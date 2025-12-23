@@ -1,0 +1,416 @@
+/* ===============================================
+   FukaiBox Layout - Material Design 3 (Google Style)
+   カラー: Primary #B3424A, Surface #fdfaf5, Text #121212
+   =============================================== */
+
+/* Root Layout */
+.fukaibox-layout {
+    min-height: 100vh;
+    background: #fdfaf5;
+}
+
+/* =============== HEADER =============== */
+.fukaibox-header {
+    background: #fdfaf5 !important;
+    height: 64px !important;
+    line-height: 64px !important;
+    padding: 0 24px !important;
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(18, 18, 18, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    white-space: nowrap;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+    flex-shrink: 1;
+}
+
+.hamburger-btn {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px !important;
+    color: var(--color-text) !important;
+    flex-shrink: 0;
+}
+
+.hamburger-btn:hover {
+    background: rgba(18, 18, 18, 0.06) !important;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.logo-image {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: #B3424A;
+    font-family: 'Noto Serif JP', serif;
+    white-space: nowrap;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Desktop login button - visible on desktop */
+.login-btn-desktop {
+    display: inline-flex !important;
+}
+
+/* Mobile login button - hidden on desktop */
+.login-btn-mobile {
+    display: none !important;
+}
+
+.user-dropdown {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 24px;
+    transition: background 0.2s;
+}
+
+.user-dropdown:hover {
+    background: rgba(18, 18, 18, 0.06);
+}
+
+.user-name {
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+/* =============== BODY =============== */
+.fukaibox-body {
+    background: transparent;
+}
+
+/* =============== SIDEBAR (M3 Navigation Drawer) =============== */
+.fukaibox-sider {
+    background: #fdfaf5 !important;
+    border-right: 1px solid rgba(18, 18, 18, 0.08);
+    height: calc(100vh - 64px);
+    position: fixed !important;
+    left: 0;
+    top: 64px;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 12px 16px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    overflow: hidden;
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+/* Navigation Item - M3 Google Style */
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    height: 48px;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #121212;
+    font-weight: 500;
+    font-size: 14px;
+    user-select: none;
+}
+
+.nav-item:hover {
+    background: rgba(179, 66, 74, 0.08);
+}
+
+/* Active Item - M3 Capsule Shape with Primary Color */
+.nav-item.active {
+    background: rgba(179, 66, 74, 0.15);
+    color: #B3424A;
+}
+
+.nav-item.active .nav-icon {
+    color: #B3424A;
+}
+
+/* Active Parent (その他が展開されて子がアクティブ) */
+.nav-item.active-parent {
+    color: #B3424A;
+}
+
+.nav-item.active-parent .nav-icon {
+    color: #B3424A;
+}
+
+/* Expandable Item (その他) */
+.nav-item-expandable {
+    margin-top: 8px;
+    border-top: 1px solid rgba(18, 18, 18, 0.06);
+    padding-top: 12px;
+}
+
+.nav-icon {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    color: #121212;
+    transition: color 0.2s;
+}
+
+.nav-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Submenu Container */
+.nav-submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-left: 12px;
+    padding-left: 12px;
+    border-left: 2px solid rgba(179, 66, 74, 0.2);
+    animation: slideDown 0.2s ease-out;
+}
+
+.nav-submenu.collapsed {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Subitem - Slightly smaller */
+.nav-subitem {
+    height: 44px;
+    font-size: 13px;
+}
+
+/* Collapsed State */
+.ant-layout-sider-collapsed .nav-item {
+    justify-content: center;
+    padding: 0;
+}
+
+.ant-layout-sider-collapsed .nav-submenu {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+}
+
+.ant-layout-sider-collapsed .nav-item-expandable {
+    margin-top: 4px;
+    padding-top: 4px;
+}
+
+.sidebar-footer {
+    text-align: center;
+    font-size: 11px;
+    color: rgba(18, 18, 18, 0.38);
+    padding-top: 16px;
+    margin-top: auto;
+    border-top: 1px solid rgba(18, 18, 18, 0.06);
+}
+
+/* =============== CONTENT =============== */
+.fukaibox-content {
+    min-height: calc(100vh - 64px);
+    padding: 32px;
+    background: #fdfaf5;
+}
+
+.content-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* =============== RESPONSIVE - Tablet =============== */
+@media (max-width: 1024px) {
+    .fukaibox-sider {
+        width: 80px !important;
+        min-width: 80px !important;
+        max-width: 80px !important;
+    }
+
+    .fukaibox-content {
+        margin-left: 80px !important;
+    }
+
+    .nav-item {
+        justify-content: center;
+        padding: 0;
+    }
+
+    .nav-label {
+        display: none;
+    }
+
+    .nav-submenu {
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+    }
+
+    .nav-item-expandable {
+        margin-top: 4px;
+        padding-top: 4px;
+    }
+
+    .sidebar-footer {
+        display: none;
+    }
+}
+
+/* =============== RESPONSIVE - Mobile =============== */
+@media (max-width: 768px) {
+    .fukaibox-header {
+        padding: 0 12px !important;
+        gap: 8px;
+    }
+
+    .header-left {
+        gap: 8px;
+    }
+
+    /* Logo text - smaller on mobile */
+    .logo-text {
+        font-size: 16px;
+    }
+
+    /* Hide user name on mobile */
+    .user-name {
+        display: none;
+    }
+
+    /* Desktop login button - hidden on mobile */
+    .login-btn-desktop {
+        display: none !important;
+    }
+
+    /* Mobile login button - visible on mobile as circle */
+    .login-btn-mobile {
+        display: inline-flex !important;
+    }
+
+    /* Sidebar becomes Navigation Rail */
+    .fukaibox-sider {
+        width: 64px !important;
+        min-width: 64px !important;
+        max-width: 64px !important;
+        padding: 8px 6px;
+    }
+
+    .fukaibox-content {
+        padding: 16px;
+        margin-left: 64px !important;
+    }
+
+    .nav-item {
+        height: 44px;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .nav-subitem {
+        height: 40px;
+    }
+
+    .nav-label {
+        display: none;
+    }
+
+    .nav-submenu {
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+    }
+
+    .nav-item-expandable {
+        margin-top: 4px;
+        padding-top: 4px;
+        border-top: none;
+    }
+
+    .sidebar-footer {
+        display: none;
+    }
+}
+
+/* =============== Very small screens =============== */
+@media (max-width: 400px) {
+    .hamburger-btn {
+        width: 40px;
+        height: 40px;
+    }
+
+    .logo-image {
+        width: 32px;
+        height: 32px;
+    }
+
+    .logo-text {
+        display: none;
+    }
+
+    .fukaibox-sider {
+        width: 56px !important;
+        min-width: 56px !important;
+        max-width: 56px !important;
+    }
+
+    .fukaibox-content {
+        margin-left: 56px !important;
+        padding: 12px;
+    }
+}
+
+/* =============== Ant Design Overrides =============== */
+.ant-layout-sider {
+    background: #fdfaf5 !important;
+}
+
+.ant-layout-sider-trigger {
+    display: none !important;
+}

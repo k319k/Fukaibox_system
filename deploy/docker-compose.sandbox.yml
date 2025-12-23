@@ -1,0 +1,30 @@
+version: '3.8'
+
+# 封解Box Tools サンドボックス
+# デプロイ先: ProDesk (root@192.168.1.14)
+# 役割: ツールプロジェクトの隔離実行環境
+
+services:
+  sandbox-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.sandbox
+    container_name: fukaibox-sandbox
+    restart: unless-stopped
+    environment:
+      MAX_RUNNING_PROJECTS: 3
+      MAX_STORAGE_GB: 2
+      RPI_BACKEND_URL: http://rpi-server.local:8000
+    ports:
+      - "9000:9000"
+    volumes:
+      - sandbox_data:/app/projects
+      - /var/run/docker.sock:/var/run/docker.sock # Docker-in-Docker for isolation
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2'
+
+volumes:
+  sandbox_data:
