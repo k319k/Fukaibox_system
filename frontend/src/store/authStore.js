@@ -28,43 +28,50 @@ export const useAuthStore = create(
             login: async (type, credentials) => {
                 set({ isLoading: true, error: null })
                 try {
-                    const endpoint = type === 'guest'
-                        ? '/auth/guest'
-                        : '/auth/discord/login'
+                    try {
+                        if (type === 'guest') {
+                            // ... existing guest logic ...
+                            const endpoint = '/auth/guest' // Relative path for proxy or same-origin
+                            const baseUrl = window.location.origin.includes('localhost')
+                                ? 'http://localhost:8000/api'
+                                : 'https://fukaibox.kanjousekai.jp/api'
 
-                    // 本番環境対応：window.locationからベースURLを取得
-                    const baseUrl = window.location.origin.includes('localhost')
-                        ? 'http://localhost:8000'  // 開発環境
-                        : 'https://fukaibox.kanjousekai.jp/api'  // 本番環境
+                            const response = await fetch(`${baseUrl}${endpoint}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(credentials),
+                            })
 
-                    const response = await fetch(`${baseUrl}${endpoint}`, {
-                        method: type === 'guest' ? 'POST' : 'GET',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: type === 'guest' ? JSON.stringify(credentials) : undefined,
-                    })
+                            if (!response.ok) throw new Error('Login failed')
+                            const data = await response.json()
 
-                    if (!response.ok) {
-                        throw new Error('Login failed')
-                    }
+                            set({
+                                user: {
+                                    id: data.user_id,
+                                    username: data.username,
+                                    displayName: data.username,
+                                    role: 'GUEST',
+                                },
+                                token: data.access_token,
+                                isLoggedIn: true,
+                                isGicho: false,
+                                isLoading: false,
+                            })
+                        } else {
+                            // Discord OAuth - Direct Redirect
+                            const baseUrl = window.location.origin.includes('localhost')
+                                ? 'http://localhost:8000'
+                                : 'https://fukaibox.kanjousekai.jp' // Explicit production URL
 
-                    const data = await response.json()
-
-                    if (type === 'guest') {
-                        set({
-                            user: {
-                                id: data.user_id,
-                                username: data.username,
-                                displayName: data.username,
-                                role: 'GUEST',
-                            },
-                            token: data.access_token,
-                            isLoggedIn: true,
-                            isGicho: false,
-                            isLoading: false,
-                        })
-                    } else {
-                        // Discord OAuth redirects
-                        window.location.href = data.redirect_url
+                            const redirectUrl = `${baseUrl}/api/auth/discord/login`
+                            console.log('Redirecting to Discord login:', redirectUrl)
+                            window.location.href = redirectUrl
+                            // Execution stops here as page redirects
+                            return
+                        }
+                    } catch (error) {
+                        console.error('Auth login error:', error)
+                        set({ error: error.message, isLoading: false })
                     }
                 } catch (error) {
                     set({ error: error.message, isLoading: false })
