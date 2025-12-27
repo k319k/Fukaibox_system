@@ -2,10 +2,7 @@
 .env
 .env.local
 .env.*.local
-backend/.env
-frontend/.env
 web/.env
-deploy/.env
 api/.env
 
 # Backups
