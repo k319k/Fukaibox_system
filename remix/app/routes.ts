@@ -8,6 +8,7 @@ export default [
     route("tools", "routes/tools._index.tsx"),
     route("settings", "routes/settings.tsx"),
     route("admin", "routes/admin.tsx"),
+    route("debug", "routes/debug.tsx"),
 
     // Auth routes
     route("auth/discord/login", "routes/auth.discord.login.ts"),
