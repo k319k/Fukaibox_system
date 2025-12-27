@@ -23,7 +23,7 @@ export interface Env {
 // Create database client from Cloudflare context
 export function createDb(env: Env) {
     const client = createClient({
-        url: env.TURSO_DATABASE_URL,
+        url: env.TURSO_DATABASE_URL ? env.TURSO_DATABASE_URL.replace("libsql://", "https://") : "",
         authToken: env.TURSO_AUTH_TOKEN,
     });
 

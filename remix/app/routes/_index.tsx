@@ -40,8 +40,15 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
         // 1. Connection/Health Check
         try {
-            await db.run(sql`SELECT 1`);
+            // Use explicit select for connection test
+            await db.select({ val: sql`1` }).from(schema.users).limit(1);
+            // Or simpler if users might be empty (this query is just for connectivity)
+            // await db.run(sql`SELECT 1`); is proving flaky with the web client + protocol mismatch?
+            // Let's stick to the protocol fix above, but keep this simple.
+            // Actually, if users is empty, .limit(1) returns empty array, which is success for connection.
         } catch (pingError: any) {
+            console.error("Ping failed:", pingError);
+            // Verify if it is protocol error
             throw new Error(`DB Connection Failed (Ping): ${pingError.message} - Check TURSO_DATABASE_URL/TOKEN`);
         }
 
