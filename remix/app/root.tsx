@@ -98,7 +98,8 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       error.status === 404
         ? "お探しのページは存在しません。"
         : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
+  } else if (error && error instanceof Error) {
+    // Show error details even in production for debugging
     details = error.message;
     stack = error.stack;
   }

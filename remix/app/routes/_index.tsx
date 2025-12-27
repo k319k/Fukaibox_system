@@ -14,27 +14,39 @@ const { Title, Text } = Typography;
 
 // Loader: Server-side data fetching
 export async function loader({ request, context }: Route.LoaderArgs) {
-    const env = context.cloudflare.env as Env;
-    const db = createDb(env);
-    const session = getSession(request);
+    console.log("Home loader started");
+    try {
+        const env = context.cloudflare.env as Env;
+        if (!env.TURSO_DATABASE_URL) {
+            throw new Error("TURSO_DATABASE_URL is missing in environment variables");
+        }
 
-    const sheets = await db.query.sheets.findMany({
-        with: { creator: true },
-        orderBy: [desc(schema.sheets.createdAt)],
-    });
+        const db = createDb(env);
+        const session = getSession(request);
 
-    // Get top users for ranking
-    const topUsers = await db.select().from(schema.users)
-        .orderBy(desc(schema.users.points))
-        .limit(10);
+        console.log("Fetching sheets...");
+        const sheets = await db.query.sheets.findMany({
+            with: { creator: true },
+            orderBy: [desc(schema.sheets.createdAt)],
+        });
 
-    return {
-        sheets,
-        topUsers,
-        user: session.user,
-        isLoggedIn: !!session.user,
-        isGicho: session.user?.isGicho || false,
-    };
+        console.log("Fetching ranking...");
+        // Get top users for ranking
+        const topUsers = await db.select().from(schema.users)
+            .orderBy(desc(schema.users.points))
+            .limit(10);
+
+        return {
+            sheets,
+            topUsers,
+            user: session.user,
+            isLoggedIn: !!session.user,
+            isGicho: session.user?.isGicho || false,
+        };
+    } catch (e: any) {
+        console.error("Home loader failed:", e);
+        throw e; // Let ErrorBoundary handle it
+    }
 }
 
 // Meta tags
