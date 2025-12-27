@@ -7,7 +7,7 @@ import { PlusOutlined, FileTextOutlined, UserOutlined } from "@ant-design/icons"
 import { useState } from "react";
 import { createDb, type Env } from "~/db/client.server";
 import * as schema from "~/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { getSession } from "~/services/session.server";
 
 const { Title, Text } = Typography;
@@ -38,6 +38,23 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         const db = createDb(env);
         const session = getSession(request); // No DB access needed for session parsing if using cookie only
 
+        // 1. Connection/Health Check
+        try {
+            await db.run(sql`SELECT 1`);
+        } catch (pingError: any) {
+            throw new Error(`DB Connection Failed (Ping): ${pingError.message} - Check TURSO_DATABASE_URL/TOKEN`);
+        }
+
+        // 2. Schema Check
+        try {
+            const tables = await db.run(sql`SELECT name FROM sqlite_master WHERE type='table' AND name='sheets'`);
+            if (tables.rows.length === 0) {
+                throw new Error("DB Connection OK but 'sheets' table not found. Did you run db:push to the correct database?");
+            }
+        } catch (schemaError: any) {
+            throw new Error(`Schema Check Failed: ${schemaError.message}`);
+        }
+
         // console.log("Fetching sheets...");
         // console.log("Fetching sheets...");
         // Use standard select + leftJoin instead of db.query to avoid json_array issues on Cloudflare
@@ -67,14 +84,14 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         };
     } catch (e: any) {
         console.error("Home loader failed:", e);
-        // Instead of throwing 500, return error state to display friendly message
+        // Return full error details for debugging
         return {
             sheets: [],
             topUsers: [],
             user: null, // Session might be invalid if env failed
             isLoggedIn: false,
             isGicho: false,
-            error: `Data Load Error: ${e.message}`
+            error: `Debug Info: ${e.message} \n(Stack: ${e.stack})`
         };
     }
 }
