@@ -5,28 +5,16 @@ import { useLoaderData, Link } from "react-router";
 import { Card, Button, Spin, Typography, Tag, Avatar } from "antd";
 import { PlusOutlined, FileTextOutlined, UserOutlined } from "@ant-design/icons";
 import { useState } from "react";
-// import { createDb, type Env } from "~/db/client.server";
-// import * as schema from "~/db/schema";
-// import { desc } from "drizzle-orm";
-// import { getSession } from "~/services/session.server";
+import { createDb, type Env } from "~/db/client.server";
+import * as schema from "~/db/schema";
+import { desc } from "drizzle-orm";
+import { getSession } from "~/services/session.server";
 
 const { Title, Text } = Typography;
 
 // Loader: Server-side data fetching
 export async function loader({ request, context }: Route.LoaderArgs) {
-    console.log("Home loader started (simulated)");
-
-    // TEMPORARY DEBUG: Bypass DB to verify worker setup
-    return {
-        sheets: [],
-        topUsers: [],
-        user: null,
-        isLoggedIn: false,
-        isGicho: false,
-        debugMessage: "DB bypassed for testing"
-    };
-
-    /*
+    // console.log("Home loader started");
     try {
         const env = context.cloudflare.env as Env;
         if (!env.TURSO_DATABASE_URL) {
@@ -34,15 +22,15 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         }
 
         const db = createDb(env);
-        const session = getSession(request);
+        const session = getSession(request); // No DB access needed for session parsing if using cookie only
 
-        console.log("Fetching sheets...");
+        // console.log("Fetching sheets...");
         const sheets = await db.query.sheets.findMany({
             with: { creator: true },
             orderBy: [desc(schema.sheets.createdAt)],
         });
 
-        console.log("Fetching ranking...");
+        // console.log("Fetching ranking...");
         // Get top users for ranking
         const topUsers = await db.select().from(schema.users)
             .orderBy(desc(schema.users.points))
@@ -59,7 +47,6 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         console.error("Home loader failed:", e);
         throw e; // Let ErrorBoundary handle it
     }
-    */
 }
 
 // Meta tags
