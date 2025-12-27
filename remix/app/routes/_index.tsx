@@ -14,7 +14,19 @@ const { Title, Text } = Typography;
 
 // Loader: Server-side data fetching
 export async function loader({ request, context }: Route.LoaderArgs) {
-    console.log("Home loader started");
+    console.log("Home loader started (simulated)");
+
+    // TEMPORARY DEBUG: Bypass DB to verify worker setup
+    return {
+        sheets: [],
+        topUsers: [],
+        user: null,
+        isLoggedIn: false,
+        isGicho: false,
+        debugMessage: "DB bypassed for testing"
+    };
+
+    /*
     try {
         const env = context.cloudflare.env as Env;
         if (!env.TURSO_DATABASE_URL) {
@@ -47,6 +59,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         console.error("Home loader failed:", e);
         throw e; // Let ErrorBoundary handle it
     }
+    */
 }
 
 // Meta tags
