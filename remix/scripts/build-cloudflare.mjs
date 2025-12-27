@@ -47,7 +47,8 @@ try {
                 "worker_loaders",
                 "ratelimits",
                 "vpc_services",
-                "python_modules"
+                "python_modules",
+                "assets"
             ];
 
             for (const field of invalidFields) {
