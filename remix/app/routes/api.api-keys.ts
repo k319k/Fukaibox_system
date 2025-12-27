@@ -3,9 +3,31 @@ import type { Route } from "./+types/api.api-keys";
 import { createDb, type Env } from "~/db/client.server";
 import * as schema from "~/db/schema";
 import { eq, and } from "drizzle-orm";
-import { requireUser } from "~/services/session.server";
 
 // GET /api/api-keys?user_id=X
+
+// Inline auth helper to avoid importing session.server at module level
+async function getAuthenticatedUser(request: Request, env: any) {
+  const { getSession } = await import("~/services/session.server");
+  const session = await getSession(request.headers.get("Cookie") || "");
+  const userId = session.get("userId");
+  
+  if (!userId) {
+    throw new Response("Unauthorized", { status: 401 });
+  }
+  
+  const { createDb } = await import("~/db/client.server");
+  const db = createDb(env);
+  const user = await db.query.users.findFirst({
+    where: (users, { eq }) => eq(users.id, userId),
+  });
+  
+  if (!user) {
+    throw new Response("User not found", { status: 401 });
+  }
+  
+  return user;
+}
 export async function loader({ request, context }: Route.LoaderArgs) {
     const env = context.cloudflare.env as Env;
     const db = createDb(env);
@@ -43,7 +65,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     }
 
     const env = context.cloudflare.env as Env;
-    const user = requireUser(request);
+    const user = await getAuthenticatedUser(request, env);
     const db = createDb(env);
     const body = (await request.json()) as { key_name: string };
 

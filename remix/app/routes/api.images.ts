@@ -3,7 +3,6 @@ import type { Route } from "./+types/api.images";
 import { createDb, type Env } from "~/db/client.server";
 import * as schema from "~/db/schema";
 import { eq } from "drizzle-orm";
-import { requireUser } from "~/services/session.server";
 
 // GET /api/images - List images (optionally by sheet_id)
 export async function loader({ request, context }: Route.LoaderArgs) {
