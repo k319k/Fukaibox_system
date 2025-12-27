@@ -1,4 +1,4 @@
-import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare";
+import { type LoaderFunctionArgs } from "react-router";
 import { createClient } from "@libsql/client/web";
 
 export const loader = async ({ context }: LoaderFunctionArgs) => {
@@ -37,7 +37,7 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
         };
     }
 
-    return json({
+    return Response.json({
         status: connectionStatus,
         env: debugInfo,
         error: connectError,
