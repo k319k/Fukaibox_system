@@ -7,7 +7,7 @@ import { PlusOutlined, FileTextOutlined, UserOutlined } from "@ant-design/icons"
 import { useState } from "react";
 import { createDb, type Env } from "~/db/client.server";
 import * as schema from "~/db/schema";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { getSession } from "~/services/session.server";
 
 const { Title, Text } = Typography;
@@ -39,10 +39,17 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         const session = getSession(request); // No DB access needed for session parsing if using cookie only
 
         // console.log("Fetching sheets...");
-        const sheets = await db.query.sheets.findMany({
-            with: { creator: true },
-            orderBy: [desc(schema.sheets.createdAt)],
-        });
+        // console.log("Fetching sheets...");
+        // Use standard select + leftJoin instead of db.query to avoid json_array issues on Cloudflare
+        const rawSheets = await db.select()
+            .from(schema.sheets)
+            .leftJoin(schema.users, eq(schema.sheets.creatorId, schema.users.id))
+            .orderBy(desc(schema.sheets.createdAt));
+
+        const sheets = rawSheets.map(({ sheets, users }) => ({
+            ...sheets,
+            creator: users
+        }));
 
         // console.log("Fetching ranking...");
         // Get top users for ranking
