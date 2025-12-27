@@ -1,24 +1,24 @@
 /**
- * FukaiBox Remix - Cloudflare Workers Configuration
+ * FukaiBox Remix - Cloudflare Pages Configuration
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "fukaibox",
 	"compatibility_date": "2025-04-04",
-	"main": "./workers/app.ts",
+	"pages_build_output_dir": "./build/client",
 	"vars": {
-		"FRONTEND_URL": "https://fukaibox.kanjousekai.jp"
+		"FRONTEND_URL": "https://fukaibox-system.pages.dev"
 	},
 	"observability": {
 		"enabled": true
 	}
 	// Secrets are set via: wrangler secret put <NAME>
-	// Required secrets:
+	// Required secrets (set in Cloudflare Pages dashboard):
 	// - TURSO_DATABASE_URL
 	// - TURSO_AUTH_TOKEN
 	// - DISCORD_CLIENT_ID
 	// - DISCORD_CLIENT_SECRET
-	// - DISCORD_REDIRECT_URI
+	// - DISCORD_REDIRECT_URI (https://fukaibox-system.pages.dev/auth/discord/callback)
 	// - JWT_SECRET
 	// - GICHO_DISCORD_IDS (comma-separated)
 	// Optional:
