@@ -98,10 +98,16 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       error.status === 404
         ? "お探しのページは存在しません。"
         : error.statusText || details;
-  } else if (error && error instanceof Error) {
-    // Show error details even in production for debugging
-    details = error.message;
-    stack = error.stack;
+  } else {
+    // Fallback for unknown errors
+    details = String(error);
+    if (typeof error === 'object' && error !== null) {
+      try {
+        stack = JSON.stringify(error, Object.getOwnPropertyNames(error), 2);
+      } catch {
+        stack = "Could not stringify error";
+      }
+    }
   }
 
   return (
