@@ -17,8 +17,22 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     // console.log("Home loader started");
     try {
         const env = context.cloudflare.env as Env;
+
+        // Debug check for env existences
+        if (!context.cloudflare || !env) {
+            console.error("Cloudflare context or env is missing");
+            return {
+                sheets: [], topUsers: [], user: null, isLoggedIn: false, isGicho: false,
+                error: "System Error: Cloudflare environment not loaded."
+            };
+        }
+
         if (!env.TURSO_DATABASE_URL) {
-            throw new Error("TURSO_DATABASE_URL is missing in environment variables");
+            console.error("Missing TURSO_DATABASE_URL");
+            return {
+                sheets: [], topUsers: [], user: null, isLoggedIn: false, isGicho: false,
+                error: "Configuration Error: Database URL not set."
+            };
         }
 
         const db = createDb(env);
@@ -42,10 +56,19 @@ export async function loader({ request, context }: Route.LoaderArgs) {
             user: session.user,
             isLoggedIn: !!session.user,
             isGicho: session.user?.isGicho || false,
+            error: null
         };
     } catch (e: any) {
         console.error("Home loader failed:", e);
-        throw e; // Let ErrorBoundary handle it
+        // Instead of throwing 500, return error state to display friendly message
+        return {
+            sheets: [],
+            topUsers: [],
+            user: null, // Session might be invalid if env failed
+            isLoggedIn: false,
+            isGicho: false,
+            error: `Data Load Error: ${e.message}`
+        };
     }
 }
 
@@ -67,11 +90,19 @@ const phaseConfig: Record<string, { label: string; color: string }> = {
 };
 
 export default function Home() {
-    const { sheets, topUsers, user, isLoggedIn, isGicho } = useLoaderData<typeof loader>();
+    const data = useLoaderData<typeof loader>();
+    // Handle safe loader return (might have error property)
+    const { sheets, topUsers, user, isLoggedIn, isGicho, error } = data as any;
+
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
         <div style={{ padding: "24px", maxWidth: "1400px", margin: "0 auto" }}>
+            {error && (
+                <div style={{ marginBottom: 24, padding: 16, background: "#fff2f0", border: "1px solid #ffccc7", borderRadius: 8, color: "#cf1322" }}>
+                    <strong>エラーが発生しました:</strong> {error}
+                </div>
+            )}
             {/* Header Section */}
             <div style={{ marginBottom: 48 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 32 }}>
