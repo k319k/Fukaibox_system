@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync } from "fs";
+import { copyFileSync, existsSync, mkdirSync, rmSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { execSync } from "child_process";
@@ -29,6 +29,15 @@ try {
     } else {
         console.error("❌ build/server/index.js not found!");
         process.exit(1);
+    }
+
+    // Remove generated wrangler.json from client directory if it exists
+    // This file causes conflicts with Cloudflare Pages deployment
+    const generatedWranglerConfig = join(clientDir, "wrangler.json");
+    if (existsSync(generatedWranglerConfig)) {
+        console.log("🗑️ Removing generated wrangler.json from client directory...");
+        rmSync(generatedWranglerConfig);
+        console.log("✅ Removed build/client/wrangler.json");
     }
 
     console.log("✨ Build complete and ready for Cloudflare Pages!");
