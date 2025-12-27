@@ -13,33 +13,42 @@ export default async function handleRequest(
 ) {
   const userAgent = request.headers.get("user-agent");
 
-  // Create Ant Design style cache for SSR
-  const cache = createCache();
+  try {
+    // Create Ant Design style cache for SSR
+    const cache = createCache();
 
-  // Render the app with StyleProvider
-  const html = renderToString(
-    <StyleProvider cache={cache}>
-      <ServerRouter context={routerContext} url={request.url} />
-    </StyleProvider>
-  );
+    // Render the app with StyleProvider
+    const html = renderToString(
+      <StyleProvider cache={cache}>
+        <ServerRouter context={routerContext} url={request.url} />
+      </StyleProvider>
+    );
 
-  // Extract styles from cache
-  const styleText = extractStyle(cache);
+    // Extract styles from cache
+    const styleText = extractStyle(cache);
 
-  // Inject styles into head
-  const finalHtml = html.replace(
-    "</head>",
-    `<style id="antd-ssr">${styleText}</style></head>`
-  );
+    // Inject styles into head
+    const finalHtml = html.replace(
+      "</head>",
+      `<style id="antd-ssr">${styleText}</style></head>`
+    );
 
-  // For bots or SPA mode, ensure all content is ready
-  if ((userAgent && isbot(userAgent)) || routerContext.isSpaMode) {
-    // Already using renderToString which is synchronous
+    // For bots or SPA mode, ensure all content is ready
+    if ((userAgent && isbot(userAgent)) || routerContext.isSpaMode) {
+      // Already using renderToString which is synchronous
+    }
+
+    responseHeaders.set("Content-Type", "text/html");
+    return new Response(`<!DOCTYPE html>${finalHtml}`, {
+      headers: responseHeaders,
+      status: responseStatusCode,
+    });
+  } catch (error) {
+    console.error("SSR Error:", error);
+    // Return a simple text response if SSR fails completely
+    return new Response(`SSR Rendering Failed: ${error instanceof Error ? error.message + "\n" + error.stack : String(error)}`, {
+      status: 500,
+      headers: { "Content-Type": "text/plain" }
+    });
   }
-
-  responseHeaders.set("Content-Type", "text/html");
-  return new Response(`<!DOCTYPE html>${finalHtml}`, {
-    headers: responseHeaders,
-    status: responseStatusCode,
-  });
 }
