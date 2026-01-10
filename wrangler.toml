@@ -4,11 +4,3 @@ compatibility_flags = ["nodejs_compat"]
 
 # Cloudflare Pages出力ディレクトリ
 pages_build_output_dir = ".open-next"
-
-# OpenNext用のワーカー設定
-main = ".open-next/worker.js"
-
-# アセット設定
-[assets]
-directory = ".open-next/assets"
-binding = "STATIC_ASSETS"
