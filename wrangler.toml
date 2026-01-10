@@ -2,6 +2,9 @@ name = "fukaibox"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
+# Cloudflare Pages出力ディレクトリ
+pages_build_output_dir = ".open-next"
+
 # OpenNext用のワーカー設定
 main = ".open-next/worker.js"
 
