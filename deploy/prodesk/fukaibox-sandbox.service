@@ -1,0 +1,27 @@
+[Unit]
+Description=FukaiBox Sandbox API
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=sandbox
+Group=sandbox
+WorkingDirectory=/app
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+ExecStart=/usr/bin/python3 /app/sandbox-api.py
+
+Restart=always
+RestartSec=10
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=fukaibox-sandbox
+
+[Install]
+WantedBy=multi-user.target
