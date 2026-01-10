@@ -1,11 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
-  images: {
-    unoptimized: true,
-  },
+  // OpenNext/Cloudflare用にサーバーレスモードを使用
 };
 
 export default nextConfig;
+
 
