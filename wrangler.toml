@@ -11,4 +11,4 @@ main = ".open-next/worker.js"
 # アセット設定
 [assets]
 directory = ".open-next/assets"
-binding = "ASSETS"
+binding = "STATIC_ASSETS"
