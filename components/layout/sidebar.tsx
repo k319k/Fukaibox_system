@@ -16,7 +16,11 @@ const bottomNavigation = [
     { name: "設定", href: "/settings", icon: SettingsIcon },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+    userRole?: string;
+}
+
+export function Sidebar({ userRole = "guest" }: SidebarProps) {
     const pathname = usePathname();
 
     return (

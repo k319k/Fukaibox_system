@@ -4,7 +4,7 @@
 
 封解Box（ふうかいボックス）は、封解公儀のためのWebアプリケーション。ショート動画制作のワークフロー管理、儀員の点数管理、界域百科事典、各種ツールを提供する統合プラットフォーム。
 
-**URL**: `fukaibox.kanjousekai.jp`
+**URL**: `fukaibox.kanjousekai.jp` → `fukai-box.vercel.app`
 
 ---
 
@@ -12,11 +12,14 @@
 
 | カテゴリ | 技術 | 用途 |
 |---------|------|------|
-| フロントエンド | Next.js (App Router) | Webアプリケーション |
-| ホスティング | Cloudflare Pages | デプロイ・配信 |
+| フロントエンド | Next.js 16 (App Router) | Webアプリケーション |
+| バンドラー | Turbopack | 高速ビルド |
+| ホスティング | Vercel | デプロイ・配信・Edge Functions |
+| UIライブラリ | HeroUI 2.8.7 | コンポーネントライブラリ |
+| スタイリング | Tailwind CSS 4 | ユーティリティCSS |
 | メインDB | Turso (libSQL) | ユーザー、料理、百科事典、Toolsコード保存 |
 | Tools用DB | Supabase | 各ToolsのAppが実行時に使用 |
-| ストレージ | Cloudflare R2 | 画像アップロード・保存 |
+| ストレージ | Vercel Blob Storage | 画像アップロード・保存 |
 | 儀員点数API | Hono または FastAPI | スタンドアローンAPI |
 | AI | GLM-4.6V-Flash, Qwen3 (OpenRouter経由) | 評価・コード生成 |
 
@@ -86,4 +89,5 @@ task.mdを参照
 - **レスポンシブ対応**: PC/タブレット/スマートフォン
 - **パフォーマンス**: ページ読み込み3秒以内
 - **セキュリティ**: 認証、認可、入力検証
-- **可用性**: Cloudflare Pagesによる高可用性
+- **可用性**: VercelによるグローバルCDNと高可用性
+- **スケーラビリティ**: Vercel Edge Functionsによるエッジコンピューティング

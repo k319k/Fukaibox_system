@@ -1,16 +1,23 @@
 import { Sidebar } from "@/components/layout/sidebar";
+import { Header } from "@/components/layout/header";
+import { getCurrentUserWithRole } from "@/app/actions/auth";
 
-export default function MainLayout({
+export default async function MainLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const user = await getCurrentUserWithRole();
+
     return (
         <div className="min-h-screen">
-            <Sidebar />
-            <main className="ml-64 p-6">
-                {children}
-            </main>
+            <Sidebar userRole={user?.role} />
+            <div className="ml-64 flex flex-col min-h-screen">
+                <Header user={user} />
+                <main className="flex-1 p-6">
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }

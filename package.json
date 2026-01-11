@@ -5,16 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cf": "TURBOPACK=0 NEXT_PRIVATE_DISABLE_TURBO=1 SKIP_TURBOPACK=1 opennextjs-cloudflare build && node scripts/post-build.js",
-    "preview": "wrangler pages dev",
-    "deploy": "wrangler pages deploy",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migrate": "tsx scripts/migrate.ts",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@heroui/react": "^2.8.7",
     "@libsql/client": "^0.17.0",
-    "@opennextjs/cloudflare": "^1.14.8",
     "better-auth": "^1.4.10",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.3",
@@ -34,7 +33,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "wrangler": "^4.58.0"
+    "tsx": "^4.21.0",
+    "typescript": "^5"
   }
 }

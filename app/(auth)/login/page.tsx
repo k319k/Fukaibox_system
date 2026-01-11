@@ -3,6 +3,7 @@
 import { Button, Card, CardBody, CardHeader, Input, Divider } from "@heroui/react";
 import { useState } from "react";
 import { signIn } from "@/lib/auth-client";
+import Link from "next/link";
 
 export default function LoginPage() {
     const [isGuestMode, setIsGuestMode] = useState(false);
@@ -160,6 +161,12 @@ export default function LoginPage() {
                             </Button>
                         </>
                     )}
+
+                    <div className="text-center mt-4">
+                        <Link href="/register" className="text-sm text-primary hover:underline">
+                            新規登録はこちら
+                        </Link>
+                    </div>
 
                     <p className="text-xs text-foreground-muted text-center mt-4">
                         ログインすることで、利用規約とプライバシーポリシーに同意したものとみなされます。

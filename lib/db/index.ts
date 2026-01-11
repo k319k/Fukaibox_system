@@ -11,7 +11,7 @@ if (!url && process.env.NODE_ENV === "production") {
 }
 
 export const client = createClient({
-  url: url ?? "http://localhost:8080", // フォールバック
+  url: url ?? ":memory:", // フォールバック（ビルド時など）
   authToken: authToken,
 });
 
