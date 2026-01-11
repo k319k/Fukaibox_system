@@ -11,8 +11,11 @@ if (!url && process.env.NODE_ENV === "production") {
 }
 
 // Use HTTP-only connection to avoid resp.body?.cancel and URL parsing errors
-// Force HTTP by converting wss:// to https:// if present
-const httpUrl = url?.replace(/^wss:\/\//, 'https://').replace(/^ws:\/\//, 'http://');
+// Convert libsql://, wss://, ws:// protocols to https:// or http://
+const httpUrl = url
+  ?.replace(/^libsql:\/\//, 'https://')
+  ?.replace(/^wss:\/\//, 'https://')
+  ?.replace(/^ws:\/\//, 'http://');
 
 export const client = createClient({
   url: httpUrl ?? ":memory:",
