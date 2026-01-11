@@ -13,6 +13,8 @@ if (!url && process.env.NODE_ENV === "production") {
 export const client = createClient({
   url: url ?? ":memory:", // フォールバック（ビルド時など）
   authToken: authToken,
+  // Prevent resp.body?.cancel error by using native Node.js fetch 
+  fetch: typeof globalThis.fetch === 'function' ? globalThis.fetch : undefined,
 });
 
 export const db = drizzle(client, { schema });
