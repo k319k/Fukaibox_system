@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
-    "build:cf": "opennextjs-cloudflare build && node scripts/post-build.js",
+    "build:cf": "TURBOPACK=0 opennextjs-cloudflare build && node scripts/post-build.js",
     "preview": "wrangler pages dev",
     "deploy": "wrangler pages deploy",
     "start": "next start",
