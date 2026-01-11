@@ -2,3 +2,6 @@ name = "fukai-box"
 compatibility_date = "2024-11-18"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".open-next"
+
+[build]
+command = "NPM_FLAGS='--legacy-peer-deps' npm run build:cf"
