@@ -1,4 +1,5 @@
 // OpenNext configuration for Cloudflare Pages
-const config = {};
-
-export default config;
+// See: https://opennext.js.org/config
+export default {
+    default: {},
+};
