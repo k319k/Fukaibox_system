@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "build:cf": "opennextjs-cloudflare build",
+    "build": "next build --no-turbo",
+    "build:cf": "opennextjs-cloudflare build && node -e \"require('fs').renameSync('.open-next/worker.js', '.open-next/_worker.js')\"",
     "preview": "wrangler pages dev",
     "deploy": "wrangler pages deploy",
     "start": "next start",
