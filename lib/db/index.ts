@@ -10,11 +10,13 @@ if (!url && process.env.NODE_ENV === "production") {
   console.warn("Warning: Database URL is not defined.");
 }
 
+// Use HTTP-only connection to avoid resp.body?.cancel and URL parsing errors
+// Force HTTP by converting wss:// to https:// if present
+const httpUrl = url?.replace(/^wss:\/\//, 'https://').replace(/^ws:\/\//, 'http://');
+
 export const client = createClient({
-  url: url ?? ":memory:", // フォールバック（ビルド時など）
+  url: httpUrl ?? ":memory:",
   authToken: authToken,
-  // Prevent resp.body?.cancel error by using native Node.js fetch 
-  fetch: typeof globalThis.fetch === 'function' ? globalThis.fetch : undefined,
 });
 
 export const db = drizzle(client, { schema });
