@@ -35,8 +35,11 @@ export const client = createClient({
   fetch: customFetch, // カスタムfetchラッパーを使用
 });
 
-// Drizzle ORMインスタンス
-export const db = drizzle(client, { schema });
+// Drizzle ORMインスタンス（SQLite mode、クエリログ有効化）
+export const db = drizzle(client, {
+  schema,
+  logger: true, // 実行されるSQLクエリをログ出力して確認
+});
 
 // 互換性のためのエクスポート
 export { client as libsqlClient };
