@@ -1,5 +1,5 @@
-import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
+import { createClient } from "@libsql/client/web";
 import * as schema from "./schema";
 
 const url = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL;
@@ -10,12 +10,9 @@ if (!url && process.env.NODE_ENV === "production") {
   console.warn("Warning: Database URL is not defined.");
 }
 
-// Use HTTP-only connection to avoid resp.body?.cancel and URL parsing errors
-// Convert libsql://, wss://, ws:// protocols to https:// or http://
-const httpUrl = url
-  ?.replace(/^libsql:\/\//, 'https://')
-  ?.replace(/^wss:\/\//, 'https://')
-  ?.replace(/^ws:\/\//, 'http://');
+// Use libSQL web client (HTTP-only) to avoid Node.js fetch compatibility issues
+// Convert libsql:// to https:// for HTTP-only connection
+const httpUrl = url?.replace(/^libsql:\/\//, 'https://');
 
 export const client = createClient({
   url: httpUrl ?? ":memory:",
