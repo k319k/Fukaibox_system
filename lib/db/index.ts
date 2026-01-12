@@ -12,11 +12,13 @@ if (!url && process.env.NODE_ENV === "production") {
 
 // Use libSQL web client (HTTP-only) to avoid Node.js fetch compatibility issues
 // Convert libsql:// to https:// for HTTP-only connection
+// Explicitly disable sync to avoid resp.body?.cancel issues
 const httpUrl = url?.replace(/^libsql:\/\//, 'https://');
 
 export const client = createClient({
   url: httpUrl ?? ":memory:",
   authToken: authToken,
+  syncUrl: undefined, // Disable sync protocol to force async HTTP-only
 });
 
 export const db = drizzle(client, { schema });
