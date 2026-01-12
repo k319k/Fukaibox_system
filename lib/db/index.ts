@@ -26,11 +26,10 @@ const customFetch: typeof fetch = async (input, init?) => {
   return undiciFetch(urlString, requestInit) as Promise<Response>;
 };
 
-// libsql://プロトコルをhttps://に変換
-const httpUrl = url?.replace(/^libsql:\/\//, 'https://');
-
+// PDCA #1: Native libSQL Protocol (libsql://) を試行
+// RETURNING句サポートのため、https://変換を削除してlibsql://プロトコルを直接使用
 export const client = createClient({
-  url: httpUrl ?? ":memory:",
+  url: url ?? ":memory:",
   authToken: authToken,
   fetch: customFetch, // カスタムfetchラッパーを使用
 });
