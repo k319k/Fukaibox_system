@@ -12,14 +12,27 @@ if (!url && process.env.NODE_ENV === "production") {
   console.warn("Warning: Database URL is not defined.");
 }
 
-// Undici fetch を使用してVercelのfetch問題を回避
+// Undici fetchラッパー：RequestオブジェクトをURLに変換
+const customFetch: typeof fetch = async (input, init?) => {
+  // RequestオブジェクトをURLに変換
+  const urlString = typeof input === 'string' ? input : input.url;
+  const requestInit = typeof input === 'string' ? init : {
+    ...init,
+    method: input.method,
+    headers: input.headers,
+    body: input.body,
+  };
+
+  return undiciFetch(urlString, requestInit) as Promise<Response>;
+};
+
 // libsql://プロトコルをhttps://に変換
 const httpUrl = url?.replace(/^libsql:\/\//, 'https://');
 
 export const client = createClient({
   url: httpUrl ?? ":memory:",
   authToken: authToken,
-  fetch: undiciFetch as typeof fetch, // Node.js標準のfetch実装を使用
+  fetch: customFetch, // カスタムfetchラッパーを使用
 });
 
 // Drizzle ORMインスタンス
