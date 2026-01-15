@@ -1,8 +1,11 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { createAuthMiddleware } from "better-auth/api";
 import { db } from "./db";
 import * as schema from "./db/schema";
+import { userRoles } from "./db/schema";
 import { env } from "@/lib/env";
+import { eq } from "drizzle-orm";
 
 // 儀長のDiscord ID一覧
 const GICHO_DISCORD_IDS = (env.GICHO_DISCORD_IDS || "").split(",").filter(Boolean);
@@ -41,6 +44,51 @@ export const auth = betterAuth({
         "http://127.0.0.1:3000",
         env.BETTER_AUTH_URL, // 本番URL
     ],
+    hooks: {
+        after: createAuthMiddleware(async (ctx) => {
+            // ソーシャルログイン（Discord）後にロールを自動設定
+            if (ctx.path.startsWith("/callback/discord") || ctx.path.startsWith("/sign-in/social")) {
+                const newSession = ctx.context.newSession;
+                if (newSession?.user) {
+                    const userId = newSession.user.id;
+
+                    // accountsテーブルからDiscord IDを取得
+                    const accounts = await db.select()
+                        .from(schema.accounts)
+                        .where(eq(schema.accounts.userId, userId));
+
+                    const discordAccount = accounts.find(a => a.providerId === "discord");
+                    const discordId = discordAccount?.accountId || "";
+
+                    // ロール判定（Discord IDベース、後でGuild APIで詳細判定も可能）
+                    let role: schema.RoleType = "guest";
+                    if (discordId && GICHO_DISCORD_IDS.includes(discordId)) {
+                        role = "gicho";
+                    } else if (discordId) {
+                        role = "giin"; // Discordログインユーザーは最低でも儀員
+                    }
+
+                    // 既存のロール情報を確認
+                    const existingRoles = await db.select()
+                        .from(userRoles)
+                        .where(eq(userRoles.userId, userId));
+
+                    if (existingRoles.length === 0) {
+                        // 新規作成
+                        await db.insert(userRoles).values({
+                            id: crypto.randomUUID(),
+                            userId,
+                            role,
+                            discordId: discordId || null,
+                            discordUsername: newSession.user.name || null,
+                            createdAt: new Date(),
+                            updatedAt: new Date(),
+                        });
+                    }
+                }
+            }
+        }),
+    },
 });
 
 /**
