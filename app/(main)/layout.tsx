@@ -11,7 +11,7 @@ export default async function MainLayout({
 
     return (
         <div className="min-h-screen">
-            <Sidebar userRole={user?.role} />
+            <Sidebar userRole={user?.role} userName={user?.name} userImage={user?.image} />
             <div className="ml-64 flex flex-col min-h-screen">
                 <Header user={user} />
                 <main className="flex-1 p-6">

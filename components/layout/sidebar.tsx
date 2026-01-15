@@ -18,10 +18,20 @@ const bottomNavigation = [
 
 interface SidebarProps {
     userRole?: string;
+    userName?: string;
+    userImage?: string | null;
 }
 
-export function Sidebar({ userRole = "guest" }: SidebarProps) {
+export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProps) {
     const pathname = usePathname();
+    const isLoggedIn = !!userName;
+    const displayName = userName || "ゲスト";
+    const roleLabel = {
+        gicho: "儀長",
+        giin: "儀員",
+        meiyo_giin: "名誉儀員",
+        guest: "ゲスト",
+    }[userRole] || "ゲスト";
 
     return (
         <aside className="fixed left-0 top-0 h-screen w-64 glass flex flex-col z-50">
@@ -81,16 +91,17 @@ export function Sidebar({ userRole = "guest" }: SidebarProps) {
                     <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
                         <Avatar
                             size="sm"
-                            name="U"
+                            name={displayName[0]}
+                            src={userImage || undefined}
                             classNames={{
                                 base: "bg-gradient-to-br from-primary to-secondary",
                             }}
                         />
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-foreground truncate">
-                                ゲスト
+                                {displayName}
                             </p>
-                            <p className="text-xs text-foreground-muted">未ログイン</p>
+                            <p className="text-xs text-foreground-muted">{isLoggedIn ? roleLabel : "未ログイン"}</p>
                         </div>
                     </div>
                 </Tooltip>
