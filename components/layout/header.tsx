@@ -64,17 +64,42 @@ export function Header({ user }: HeaderProps) {
                     </div>
                 </DropdownTrigger>
                 <DropdownMenu
-                    aria-label="User menu"
+                    aria-label="ユーザーメニュー"
+                    className="w-64"
+                    itemClasses={{
+                        base: "gap-4 h-12 rounded-lg data-[hover=true]:bg-[var(--md-sys-color-surface-container-high)] transition-colors",
+                    }}
                     classNames={{
-                        base: "surface-container-lowest shape-lg",
+                        base: "before:bg-[var(--md-sys-color-surface-container-lowest)] before:backdrop-blur-md shadow-xl border border-[var(--md-sys-color-outline-variant)] rounded-2xl p-2",
                     }}
                 >
-                    <DropdownItem key="profile" className="h-16 gap-2" textValue="Profile">
-                        <p className="title-medium">{user.name}</p>
-                        <p className="body-small">{user.email}</p>
-                        {user.discordUsername && (
-                            <p className="body-small">@{user.discordUsername}</p>
-                        )}
+                    <DropdownItem key="profile" className="h-16 gap-3 opacity-100 cursor-default hover:!bg-transparent">
+                        <User
+                            name={user.name}
+                            description={
+                                <div className="flex flex-col gap-1 mt-1">
+                                    <span className="text-[var(--md-sys-color-on-surface-variant)] label-small">{user.email}</span>
+                                    <div className="flex gap-1">
+                                        <Badge content="" color="primary" size="sm" shape="circle" className="hidden">
+                                            {/* Dummy for alignment */}
+                                        </Badge>
+                                        <div className={`px-3 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider ${user.role === 'gicho' ? 'bg-[#40000A] text-[#FFDAD9] border border-[#FFB4AB]/30' :
+                                                user.role === 'meiyo_giin' ? 'bg-[#1E1B16] text-[#E8E2D9] border border-[#D1C6B5]/30' :
+                                                    user.role === 'giin' ? 'bg-[#001F25] text-[#A6EEFF] border border-[#4FD8EB]/30' :
+                                                        'bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]'
+                                            }`}>
+                                            {user.role}
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            avatarProps={{
+                                src: user.image || undefined,
+                                classNames: {
+                                    base: "bg-gradient-to-br from-primary to-secondary ring-2 ring-[var(--md-sys-color-outline-variant)]",
+                                },
+                            }}
+                        />
                     </DropdownItem>
                     <DropdownItem key="settings" href="/settings" className="title-small">
                         設定

@@ -236,5 +236,5 @@ PORT=3001 npm run dev
 
 ---
 
-**最終更新**: 2026-01-11
+**最終更新**: 2026-01-16
 **担当エージェント**: Antigravity by Google DeepMind

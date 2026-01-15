@@ -49,28 +49,25 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 surface">
-            {/* 背景装飾 - M3 Gradient */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-radial from-[var(--md-sys-color-primary-container)]/40 to-transparent rounded-full blur-3xl" />
-                <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-radial from-[var(--md-sys-color-secondary-container)]/40 to-transparent rounded-full blur-3xl" />
-            </div>
+        <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[var(--md-sys-color-surface-container)] px-4">
+            {/* Background Decoration */}
+            <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-[var(--md-sys-color-primary-container)] rounded-full blur-[100px] opacity-40 pointer-events-none" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-[var(--md-sys-color-secondary-container)] rounded-full blur-[100px] opacity-40 pointer-events-none" />
 
-            <Card className="w-full max-w-md elevated-3 shape-xl">
-                <CardHeader className="flex flex-col items-center pb-0 pt-10">
-                    <div className="w-20 h-20 gradient-primary shape-xl flex items-center justify-center mb-5 shadow-lg">
-                        <span className="text-3xl font-bold text-white">封</span>
+            {/* Login Card */}
+            <Card className="w-full max-w-md surface-container-lowest shape-xl shadow-[var(--md-sys-elevation-3)] relative z-10">
+                <CardHeader className="flex flex-col gap-2 items-center justify-center pt-10 pb-2">
+                    <div className="w-16 h-16 bg-[var(--md-sys-color-primary)] rounded-2xl flex items-center justify-center mb-4 shadow-lg rotate-3">
+                        <span className="text-3xl text-[var(--md-sys-color-on-primary)]">📦</span>
                     </div>
-                    <h1 className="headline-medium">封解Box</h1>
-                    <p className="body-medium mt-2">
-                        封解公儀の統合プラットフォーム
-                    </p>
+                    <h1 className="headline-medium text-[var(--md-sys-color-on-surface)]">封解Box</h1>
+                    <p className="body-large text-[var(--md-sys-color-on-surface-variant)]">メンバー専用ポータル</p>
                 </CardHeader>
-
-                <CardBody className="gap-4 px-8 pb-10">
+                <CardBody className="px-10 pb-10 space-y-6">
                     {error && (
-                        <div className="bg-[var(--md-sys-color-error-container)] border border-[var(--md-sys-color-error)]/20 shape-md p-4 text-[var(--md-sys-color-error)] body-medium">
-                            {error}
+                        <div className="bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] p-4 rounded-xl flex items-center gap-3 text-sm animate-in fade-in slide-in-from-top-2">
+                            <span className="text-lg">⚠️</span>
+                            <p className="font-medium">{error}</p>
                         </div>
                     )}
 
