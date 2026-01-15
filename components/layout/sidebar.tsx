@@ -75,13 +75,7 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
 
                                 {/* Active Background - High Contrast Primary */}
                                 {isActive && (
-                                    <motion.div
-                                        layoutId="sidebar-active"
-                                        className="absolute inset-0 bg-[var(--md-sys-color-primary)] shadow-md z-0 rounded-full"
-                                        initial={{ opacity: 0, scale: 0.95 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ duration: 0.2, ease: "easeOut" }}
-                                    />
+                                    <div className="absolute inset-0 bg-[var(--md-sys-color-primary)] shadow-md z-0 rounded-full" />
                                 )}
 
                                 {/* Hover State Layer */}
@@ -99,37 +93,60 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
                 {bottomNavigation.map((item) => {
                     const isActive = pathname === item.href;
                     return (
-                        <span className="title-medium">{item.name}</span>
-                            </Button>
-        </Link>
-    );
-})}
-            </div >
+                        <Link key={item.name} href={item.href} className="group relative block">
+                            <Button
+                                variant="light"
+                                className="w-full justify-start gap-3 h-12 shape-full state-layer relative overflow-hidden"
+                                aria-current={isActive ? "page" : undefined}
+                            >
+                                <div className="relative z-10 flex items-center gap-3">
+                                    <div className={`transition-colors duration-200 ${isActive ? "text-[var(--md-sys-color-on-primary)]" : "text-[var(--md-sys-color-on-surface-variant)] group-hover:text-[var(--md-sys-color-primary)]"}`}>
+                                        <item.icon className="w-5 h-5" />
+                                    </div>
+                                    <span className={`font-medium tracking-wide transition-colors duration-200 ${isActive ? "text-[var(--md-sys-color-on-primary)] label-large" : "text-[var(--md-sys-color-on-surface-variant)] label-large group-hover:text-[var(--md-sys-color-on-surface)]"}`}>
+                                        {item.name}
+                                    </span>
+                                </div>
 
-    {/* ユーザー情報 - M3 Surface Container High */ }
-    < div className = "px-3 pb-4 border-t border-[var(--md-sys-color-outline-variant)] pt-4" >
-        <Tooltip content="プロフィール">
-            <div className="flex items-center gap-3 p-3 shape-lg surface-container-high hover:surface-container-highest cursor-pointer transition-colors">
-                <Avatar
-                    size="sm"
-                    name={displayName[0]}
-                    src={userImage || undefined}
-                    classNames={{
-                        base: "bg-gradient-to-br from-primary to-secondary ring-2 ring-[var(--md-sys-color-outline-variant)]",
-                    }}
-                />
-                <div className="flex-1 min-w-0">
-                    <p className="title-medium truncate">
-                        {displayName}
-                    </p>
-                    <span className={cn("inline-block px-2 py-0.5 text-xs mt-1", roleBadgeClass)}>
-                        {isLoggedIn ? roleLabel : "未ログイン"}
-                    </span>
-                </div>
+                                {/* Active Background */}
+                                {isActive && (
+                                    <div className="absolute inset-0 bg-[var(--md-sys-color-primary)] shadow-md z-0 rounded-full" />
+                                )}
+
+                                {/* Hover State Layer */}
+                                {!isActive && (
+                                    <div className="absolute inset-0 rounded-full bg-[var(--md-sys-color-on-surface)] opacity-0 group-hover:opacity-[0.08] transition-opacity duration-200" />
+                                )}
+                            </Button>
+                        </Link>
+                    );
+                })}
             </div>
-        </Tooltip>
-            </div >
-        </aside >
+
+            {/* ユーザー情報 - M3 Surface Container High */}
+            <div className="px-3 pb-4 border-t border-[var(--md-sys-color-outline-variant)] pt-4">
+                <Tooltip content="プロフィール">
+                    <div className="flex items-center gap-3 p-3 shape-lg surface-container-high hover:surface-container-highest cursor-pointer transition-colors">
+                        <Avatar
+                            size="sm"
+                            name={displayName[0]}
+                            src={userImage || undefined}
+                            classNames={{
+                                base: "bg-gradient-to-br from-primary to-secondary ring-2 ring-[var(--md-sys-color-outline-variant)]",
+                            }}
+                        />
+                        <div className="flex-1 min-w-0">
+                            <p className="title-medium truncate">
+                                {displayName}
+                            </p>
+                            <span className={cn("inline-block px-2 py-0.5 text-xs mt-1", roleBadgeClass)}>
+                                {isLoggedIn ? roleLabel : "未ログイン"}
+                            </span>
+                        </div>
+                    </div>
+                </Tooltip>
+            </div>
+        </aside>
     );
 }
 
