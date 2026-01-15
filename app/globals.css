@@ -1,73 +1,271 @@
 @import "tailwindcss";
 
-/* Material Design 3 カラーパレット (Ivory & Carmine) */
+/* ═══════════════════════════════════════════════════════════════════════════
+   Material Design 3 カラーパレット (Ivory & Carmine)
+   封解Box テーマ
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 :root {
-  /* Primary (Carmine Red) */
+  /* ───────────────────────────────────────────────────────────────────────────
+     Primary (Carmine Red)
+     ─────────────────────────────────────────────────────────────────────────── */
   --md-sys-color-primary: #B3424A;
   --md-sys-color-on-primary: #FFFFFF;
   --md-sys-color-primary-container: #FFDAD9;
   --md-sys-color-on-primary-container: #40000A;
 
-  /* Secondary (Deep Red) */
+  /* ───────────────────────────────────────────────────────────────────────────
+     Secondary (Deep Red)
+     ─────────────────────────────────────────────────────────────────────────── */
   --md-sys-color-secondary: #9E2B1F;
   --md-sys-color-on-secondary: #FFFFFF;
   --md-sys-color-secondary-container: #FFDAD4;
   --md-sys-color-on-secondary-container: #400001;
 
-  /* Tertiary (Brown) */
+  /* ───────────────────────────────────────────────────────────────────────────
+     Tertiary (Brown)
+     ─────────────────────────────────────────────────────────────────────────── */
   --md-sys-color-tertiary: #775930;
   --md-sys-color-on-tertiary: #FFFFFF;
+  --md-sys-color-tertiary-container: #FFDEBC;
+  --md-sys-color-on-tertiary-container: #291800;
 
-  /* Surface (Ivory) */
+  /* ───────────────────────────────────────────────────────────────────────────
+     Surface Hierarchy (M3 Elevation Tones)
+     明度差を強化してコントラストを改善
+     ─────────────────────────────────────────────────────────────────────────── */
   --md-sys-color-surface: #F5F0DC;
+  --md-sys-color-surface-dim: #E8E3CF;
+  --md-sys-color-surface-bright: #FBF8EE;
+  --md-sys-color-surface-container-lowest: #FFFFFF;
+  --md-sys-color-surface-container-low: #F8F4E6;
+  --md-sys-color-surface-container: #F2EDD9;
+  --md-sys-color-surface-container-high: #ECE7D4;
+  --md-sys-color-surface-container-highest: #E6E1CE;
   --md-sys-color-on-surface: #1D1B16;
-  --md-sys-color-surface-variant: #F4DDDB;
-  --md-sys-color-on-surface-variant: #534342;
+  --md-sys-color-on-surface-variant: #4B4639;
+  --md-sys-color-surface-variant: #E8E1CF;
 
-  /* Outline */
-  --md-sys-color-outline: #857372;
+  /* ───────────────────────────────────────────────────────────────────────────
+     Outline & Error
+     ─────────────────────────────────────────────────────────────────────────── */
+  --md-sys-color-outline: #7C7768;
+  --md-sys-color-outline-variant: #CCC6B5;
+  --md-sys-color-error: #BA1A1A;
+  --md-sys-color-on-error: #FFFFFF;
+  --md-sys-color-error-container: #FFDAD6;
 
-  /* 封解Box 互換カラー */
+  /* ───────────────────────────────────────────────────────────────────────────
+     封解Box 互換カラー (Legacy Support)
+     ─────────────────────────────────────────────────────────────────────────── */
   --color-primary: var(--md-sys-color-primary);
   --color-secondary: var(--md-sys-color-secondary);
   --background: var(--md-sys-color-surface);
   --foreground: var(--md-sys-color-on-surface);
   --foreground-muted: var(--md-sys-color-on-surface-variant);
-  --background-card: var(--md-sys-color-surface-variant);
-  --background-elevated: #FFFBF7;
+  --background-card: var(--md-sys-color-surface-container);
+  --background-elevated: var(--md-sys-color-surface-container-lowest);
 
-  /* ロール別カラー (M3風に調整) */
-  --color-gicho: #fbbf24;
-  --color-meiyo-giin: #a78bfa;
-  --color-giin: #34d399;
-  --color-guest: #9ca3af;
+  /* ───────────────────────────────────────────────────────────────────────────
+     ロール別カラー (M3風に調整)
+     ─────────────────────────────────────────────────────────────────────────── */
+  --color-gicho: #E8A127;
+  --color-gicho-container: #FFF0C7;
+  --color-meiyo-giin: #8B5CF6;
+  --color-meiyo-giin-container: #EDE9FE;
+  --color-giin: #10B981;
+  --color-giin-container: #D1FAE5;
+  --color-guest: #6B7280;
+  --color-guest-container: #F3F4F6;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     M3 Elevation (Shadow Tokens)
+     5段階のシャドウで視覚的階層を表現
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --md-sys-elevation-0: none;
+  --md-sys-elevation-1: 0 1px 2px 0 rgba(29, 27, 22, 0.05), 0 1px 3px 1px rgba(29, 27, 22, 0.10);
+  --md-sys-elevation-2: 0 1px 2px 0 rgba(29, 27, 22, 0.08), 0 2px 6px 2px rgba(29, 27, 22, 0.12);
+  --md-sys-elevation-3: 0 1px 3px 0 rgba(29, 27, 22, 0.10), 0 4px 8px 3px rgba(29, 27, 22, 0.15);
+  --md-sys-elevation-4: 0 2px 3px 0 rgba(29, 27, 22, 0.12), 0 6px 10px 4px rgba(29, 27, 22, 0.18);
+  --md-sys-elevation-5: 0 4px 4px 0 rgba(29, 27, 22, 0.14), 0 8px 12px 6px rgba(29, 27, 22, 0.20);
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     M3 Shape (Corner Radius Tokens)
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --md-sys-shape-corner-none: 0px;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 9999px;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     M3 Typography Scale
+     ═══════════════════════════════════════════════════════════════════════════ */
+  /* Display */
+  --md-sys-typescale-display-large: 700 3.5rem/1.1 var(--font-sans);
+  --md-sys-typescale-display-medium: 700 2.75rem/1.15 var(--font-sans);
+  --md-sys-typescale-display-small: 700 2.25rem/1.2 var(--font-sans);
+  /* Headline */
+  --md-sys-typescale-headline-large: 600 2rem/1.25 var(--font-sans);
+  --md-sys-typescale-headline-medium: 600 1.75rem/1.3 var(--font-sans);
+  --md-sys-typescale-headline-small: 600 1.5rem/1.35 var(--font-sans);
+  /* Title */
+  --md-sys-typescale-title-large: 500 1.375rem/1.4 var(--font-sans);
+  --md-sys-typescale-title-medium: 500 1rem/1.5 var(--font-sans);
+  --md-sys-typescale-title-small: 500 0.875rem/1.45 var(--font-sans);
+  /* Body */
+  --md-sys-typescale-body-large: 400 1rem/1.6 var(--font-sans);
+  --md-sys-typescale-body-medium: 400 0.875rem/1.55 var(--font-sans);
+  --md-sys-typescale-body-small: 400 0.75rem/1.5 var(--font-sans);
+  /* Label */
+  --md-sys-typescale-label-large: 500 0.875rem/1.4 var(--font-sans);
+  --md-sys-typescale-label-medium: 500 0.75rem/1.35 var(--font-sans);
+  --md-sys-typescale-label-small: 500 0.6875rem/1.3 var(--font-sans);
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Spacing System (4px Grid)
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   Tailwind Theme Integration
+   ═══════════════════════════════════════════════════════════════════════════ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-noto-sans-jp), system-ui, sans-serif;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   Base Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
 body {
   background: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
   font-family: var(--font-sans);
   min-height: 100vh;
+  line-height: 1.6;
 }
 
-/* M3 カードスタイル */
+/* ═══════════════════════════════════════════════════════════════════════════
+   M3 Surface & Elevation Classes
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Surface階層 - コンテナ背景 */
+.surface {
+  background: var(--md-sys-color-surface);
+}
+
+.surface-dim {
+  background: var(--md-sys-color-surface-dim);
+}
+
+.surface-bright {
+  background: var(--md-sys-color-surface-bright);
+}
+
+.surface-container-lowest {
+  background: var(--md-sys-color-surface-container-lowest);
+}
+
+.surface-container-low {
+  background: var(--md-sys-color-surface-container-low);
+}
+
+.surface-container {
+  background: var(--md-sys-color-surface-container);
+}
+
+.surface-container-high {
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.surface-container-highest {
+  background: var(--md-sys-color-surface-container-highest);
+}
+
+/* Elevated Surface - 背景色 + シャドウ */
+.elevated-1 {
+  background: var(--md-sys-color-surface-container-low);
+  box-shadow: var(--md-sys-elevation-1);
+}
+
+.elevated-2 {
+  background: var(--md-sys-color-surface-container);
+  box-shadow: var(--md-sys-elevation-2);
+}
+
+.elevated-3 {
+  background: var(--md-sys-color-surface-container-high);
+  box-shadow: var(--md-sys-elevation-3);
+}
+
+.elevated-4 {
+  background: var(--md-sys-color-surface-container-high);
+  box-shadow: var(--md-sys-elevation-4);
+}
+
+.elevated-5 {
+  background: var(--md-sys-color-surface-container-highest);
+  box-shadow: var(--md-sys-elevation-5);
+}
+
+/* M3 カードスタイル (コントラスト強化版) */
 .card-gradient {
-  background: var(--md-sys-color-surface-variant);
-  border: 1px solid var(--md-sys-color-outline);
-  border-radius: 12px;
+  background: var(--md-sys-color-surface-container-low);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-large);
+  box-shadow: var(--md-sys-elevation-1);
 }
 
-/* M3 Elevated Surface */
+.card-gradient:hover {
+  box-shadow: var(--md-sys-elevation-2);
+}
+
+/* M3 Elevated Card */
+.card-elevated {
+  background: var(--md-sys-color-surface-container-lowest);
+  border-radius: var(--md-sys-shape-corner-large);
+  box-shadow: var(--md-sys-elevation-2);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card-elevated:hover {
+  box-shadow: var(--md-sys-elevation-3);
+  transform: translateY(-2px);
+}
+
+/* M3 Filled Card */
+.card-filled {
+  background: var(--md-sys-color-surface-container-highest);
+  border-radius: var(--md-sys-shape-corner-large);
+}
+
+/* M3 Outlined Card */
+.card-outlined {
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-large);
+}
+
+/* Glass Effect (改善版) */
 .glass {
-  background: var(--background-elevated);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-  border-radius: 12px;
+  background: var(--md-sys-color-surface-container-lowest);
+  box-shadow: var(--md-sys-elevation-2);
+  border-right: 1px solid var(--md-sys-color-outline-variant);
 }
 
 /* Primary Gradient (M3 Compatible) */
@@ -75,31 +273,186 @@ body {
   background: linear-gradient(135deg, var(--md-sys-color-primary) 0%, var(--md-sys-color-secondary) 100%);
 }
 
-/* M3 Shadow & Elevation */
+/* ═══════════════════════════════════════════════════════════════════════════
+   M3 Shape Classes
+   ═══════════════════════════════════════════════════════════════════════════ */
+.shape-none {
+  border-radius: var(--md-sys-shape-corner-none);
+}
+
+.shape-xs {
+  border-radius: var(--md-sys-shape-corner-extra-small);
+}
+
+.shape-sm {
+  border-radius: var(--md-sys-shape-corner-small);
+}
+
+.shape-md {
+  border-radius: var(--md-sys-shape-corner-medium);
+}
+
+.shape-lg {
+  border-radius: var(--md-sys-shape-corner-large);
+}
+
+.shape-xl {
+  border-radius: var(--md-sys-shape-corner-extra-large);
+}
+
+.shape-full {
+  border-radius: var(--md-sys-shape-corner-full);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   M3 Typography Classes
+   ═══════════════════════════════════════════════════════════════════════════ */
+.display-large {
+  font: var(--md-sys-typescale-display-large);
+  color: var(--md-sys-color-on-surface);
+}
+
+.display-medium {
+  font: var(--md-sys-typescale-display-medium);
+  color: var(--md-sys-color-on-surface);
+}
+
+.display-small {
+  font: var(--md-sys-typescale-display-small);
+  color: var(--md-sys-color-on-surface);
+}
+
+.headline-large {
+  font: var(--md-sys-typescale-headline-large);
+  color: var(--md-sys-color-on-surface);
+}
+
+.headline-medium {
+  font: var(--md-sys-typescale-headline-medium);
+  color: var(--md-sys-color-on-surface);
+}
+
+.headline-small {
+  font: var(--md-sys-typescale-headline-small);
+  color: var(--md-sys-color-on-surface);
+}
+
+.title-large {
+  font: var(--md-sys-typescale-title-large);
+  color: var(--md-sys-color-on-surface);
+}
+
+.title-medium {
+  font: var(--md-sys-typescale-title-medium);
+  color: var(--md-sys-color-on-surface);
+}
+
+.title-small {
+  font: var(--md-sys-typescale-title-small);
+  color: var(--md-sys-color-on-surface);
+}
+
+.body-large {
+  font: var(--md-sys-typescale-body-large);
+  color: var(--md-sys-color-on-surface);
+}
+
+.body-medium {
+  font: var(--md-sys-typescale-body-medium);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.body-small {
+  font: var(--md-sys-typescale-body-small);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.label-large {
+  font: var(--md-sys-typescale-label-large);
+  color: var(--md-sys-color-on-surface);
+}
+
+.label-medium {
+  font: var(--md-sys-typescale-label-medium);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.label-small {
+  font: var(--md-sys-typescale-label-small);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Interaction States
+   ═══════════════════════════════════════════════════════════════════════════ */
 .hover-glow {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .hover-glow:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--md-sys-elevation-3);
   transform: translateY(-2px);
 }
 
-/* ロールバッジ (M3 Compatible) */
+/* State Layer (M3 Interaction) */
+.state-layer {
+  position: relative;
+}
+
+.state-layer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.state-layer:hover::before {
+  background: var(--md-sys-color-on-surface);
+  opacity: 0.08;
+}
+
+.state-layer:active::before {
+  background: var(--md-sys-color-on-surface);
+  opacity: 0.12;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ロールバッジ (M3 Tonal Style)
+   ═══════════════════════════════════════════════════════════════════════════ */
 .badge-gicho {
-  background: var(--color-gicho);
-  color: #1a1a2e;
-  border-radius: 6px;
+  background: var(--color-gicho-container);
+  color: var(--color-gicho);
+  border-radius: var(--md-sys-shape-corner-small);
+  font-weight: 500;
 }
 
 .badge-meiyo-giin {
-  background: var(--color-meiyo-giin);
-  color: white;
-  border-radius: 6px;
+  background: var(--color-meiyo-giin-container);
+  color: var(--color-meiyo-giin);
+  border-radius: var(--md-sys-shape-corner-small);
+  font-weight: 500;
 }
 
 .badge-giin {
-  background: var(--color-giin);
-  color: #1a1a2e;
-  border-radius: 6px;
+  background: var(--color-giin-container);
+  color: var(--color-giin);
+  border-radius: var(--md-sys-shape-corner-small);
+  font-weight: 500;
+}
+
+.badge-guest {
+  background: var(--color-guest-container);
+  color: var(--color-guest);
+  border-radius: var(--md-sys-shape-corner-small);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Dashed Border Style
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dashed-border {
+  border: 2px dashed var(--md-sys-color-outline-variant);
 }

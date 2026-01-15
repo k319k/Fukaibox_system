@@ -90,52 +90,51 @@ export default function KitchenDetailClient({ project, initialSections }: { proj
     };
 
     return (
-        <div className="max-w-7xl mx-auto space-y-6 pb-20">
-            {/* ヘッダー */}
+        <div className="max-w-7xl mx-auto space-y-8 pb-20">
+            {/* ヘッダー - M3 Typography */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <Link href="/kitchen" className="text-sm text-primary hover:underline mb-2 inline-block transition-colors">
+                    <Link href="/kitchen" className="label-large text-[var(--md-sys-color-primary)] hover:underline mb-3 inline-block transition-colors">
                         ← 台所に戻る
                     </Link>
-                    <h1 className="text-3xl font-bold text-foreground tracking-tight">{project.title}</h1>
+                    <h1 className="headline-large">{project.title}</h1>
                     {project.description && (
-                        <p className="text-foreground-muted mt-1 text-sm">{project.description}</p>
+                        <p className="body-medium mt-2">{project.description}</p>
                     )}
                 </div>
-                <div className="flex items-center gap-3">
-                    <Chip color="warning" variant="flat" className="font-medium">調理中</Chip>
-                    <div className="text-right hidden md:block">
-                        <p className="text-xs text-foreground-muted">Project ID</p>
-                        <p className="text-sm font-mono">{project.id}</p>
+                <div className="flex items-center gap-4">
+                    <Chip color="warning" variant="flat" classNames={{ base: "shape-sm font-medium" }}>調理中</Chip>
+                    <div className="text-right hidden md:block surface-container shape-md px-4 py-2">
+                        <p className="label-small">Project ID</p>
+                        <p className="title-small font-mono">{project.id}</p>
                     </div>
                 </div>
             </div>
 
-            {/* メインタブエリア */}
-            <Card className="card-gradient shadow-sm border border-white/20">
+            {/* メインタブエリア - M3 Card */}
+            <Card className="card-elevated">
                 <CardBody className="p-0">
                     <Tabs aria-label="料理管理タブ" variant="underlined" classNames={{
-                        tabList: "w-full border-b border-white/10 px-6 pt-2 bg-white/5",
-                        cursor: "w-full bg-primary h-0.5",
-                        tab: "max-w-fit px-6 h-12 text-foreground-muted hover:text-foreground transition-colors",
+                        tabList: "w-full border-b border-[var(--md-sys-color-outline-variant)] px-6 pt-2 surface-container-low",
+                        cursor: "w-full bg-[var(--md-sys-color-primary)] h-[3px]",
+                        tab: "max-w-fit px-6 h-14 title-medium text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] transition-colors",
                         tabContent: "group-data-[selected=true]:text-primary font-medium"
                     }}>
-                        {/* 1. 調理（セクション管理・推敲） */}
                         <Tab key="cooking" title="1. 調理">
                             <div className="p-6 space-y-6">
-                                <div className="flex items-center justify-between bg-primary/5 p-4 rounded-xl border border-primary/10">
+                                <div className="flex items-center justify-between surface-container-high shape-lg p-5 border border-[var(--md-sys-color-outline-variant)]">
                                     <div>
-                                        <h2 className="text-lg font-bold text-primary">セクション構成</h2>
-                                        <p className="text-xs text-foreground-muted">動画の構成要素（台本・指示）を管理します</p>
+                                        <h2 className="title-large text-[var(--md-sys-color-primary)]">セクション構成</h2>
+                                        <p className="body-small mt-1">動画の構成要素（台本・指示）を管理します</p>
                                     </div>
-                                    <Button color="primary" onPress={onOpen} startContent={<span className="text-lg">+</span>}>
+                                    <Button color="primary" onPress={onOpen} className="shape-full font-medium" startContent={<span className="text-lg">+</span>}>
                                         セクション追加
                                     </Button>
                                 </div>
 
                                 <div className="space-y-4">
                                     {sections.map((section, index) => (
-                                        <Card key={section.id} className="group hover:border-primary/30 transition-all duration-300 border border-transparent shadow-sm bg-surface/50">
+                                        <Card key={section.id} className="card-outlined group hover:elevated-2 transition-all duration-300">
                                             <CardBody className="p-5">
                                                 <div className="flex flex-col md:flex-row gap-6">
                                                     {/* 左側：インデックス・操作 */}

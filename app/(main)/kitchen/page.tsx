@@ -34,26 +34,26 @@ export default function KitchenPage() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto space-y-6">
-            {/* ヘッダー */}
+        <div className="max-w-7xl mx-auto space-y-8">
+            {/* ヘッダー - M3 Headline */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold">台所（料理システム）</h1>
-                    <p className="text-foreground-muted mt-1">ショート動画制作のワークフロー管理</p>
+                    <h1 className="headline-large">台所（料理システム）</h1>
+                    <p className="body-medium mt-2">ショート動画制作のワークフロー管理</p>
                 </div>
                 <Link href="/kitchen/new">
-                    <Button color="primary" variant="shadow" size="lg">
+                    <Button color="primary" variant="shadow" size="lg" className="shape-full font-semibold">
                         + 新しい料理を開始
                     </Button>
                 </Link>
             </div>
 
-            {/* 料理一覧 */}
+            {/* 料理一覧 - M3 Elevated Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.length === 0 ? (
-                    <Card className="col-span-full card-gradient">
-                        <CardBody className="text-center py-12">
-                            <p className="text-foreground-muted">
+                    <Card className="col-span-full card-outlined">
+                        <CardBody className="text-center py-16">
+                            <p className="body-large">
                                 まだ料理プロジェクトがありません。<br />
                                 「新しい料理を開始」から作成してください。
                             </p>
@@ -62,20 +62,20 @@ export default function KitchenPage() {
                 ) : (
                     projects.map((project) => (
                         <Link key={project.id} href={`/kitchen/${project.id}`}>
-                            <Card className="card-gradient hover-glow transition-all cursor-pointer">
-                                <CardHeader className="pb-2">
+                            <Card className="card-elevated transition-all cursor-pointer h-full">
+                                <CardHeader className="pb-2 px-5 pt-5">
                                     <div className="flex items-center justify-between w-full">
-                                        <h3 className="font-semibold">{project.title}</h3>
+                                        <h3 className="title-large">{project.title}</h3>
                                         {getStatusChip(project.status)}
                                     </div>
                                 </CardHeader>
-                                <CardBody className="pt-0">
+                                <CardBody className="pt-0 px-5 pb-5">
                                     {project.description && (
-                                        <p className="text-sm text-foreground-muted line-clamp-2">
+                                        <p className="body-medium line-clamp-2">
                                             {project.description}
                                         </p>
                                     )}
-                                    <p className="text-xs text-foreground-muted mt-2">
+                                    <p className="label-small mt-3">
                                         作成日: {new Date(project.createdAt).toLocaleDateString("ja-JP")}
                                     </p>
                                 </CardBody>
@@ -89,18 +89,27 @@ export default function KitchenPage() {
 }
 
 function getStatusChip(status: string) {
-    switch (status) {
-        case "cooking":
-            return <Chip size="sm" color="warning" variant="flat">調理中</Chip>;
-        case "image_upload":
-            return <Chip size="sm" color="primary" variant="flat">画像UP</Chip>;
-        case "image_selection":
-            return <Chip size="sm" color="secondary" variant="flat">画像採用</Chip>;
-        case "download":
-            return <Chip size="sm" color="success" variant="flat">ダウンロード</Chip>;
-        case "archived":
-            return <Chip size="sm" variant="flat">アーカイブ</Chip>;
-        default:
-            return <Chip size="sm" variant="flat">{status}</Chip>;
-    }
+    const statusConfig: Record<string, { color: "warning" | "primary" | "secondary" | "success" | "default", label: string }> = {
+        cooking: { color: "warning", label: "調理中" },
+        image_upload: { color: "primary", label: "画像UP" },
+        image_selection: { color: "secondary", label: "画像採用" },
+        download: { color: "success", label: "ダウンロード" },
+        archived: { color: "default", label: "アーカイブ" },
+    };
+
+    const config = statusConfig[status] || { color: "default" as const, label: status };
+
+    return (
+        <Chip
+            size="sm"
+            color={config.color}
+            variant="flat"
+            classNames={{
+                base: "shape-sm font-medium",
+            }}
+        >
+            {config.label}
+        </Chip>
+    );
 }
+

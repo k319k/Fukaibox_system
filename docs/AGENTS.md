@@ -121,6 +121,7 @@ Vercelダッシュボードで以下の環境変数を設定：
 3. **HeroUIコンポーネント使用**: UIにはHeroUIコンポーネントを優先的に使用
 4. **App Router準拠**: ファイルベースルーティング、Server Components優先
 5. **Tailwind CSS**: スタイリングはTailwind CSS classesを使用
+6. **ローカル開発サーバー禁止**: ローカル開発サーバーは禁止。Vercelのみ。
 
 ### データベース操作
 

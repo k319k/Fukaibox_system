@@ -49,39 +49,39 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4">
-            {/* 背景装飾 */}
+        <div className="min-h-screen flex items-center justify-center p-4 surface">
+            {/* 背景装飾 - M3 Gradient */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl" />
-                <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-secondary/10 to-transparent rounded-full blur-3xl" />
+                <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-radial from-[var(--md-sys-color-primary-container)]/40 to-transparent rounded-full blur-3xl" />
+                <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-radial from-[var(--md-sys-color-secondary-container)]/40 to-transparent rounded-full blur-3xl" />
             </div>
 
-            <Card className="w-full max-w-md glass">
-                <CardHeader className="flex flex-col items-center pb-0 pt-8">
-                    <div className="w-20 h-20 gradient-primary rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+            <Card className="w-full max-w-md elevated-3 shape-xl">
+                <CardHeader className="flex flex-col items-center pb-0 pt-10">
+                    <div className="w-20 h-20 gradient-primary shape-xl flex items-center justify-center mb-5 shadow-lg">
                         <span className="text-3xl font-bold text-white">封</span>
                     </div>
-                    <h1 className="text-2xl font-bold text-foreground">封解Box</h1>
-                    <p className="text-foreground-muted text-sm mt-1">
+                    <h1 className="headline-medium">封解Box</h1>
+                    <p className="body-medium mt-2">
                         封解公儀の統合プラットフォーム
                     </p>
                 </CardHeader>
 
-                <CardBody className="gap-4 px-6 pb-8">
+                <CardBody className="gap-4 px-8 pb-10">
                     {error && (
-                        <div className="bg-danger/10 border border-danger/20 rounded-lg p-3 text-danger text-sm">
+                        <div className="bg-[var(--md-sys-color-error-container)] border border-[var(--md-sys-color-error)]/20 shape-md p-4 text-[var(--md-sys-color-error)] body-medium">
                             {error}
                         </div>
                     )}
 
                     {!isGuestMode ? (
                         <>
-                            {/* Discordログイン */}
+                            {/* Discordログイン - Primary Action */}
                             <Button
                                 color="primary"
                                 variant="shadow"
                                 size="lg"
-                                className="w-full font-medium"
+                                className="w-full font-semibold shape-full"
                                 onPress={handleDiscordLogin}
                                 isLoading={isLoading}
                                 startContent={
@@ -95,25 +95,25 @@ export default function LoginPage() {
                                 Discordでログイン
                             </Button>
 
-                            <Divider className="my-2" />
+                            <Divider className="my-3" />
 
-                            {/* ゲストログインへ切り替え */}
+                            {/* ゲストログインへ切り替え - Secondary Action */}
                             <Button
                                 variant="bordered"
                                 size="lg"
-                                className="w-full"
+                                className="w-full shape-full border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-on-surface)]"
                                 onPress={() => setIsGuestMode(true)}
                             >
                                 ゲストログイン
                             </Button>
 
-                            <Divider className="my-2" />
+                            <Divider className="my-3" />
 
-                            {/* ログインせずに続行 */}
+                            {/* ログインせずに続行 - Tertiary Action */}
                             <Button
                                 variant="light"
                                 size="lg"
-                                className="w-full text-foreground-muted"
+                                className="w-full shape-full text-[var(--md-sys-color-on-surface-variant)]"
                                 onPress={handleContinueWithoutLogin}
                             >
                                 ログインせずに続行
@@ -128,6 +128,9 @@ export default function LoginPage() {
                                 value={username}
                                 onValueChange={setUsername}
                                 isDisabled={isLoading}
+                                classNames={{
+                                    inputWrapper: "shape-md border-[var(--md-sys-color-outline)]",
+                                }}
                             />
                             <Input
                                 label="パスワード"
@@ -136,25 +139,28 @@ export default function LoginPage() {
                                 value={password}
                                 onValueChange={setPassword}
                                 isDisabled={isLoading}
+                                classNames={{
+                                    inputWrapper: "shape-md border-[var(--md-sys-color-outline)]",
+                                }}
                             />
 
                             <Button
                                 color="primary"
                                 variant="shadow"
                                 size="lg"
-                                className="w-full mt-2"
+                                className="w-full mt-2 font-semibold shape-full"
                                 onPress={handleGuestLogin}
                                 isLoading={isLoading}
                             >
                                 ログイン
                             </Button>
 
-                            <Divider className="my-2" />
+                            <Divider className="my-3" />
 
                             <Button
                                 variant="light"
                                 size="lg"
-                                className="w-full"
+                                className="w-full shape-full"
                                 onPress={() => setIsGuestMode(false)}
                             >
                                 戻る
@@ -162,13 +168,13 @@ export default function LoginPage() {
                         </>
                     )}
 
-                    <div className="text-center mt-4">
-                        <Link href="/register" className="text-sm text-primary hover:underline">
+                    <div className="text-center mt-5">
+                        <Link href="/register" className="label-large text-[var(--md-sys-color-primary)] hover:underline transition-colors">
                             新規登録はこちら
                         </Link>
                     </div>
 
-                    <p className="text-xs text-foreground-muted text-center mt-4">
+                    <p className="body-small text-center mt-4">
                         ログインすることで、利用規約とプライバシーポリシーに同意したものとみなされます。
                     </p>
                 </CardBody>
@@ -176,3 +182,4 @@ export default function LoginPage() {
         </div>
     );
 }
+

@@ -33,18 +33,27 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
         guest: "ゲスト",
     }[userRole] || "ゲスト";
 
+    const roleBadgeClass = {
+        gicho: "badge-gicho",
+        giin: "badge-giin",
+        meiyo_giin: "badge-meiyo-giin",
+        guest: "badge-guest",
+    }[userRole] || "badge-guest";
+
     return (
-        <aside className="fixed left-0 top-0 h-screen w-64 glass flex flex-col z-50">
-            {/* ロゴ */}
-            <div className="p-4 flex items-center gap-3">
-                <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-lg">
+        <aside className="fixed left-0 top-0 h-screen w-64 elevated-2 flex flex-col z-50">
+            {/* ロゴ - M3 Headline Style */}
+            <div className="p-5 flex items-center gap-3 border-b border-[var(--md-sys-color-outline-variant)]">
+                <div className="w-11 h-11 gradient-primary shape-lg flex items-center justify-center shadow-lg">
                     <span className="text-lg font-bold text-white">封</span>
                 </div>
-                <span className="text-xl font-bold text-foreground">封解Box</span>
+                <div>
+                    <span className="headline-small block">封解Box</span>
+                </div>
             </div>
 
             {/* メインナビゲーション */}
-            <nav className="flex-1 px-3 py-4 space-y-1">
+            <nav className="flex-1 px-3 py-5 space-y-1">
                 {navigation.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -52,12 +61,14 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
                             <Button
                                 variant={isActive ? "flat" : "light"}
                                 className={cn(
-                                    "w-full justify-start gap-3 h-11",
-                                    isActive && "bg-primary/20 text-primary"
+                                    "w-full justify-start gap-3 h-12 shape-full state-layer",
+                                    isActive
+                                        ? "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] font-semibold"
+                                        : "text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-container-high)]"
                                 )}
                             >
-                                <item.icon className="w-5 h-5" />
-                                {item.name}
+                                <item.icon className={cn("w-5 h-5", isActive && "text-[var(--md-sys-color-primary)]")} />
+                                <span className="title-medium">{item.name}</span>
                             </Button>
                         </Link>
                     );
@@ -65,7 +76,7 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
             </nav>
 
             {/* 下部ナビゲーション */}
-            <div className="px-3 pb-4 space-y-1">
+            <div className="px-3 pb-3 space-y-1">
                 {bottomNavigation.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -73,35 +84,39 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
                             <Button
                                 variant={isActive ? "flat" : "light"}
                                 className={cn(
-                                    "w-full justify-start gap-3 h-11",
-                                    isActive && "bg-primary/20 text-primary"
+                                    "w-full justify-start gap-3 h-12 shape-full state-layer",
+                                    isActive
+                                        ? "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] font-semibold"
+                                        : "text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-container-high)]"
                                 )}
                             >
-                                <item.icon className="w-5 h-5" />
-                                {item.name}
+                                <item.icon className={cn("w-5 h-5", isActive && "text-[var(--md-sys-color-primary)]")} />
+                                <span className="title-medium">{item.name}</span>
                             </Button>
                         </Link>
                     );
                 })}
             </div>
 
-            {/* ユーザー情報 */}
-            <div className="px-3 pb-4 border-t border-white/5 pt-4">
+            {/* ユーザー情報 - M3 Surface Container High */}
+            <div className="px-3 pb-4 border-t border-[var(--md-sys-color-outline-variant)] pt-4">
                 <Tooltip content="プロフィール">
-                    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
+                    <div className="flex items-center gap-3 p-3 shape-lg surface-container-high hover:surface-container-highest cursor-pointer transition-colors">
                         <Avatar
                             size="sm"
                             name={displayName[0]}
                             src={userImage || undefined}
                             classNames={{
-                                base: "bg-gradient-to-br from-primary to-secondary",
+                                base: "bg-gradient-to-br from-primary to-secondary ring-2 ring-[var(--md-sys-color-outline-variant)]",
                             }}
                         />
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-foreground truncate">
+                            <p className="title-medium truncate">
                                 {displayName}
                             </p>
-                            <p className="text-xs text-foreground-muted">{isLoggedIn ? roleLabel : "未ログイン"}</p>
+                            <span className={cn("inline-block px-2 py-0.5 text-xs mt-1", roleBadgeClass)}>
+                                {isLoggedIn ? roleLabel : "未ログイン"}
+                            </span>
                         </div>
                     </div>
                 </Tooltip>
