@@ -6,6 +6,13 @@ import { db } from "@/lib/db";
 import { userRoles } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import type { RoleType } from "@/lib/db/schema";
+import { z } from "zod";
+
+const registerSchema = z.object({
+    email: z.string().email("有効なメールアドレスを入力してください"),
+    password: z.string().min(8, "パスワードは8文字以上である必要があります"),
+    name: z.string().min(1, "名前を入力してください"),
+});
 
 /**
  * 現在のセッションを取得
@@ -79,6 +86,15 @@ export async function updateUserRole(
  */
 export async function registerGuest(email: string, password: string, name: string) {
     try {
+        // Zod検証
+        const validation = registerSchema.safeParse({ email, password, name });
+        if (!validation.success) {
+            return {
+                success: false,
+                error: validation.error.errors[0].message
+            };
+        }
+
         // better-authのsignUpを使用
         const result = await auth.api.signUpEmail({
             body: {
@@ -94,9 +110,11 @@ export async function registerGuest(email: string, password: string, name: strin
         }
 
         return { success: true, user: result.user };
-    } catch (error) {
+    } catch (error: any) { // Type assertion for error handling
         console.error("Guest registration error:", error);
-        return { success: false, error: "登録に失敗しました" };
+        // Better auth error handiling
+        const errorMessage = error?.body?.message || error?.message || "登録に失敗しました";
+        return { success: false, error: errorMessage };
     }
 }
 

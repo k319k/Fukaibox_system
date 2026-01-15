@@ -2,13 +2,14 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db";
 import * as schema from "./db/schema";
+import { env } from "@/lib/env";
 
 // 儀長のDiscord ID一覧
-const GICHO_DISCORD_IDS = (process.env.GICHO_DISCORD_IDS || "").split(",").filter(Boolean);
+const GICHO_DISCORD_IDS = (env.GICHO_DISCORD_IDS || "").split(",").filter(Boolean);
 
 // ロールID
-const GIIN_ROLE_ID = process.env.GIIN_ROLE_ID || "";
-const MEIYO_GIIN_ROLE_ID = process.env.MEIYO_GIIN_ROLE_ID || "";
+const GIIN_ROLE_ID = env.GIIN_ROLE_ID || "";
+const MEIYO_GIIN_ROLE_ID = env.MEIYO_GIIN_ROLE_ID || "";
 
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
@@ -25,14 +26,21 @@ export const auth = betterAuth({
     },
     socialProviders: {
         discord: {
-            clientId: process.env.DISCORD_CLIENT_ID!,
-            clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+            clientId: env.DISCORD_CLIENT_ID,
+            clientSecret: env.DISCORD_CLIENT_SECRET,
         },
     },
     session: {
         expiresIn: 60 * 60 * 24 * 7, // 7日
         updateAge: 60 * 60 * 24, // 1日
     },
+    secret: env.BETTER_AUTH_SECRET,
+    baseURL: env.BETTER_AUTH_URL,
+    trustedOrigins: [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        env.BETTER_AUTH_URL, // 本番URL
+    ],
 });
 
 /**

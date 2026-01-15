@@ -10,9 +10,13 @@
 
 ### デプロイメント情報
 
-- **本番URL**: <https://fukai-box.vercel.app>
-- **管理画面**: <https://vercel.com/k319ks-projects/fukai-box>
+- **本番URL**: <https://fukaibox.kanjousekai.jp/>
+- **Vercel管理画面**: <https://vercel.com/k319ks-projects/fukai-box>
 - **GitHubリポジトリ**: <https://github.com/k319k/Fukaibox_system>
+
+- **TursoCLI**:WSLから
+- **VercelCLI**:WSLから
+- **Wrangler**:Shellから
 
 ## 技術スタック
 

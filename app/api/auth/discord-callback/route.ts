@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { determineRoleFromDiscordRoles } from "@/lib/auth";
 import { updateUserRole } from "@/app/actions/auth";
+import { env } from "@/lib/env";
 
-const DISCORD_GUILD_ID = process.env.DISCORD_GUILD_ID || "";
+const DISCORD_GUILD_ID = env.DISCORD_GUILD_ID || "";
 
 /**
  * Discord OAuth認証後のカスタム処理

@@ -2,15 +2,15 @@ import { drizzle } from "drizzle-orm/libsql";
 import { createClient } from "@libsql/client";
 import { fetch as undiciFetch } from "undici";
 import * as schema from "./schema";
+import { env } from "@/lib/env";
 
-// 環境変数から接続情報を取得
-const url = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL;
-const authToken = process.env.TURSO_AUTH_TOKEN;
+// 環境変数から接続情報を取得 (Zod検証済み)
+const url = env.TURSO_DATABASE_URL;
+const authToken = env.TURSO_AUTH_TOKEN;
 
-// ビルド時の警告（本番環境でのみ）
-if (!url && process.env.NODE_ENV === "production") {
-  console.warn("Warning: Database URL is not defined.");
-}
+// RETURNING句サポートのため、https:// などを libsql:// に強制変換
+// これによりWebSocket経由で接続され、RETURNING句がサポートされる
+const connectionUrl = url.replace(/^https?:\/\//, "libsql://");
 
 // Undici fetchラッパー：RequestオブジェクトをURLに変換
 const customFetch: typeof fetch = async (input, init?) => {
@@ -26,10 +26,8 @@ const customFetch: typeof fetch = async (input, init?) => {
   return undiciFetch(urlString, requestInit) as Promise<Response>;
 };
 
-// PDCA #1: Native libSQL Protocol (libsql://) を試行
-// RETURNING句サポートのため、https://変換を削除してlibsql://プロトコルを直接使用
 export const client = createClient({
-  url: url ?? ":memory:",
+  url: connectionUrl,
   authToken: authToken,
   fetch: customFetch, // カスタムfetchラッパーを使用
 });
@@ -37,8 +35,9 @@ export const client = createClient({
 // Drizzle ORMインスタンス（SQLite mode、クエリログ有効化）
 export const db = drizzle(client, {
   schema,
-  logger: true, // 実行されるSQLクエリをログ出力して確認
+  logger: env.NODE_ENV === "development", // 開発環境のみログ出力
 });
 
 // 互換性のためのエクスポート
 export { client as libsqlClient };
+
