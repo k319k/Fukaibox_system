@@ -8,13 +8,13 @@ import { env } from "@/lib/env";
 const url = env.TURSO_DATABASE_URL;
 const authToken = env.TURSO_AUTH_TOKEN;
 
-// RETURNING句サポートのため、https:// などを libsql:// に強制変換
-// これによりWebSocket経由で接続され、RETURNING句がサポートされる
-const connectionUrl = url.replace(/^https?:\/\//, "libsql://");
+// libsql:// スキームをそのまま使用（WebSocket接続）
+// すでにlibsql://で始まっている場合はそのまま、それ以外はlibsql://に変換
+const connectionUrl = url.startsWith("libsql://") ? url : url.replace(/^https?:\/\//, "libsql://");
 
 // Undici fetchラッパー：RequestオブジェクトをURLに変換
+// Node.jsのネイティブFetchとの互換性問題を解決
 const customFetch: typeof fetch = async (input, init?) => {
-  // RequestオブジェクトをURLに変換
   const urlString = typeof input === 'string' ? input : input.url;
   const requestInit = typeof input === 'string' ? init : {
     ...init,
@@ -22,7 +22,6 @@ const customFetch: typeof fetch = async (input, init?) => {
     headers: input.headers,
     body: input.body,
   };
-
   return undiciFetch(urlString, requestInit) as Promise<Response>;
 };
 
@@ -40,4 +39,3 @@ export const db = drizzle(client, {
 
 // 互換性のためのエクスポート
 export { client as libsqlClient };
-

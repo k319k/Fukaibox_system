@@ -19,7 +19,19 @@ export async function GET(request: NextRequest) {
     try {
         const results: string[] = [];
 
+        // 環境変数の確認
+        const dbUrl = process.env.TURSO_DATABASE_URL || "";
+        const dbToken = process.env.TURSO_AUTH_TOKEN || "";
+
+        results.push("=== Environment Debug ===");
+        results.push(`DB URL: ${dbUrl.substring(0, 30)}...`);
+        results.push(`Token length: ${dbToken.length}`);
+        results.push(`Token starts with: ${dbToken.substring(0, 10)}...`);
+        results.push(`Token ends with: ...${dbToken.substring(dbToken.length - 10)}`);
+        results.push(`Token has quotes: ${dbToken.startsWith('"') || dbToken.endsWith('"')}`);
+
         // まずテーブル一覧を確認
+        results.push("\n=== Current tables ===");
         results.push("=== Current tables ===");
         const tables = await client.execute(
             "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
