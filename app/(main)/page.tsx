@@ -114,8 +114,8 @@ export default function HomePage() {
                             {[1, 2, 3].map((rank) => (
                                 <div key={rank} className="flex items-center gap-4 p-3 rounded-xl hover:bg-[var(--md-sys-color-surface-container-high)] transition-colors cursor-pointer">
                                     <div className={`w-8 h-8 flex items-center justify-center rounded-full font-bold ${rank === 1 ? 'bg-[#FFD700]/20 text-[#B8860B]' :
-                                            rank === 2 ? 'bg-[#C0C0C0]/20 text-[#696969]' :
-                                                'bg-[#CD7F32]/20 text-[#8B4513]'
+                                        rank === 2 ? 'bg-[#C0C0C0]/20 text-[#696969]' :
+                                            'bg-[#CD7F32]/20 text-[#8B4513]'
                                         }`}>
                                         {rank}
                                     </div>
@@ -128,31 +128,7 @@ export default function HomePage() {
                         </CardBody>
                     </Card>
                 </div>
-
-                {/* クイックアクション - Outlined Card */}
-                <Card className="card-outlined">
-                    <CardHeader className="px-5 pt-5">
-                        <h3 className="title-large">クイックアクション</h3>
-                    </CardHeader>
-                    <CardBody className="flex flex-wrap gap-3 px-5 pb-5">
-                        <Link href="/kitchen">
-                            <Button variant="flat" color="primary" className="shape-full font-medium">
-                                🍳 台所へ
-                            </Button>
-                        </Link>
-                        <Link href="/dictionary">
-                            <Button variant="flat" color="secondary" className="shape-full font-medium">
-                                📚 百科事典を見る
-                            </Button>
-                        </Link>
-                        <Link href="/tools">
-                            <Button variant="flat" color="success" className="shape-full font-medium">
-                                🔧 Toolsを探す
-                            </Button>
-                        </Link>
-                    </CardBody>
-                </Card>
             </div>
-            );
+        </div>
+    );
 }
-
