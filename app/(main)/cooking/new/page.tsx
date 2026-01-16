@@ -1,16 +1,26 @@
 "use client";
 
-import { Button, Card, CardBody, CardHeader, Input, Textarea } from "@heroui/react";
-import { useState } from "react";
+import { Button, Card, CardBody, CardHeader, Input, Textarea, Chip } from "@heroui/react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { createCookingProject } from "@/app/actions/kitchen";
+import { createProjectWithScript } from "@/app/actions/kitchen";
 
 export default function NewKitchenPage() {
     const router = useRouter();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const [fullScript, setFullScript] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+
+    // セクション数のプレビュー
+    const sectionCount = useMemo(() => {
+        if (!fullScript.trim()) return 0;
+        return fullScript
+            .split(/\n\n+|\r\n\r\n+/)
+            .map(s => s.trim())
+            .filter(s => s.length > 0).length;
+    }, [fullScript]);
 
     const handleCreate = async () => {
         if (!title.trim()) {
@@ -18,12 +28,21 @@ export default function NewKitchenPage() {
             return;
         }
 
+        if (!fullScript.trim()) {
+            setError("台本全体を入力してください");
+            return;
+        }
+
+        if (sectionCount === 0) {
+            setError("台本が空です。内容を入力してください");
+            return;
+        }
+
         setIsLoading(true);
         setError("");
 
         try {
-            // Server Actionを使用してプロジェクトを作成
-            const project = await createCookingProject(title, description);
+            const project = await createProjectWithScript(title, description, fullScript);
 
             if (project) {
                 router.push(`/cooking/${project.id}`);
@@ -39,10 +58,10 @@ export default function NewKitchenPage() {
     };
 
     return (
-        <div className="max-w-3xl mx-auto space-y-6">
+        <div className="max-w-4xl mx-auto space-y-6">
             <div>
                 <h1 className="text-3xl font-bold text-foreground">新しい料理を開始</h1>
-                <p className="text-foreground-muted mt-1">ショート動画の制作プロジェクトを作成します</p>
+                <p className="text-foreground-muted mt-1">ショート動画の台本を入力してプロジェクトを作成します</p>
             </div>
 
             <Card className="card-gradient">
@@ -73,8 +92,32 @@ export default function NewKitchenPage() {
                         value={description}
                         onValueChange={setDescription}
                         isDisabled={isLoading}
-                        minRows={3}
+                        minRows={2}
                     />
+
+                    <div className="space-y-2">
+                        <Textarea
+                            label="台本全体"
+                            placeholder={"セクション1の内容\n\nセクション2の内容\n\nセクション3の内容\n\n改行を2回入れるとセクション分けされます"}
+                            variant="bordered"
+                            value={fullScript}
+                            onValueChange={setFullScript}
+                            isDisabled={isLoading}
+                            minRows={15}
+                            description="改行を2回（Enterキーを2回）入れると、そこでセクションが分かれます"
+                        />
+
+                        {fullScript.trim() && (
+                            <div className="flex items-center gap-2">
+                                <Chip color="primary" variant="flat">
+                                    プレビュー: {sectionCount} セクション
+                                </Chip>
+                                <p className="text-sm text-foreground-muted">
+                                    自動的に {sectionCount} 個のセクションに分割されます
+                                </p>
+                            </div>
+                        )}
+                    </div>
 
                     <div className="flex gap-3 justify-end">
                         <Button
@@ -90,7 +133,7 @@ export default function NewKitchenPage() {
                             onPress={handleCreate}
                             isLoading={isLoading}
                         >
-                            作成
+                            保存してセクション分割
                         </Button>
                     </div>
                 </CardBody>

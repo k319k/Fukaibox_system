@@ -7,6 +7,62 @@ import { getSession } from "./auth";
 import { generateUploadUrl, getPublicUrl } from "@/lib/r2";
 
 /**
+ * 台本全体からプロジェクト+セクションを一括作成
+ */
+export async function createProjectWithScript(
+    title: string,
+    description: string,
+    fullScript: string
+) {
+    const session = await getSession();
+    const createdBy = session?.user?.id || "anonymous";
+
+    console.log("[createProjectWithScript] Request:", {
+        title,
+        fullScriptLength: fullScript.length,
+        createdBy,
+    });
+
+    // 1. プロジェクト作成
+    const newProject = await db.insert(cookingProjects).values({
+        id: crypto.randomUUID(),
+        title,
+        description: description || "",
+        status: "cooking",
+        createdBy,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    }).returning();
+
+    const project = newProject[0];
+
+    // 2. 改行*2で分割（\n\n または \r\n\r\n）
+    const sections = fullScript
+        .split(/\n\n+|\r\n\r\n+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+
+    console.log("[createProjectWithScript] Sections to create:", sections.length);
+
+    // 3. セクション一括作成
+    for (let i = 0; i < sections.length; i++) {
+        await db.insert(cookingSections).values({
+            id: crypto.randomUUID(),
+            projectId: project.id,
+            orderIndex: i,
+            content: sections[i],
+            imageInstruction: "",
+            allowImageSubmission: true, // デフォルトで許可
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+    }
+
+    console.log("[createProjectWithScript] Success:", project.id);
+    return project;
+}
+
+/**
  * 料理プロジェクト一覧を取得
  */
 export async function getCookingProjects() {
@@ -110,15 +166,25 @@ export async function getCookingSections(projectId: string) {
 export async function updateCookingSection(
     sectionId: string,
     content: string,
-    imageInstruction?: string
+    imageInstruction?: string,
+    allowImageSubmission?: boolean
 ) {
+    const updateData: any = {
+        content,
+        updatedAt: new Date(),
+    };
+
+    if (imageInstruction !== undefined) {
+        updateData.imageInstruction = imageInstruction;
+    }
+
+    if (allowImageSubmission !== undefined) {
+        updateData.allowImageSubmission = allowImageSubmission;
+    }
+
     await db
         .update(cookingSections)
-        .set({
-            content,
-            imageInstruction: imageInstruction ?? undefined,
-            updatedAt: new Date(),
-        })
+        .set(updateData)
         .where(eq(cookingSections.id, sectionId));
 }
 
