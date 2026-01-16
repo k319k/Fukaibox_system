@@ -6,7 +6,7 @@ import {
     Input, Textarea, Divider, Tooltip, Image, Progress, Spinner
 } from "@heroui/react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     createCookingSection,
     updateCookingSection,
