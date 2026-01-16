@@ -297,19 +297,38 @@ export async function applyCookingProposal(proposalId: string) {
  * 画像アップロード用の署名付きURLを取得
  */
 export async function getUploadUrl(filename: string, contentType: string, projectId: string) {
-    const session = await getSession();
-    if (!session?.user) {
-        throw new Error("Unauthorized");
+    try {
+        const session = await getSession();
+
+        // 詳細なデバッグログ
+        console.log("[getUploadUrl] Request:", {
+            filename,
+            contentType,
+            projectId,
+            hasSession: !!session,
+            hasUser: !!session?.user,
+            userId: session?.user?.id,
+        });
+
+        if (!session?.user) {
+            console.error("[getUploadUrl] No session or user found");
+            throw new Error("認証が必要です。ログインしてください。");
+        }
+
+        // 正しい拡張子を取得
+        const ext = filename.split('.').pop();
+        const uniqueId = crypto.randomUUID();
+        const key = `cooking-images/${projectId}/${uniqueId}.${ext}`;
+
+        console.log("[getUploadUrl] Generating URL for key:", key);
+        const url = await generateUploadUrl(key, contentType);
+        console.log("[getUploadUrl] Success");
+
+        return { url, key };
+    } catch (error) {
+        console.error("[getUploadUrl] Error:", error);
+        throw error;
     }
-
-    // 正しい拡張子を取得
-    const ext = filename.split('.').pop();
-    const uniqueId = crypto.randomUUID();
-    const key = `cooking-images/${projectId}/${uniqueId}.${ext}`;
-
-    const url = await generateUploadUrl(key, contentType);
-
-    return { url, key };
 }
 
 /**
@@ -320,21 +339,34 @@ export async function confirmImageUpload(
     key: string,
     sectionId?: string | null
 ) {
-    const session = await getSession();
-    const userId = session?.user?.id || "anonymous";
+    try {
+        const session = await getSession();
+        const userId = session?.user?.id || "anonymous";
 
-    const publicUrl = getPublicUrl(key);
+        console.log("[confirmImageUpload] Request:", {
+            projectId,
+            key,
+            sectionId,
+            userId,
+        });
 
-    const newImage = await db.insert(cookingImages).values({
-        id: crypto.randomUUID(),
-        projectId,
-        sectionId: sectionId || null,
-        uploadedBy: userId,
-        imageUrl: publicUrl,
-        createdAt: new Date(),
-    }).returning();
+        const publicUrl = getPublicUrl(key);
 
-    return newImage[0];
+        const newImage = await db.insert(cookingImages).values({
+            id: crypto.randomUUID(),
+            projectId,
+            sectionId: sectionId || null,
+            uploadedBy: userId,
+            imageUrl: publicUrl,
+            createdAt: new Date(),
+        }).returning();
+
+        console.log("[confirmImageUpload] Success", newImage[0].id);
+        return newImage[0];
+    } catch (error) {
+        console.error("[confirmImageUpload] Error:", error);
+        throw error;
+    }
 }
 
 /**

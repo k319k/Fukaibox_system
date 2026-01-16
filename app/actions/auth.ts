@@ -18,10 +18,24 @@ const registerSchema = z.object({
  * 現在のセッションを取得
  */
 export async function getSession() {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
-    return session;
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        // デバッグログ（本番環境での問題特定用）
+        console.log("[getSession] Session check:", {
+            hasSession: !!session,
+            hasUser: !!session?.user,
+            userId: session?.user?.id,
+            userName: session?.user?.name,
+        });
+
+        return session;
+    } catch (error) {
+        console.error("[getSession] Error:", error);
+        return null;
+    }
 }
 
 /**
