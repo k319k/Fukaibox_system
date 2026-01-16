@@ -32,31 +32,31 @@ export default function HomePage() {
                 )}
             </header>
 
-            {/* Quick Actions Grid - Mono-hue Red Harmony & Pill Shape */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {/* Quick Actions Grid - M3 Tonal Surface Hierarchy */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {[
-                    { label: "料理をする", href: "/kitchen", icon: ChefHat, color: "bg-[#FFDAD9] text-[#40000A]" }, // Primary Container (Red 90)
-                    { label: "保管庫を見る", href: "/storage", icon: Package, color: "bg-[#FFEDEA] text-[#40000A]" }, // Red 95
-                    { label: "道具を使う", href: "/tools", icon: Wrench, color: "bg-[#FFF0EE] text-[#40000A]" },    // Red 98
-                    { label: "設定", href: "/settings", icon: Settings, color: "bg-[#FFF8F7] text-[#40000A]" },     // Red 99
+                    { label: "料理をする", href: "/kitchen", icon: ChefHat, color: "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]" },
+                    { label: "保管庫を見る", href: "/storage", icon: Package, color: "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]" },
+                    { label: "道具を使う", href: "/tools", icon: Wrench, color: "bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]" },
+                    { label: "設定", href: "/settings", icon: Settings, color: "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)]" },
                 ].map((action) => (
                     <Link key={action.label} href={action.href} className="group">
-                        <Card className={`h-36 border-none shadow-lg hover:shadow-xl transition-all duration-300 ${action.color} !rounded-[32px]`}>
-                            <CardBody className="flex flex-col items-center justify-center gap-4">
-                                <action.icon strokeWidth={1.5} className="w-12 h-12 group-hover:scale-110 transition-transform duration-300" />
-                                <span className="title-medium font-bold tracking-wide">{action.label}</span>
+                        <Card className={`h-44 border-none shadow-sm hover:shadow-md transition-all duration-300 ${action.color} !rounded-3xl`}>
+                            <CardBody className="flex flex-col items-center justify-center gap-5 p-8">
+                                <action.icon strokeWidth={1.5} className="w-10 h-10 group-hover:scale-110 transition-transform duration-300" />
+                                <span className="title-medium font-extrabold tracking-tight">{action.label}</span>
                             </CardBody>
                         </Card>
                     </Link>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Main Content Area (2 cols) */}
-                <div className="lg:col-span-2 space-y-12">
-                    {/* Live Stream Widget - Stronger Gravity & Depth */}
-                    <Card className="card-elevated shadow-lg min-h-[440px] relative overflow-hidden group !rounded-[32px] bg-white border-none">
-                        <CardHeader className="px-12 pt-12 pb-6 flex justify-between items-center z-10">
+                <div className="lg:col-span-2 space-y-10">
+                    {/* Live Stream Widget - M3 Surface Hierarchy (No heavy shadow) */}
+                    <Card className="card-elevated shadow-sm min-h-[440px] relative overflow-hidden group !rounded-3xl bg-[var(--md-sys-color-surface-container-lowest)] border-none">
+                        <CardHeader className="px-10 pt-10 pb-6 flex justify-between items-center z-10">
                             <div>
                                 <h2 className="headline-small text-[var(--md-sys-color-on-surface)] flex items-center gap-4 font-bold">
                                     <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
@@ -84,15 +84,15 @@ export default function HomePage() {
                         <div className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-[var(--md-sys-color-primary-container)] to-transparent opacity-20 rounded-full blur-3xl pointer-events-none" />
                     </Card>
 
-                    {/* Latest Videos - Consistent P-10 Padding */}
-                    <Card className="card-outlined shadow-md !rounded-[32px] bg-[var(--md-sys-color-surface-container-lowest)] border-none">
-                        <CardHeader className="px-12 pt-12 pb-6">
-                            <h2 className="headline-small text-[var(--md-sys-color-on-surface)] font-bold flex items-center gap-3">
+                    {/* Latest Videos - M3 Surface Hierarchy */}
+                    <Card className="shadow-sm !rounded-3xl bg-[var(--md-sys-color-surface-container-low)] border-none">
+                        <CardHeader className="px-10 pt-10 pb-6">
+                            <h2 className="headline-small text-[var(--md-sys-color-on-surface)] font-extrabold flex items-center gap-3 tracking-tight">
                                 <Play className="w-6 h-6 fill-current text-[var(--md-sys-color-primary)]" />
                                 最新の動画
                             </h2>
                         </CardHeader>
-                        <CardBody className="px-12 pb-12">
+                        <CardBody className="px-10 pb-10">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                 {[1, 2].map((i) => (
                                     <div key={i} className="group cursor-pointer">
@@ -118,16 +118,16 @@ export default function HomePage() {
                 </div>
 
                 {/* Sidebar Widgets (1 col) */}
-                <div className="space-y-12">
-                    {/* Ranking Widget */}
-                    <Card className="card-filled h-auto shadow-md !rounded-[32px] bg-white border-none">
-                        <CardHeader className="px-10 pt-10 pb-4">
-                            <h2 className="headline-small text-[var(--md-sys-color-on-surface)] font-bold flex items-center gap-3">
-                                <Trophy className="w-6 h-6 text-[#E8A127]" />
+                <div className="space-y-10">
+                    {/* Ranking Widget - M3 Surface */}
+                    <Card className="shadow-sm !rounded-3xl bg-[var(--md-sys-color-surface-container-low)] border-none">
+                        <CardHeader className="px-8 pt-8 pb-4">
+                            <h2 className="headline-small text-[var(--md-sys-color-on-surface)] font-extrabold flex items-center gap-3 tracking-tight">
+                                <Trophy className="w-5 h-5 text-[var(--md-sys-color-tertiary)]" />
                                 貢献度ランキング
                             </h2>
                         </CardHeader>
-                        <CardBody className="px-10 pb-10 space-y-5">
+                        <CardBody className="px-8 pb-8 space-y-4">
                             {[1, 2, 3, 4, 5].map((rank) => (
                                 <div key={rank} className="flex items-center gap-5 p-4 rounded-2xl hover:bg-[var(--md-sys-color-surface-container-high)] transition-all cursor-pointer group">
                                     <div className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold text-lg transition-transform group-hover:scale-110 ${rank === 1 ? 'bg-[#FFD700] text-white' :

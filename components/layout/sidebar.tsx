@@ -42,46 +42,46 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
     }[userRole] || "badge-guest";
 
     return (
-        <aside className="fixed left-0 top-0 h-screen w-64 flex flex-col z-50 bg-[var(--md-sys-color-surface-container-lowest)]/95 backdrop-blur-xl border-r border-[var(--md-sys-color-outline-variant)]/30 shadow-xl">
+        <aside className="fixed left-0 top-0 h-screen w-64 flex flex-col z-50 bg-[var(--md-sys-color-surface)]/98 backdrop-blur-xl border-r border-[var(--md-sys-color-outline-variant)]/20">
             {/* ロゴ - M3 Headline Style */}
             <div className="p-6 flex items-center gap-4">
-                <div className="w-12 h-12 bg-[var(--md-sys-color-primary)] rounded-2xl flex items-center justify-center shadow-lg">
-                    <span className="text-xl font-bold text-white tracking-tight">封</span>
+                <div className="w-12 h-12 bg-[var(--md-sys-color-primary-container)] rounded-2xl flex items-center justify-center">
+                    <span className="text-xl font-extrabold text-[var(--md-sys-color-on-primary-container)] tracking-tight">封</span>
                 </div>
                 <div>
-                    <span className="headline-small block tracking-tight font-bold text-[var(--md-sys-color-on-surface)]">封解Box</span>
+                    <span className="headline-small block tracking-tight font-extrabold text-[var(--md-sys-color-on-surface)]">封解Box</span>
                 </div>
             </div>
 
             {/* メインナビゲーション */}
-            <nav className="flex-1 px-4 py-6 space-y-2">
+            <nav className="flex-1 px-4 py-6 space-y-1">
                 {navigation.map((item) => {
                     const isActive = pathname === item.href;
                     return (
                         <Link key={item.name} href={item.href} className="group relative block">
                             <Button
                                 variant="light"
-                                className="w-full justify-start gap-4 h-14 rounded-2xl relative overflow-hidden"
+                                className="w-full justify-start gap-4 h-14 rounded-full relative overflow-hidden"
                                 aria-current={isActive ? "page" : undefined}
                             >
                                 <div className="relative z-10 flex items-center gap-4">
                                     <item.icon
                                         strokeWidth={1.5}
-                                        className={`w-5 h-5 transition-colors duration-200 ${isActive ? "text-[var(--md-sys-color-on-primary)]" : "text-[var(--md-sys-color-primary)]"}`}
+                                        className={`w-5 h-5 transition-colors duration-200 ${isActive ? "text-[var(--md-sys-color-on-primary-container)]" : "text-[var(--md-sys-color-on-surface-variant)] group-hover:text-[var(--md-sys-color-primary)]"}`}
                                     />
-                                    <span className={`font-medium tracking-tight transition-colors duration-200 ${isActive ? "text-[var(--md-sys-color-on-primary)]" : "text-[var(--md-sys-color-on-surface)] group-hover:text-[var(--md-sys-color-primary)]"}`}>
+                                    <span className={`font-semibold tracking-tight transition-colors duration-200 ${isActive ? "text-[var(--md-sys-color-on-primary-container)]" : "text-[var(--md-sys-color-on-surface-variant)] group-hover:text-[var(--md-sys-color-on-surface)]"}`}>
                                         {item.name}
                                     </span>
                                 </div>
 
-                                {/* Active Background - Primary Filled */}
+                                {/* Active Background - M3 Primary Container (NOT solid Primary) */}
                                 {isActive && (
-                                    <div className="absolute inset-0 bg-[var(--md-sys-color-primary)] shadow-md z-0 rounded-2xl" />
+                                    <div className="absolute inset-0 bg-[var(--md-sys-color-primary-container)] z-0 rounded-full" />
                                 )}
 
                                 {/* Hover State Layer */}
                                 {!isActive && (
-                                    <div className="absolute inset-0 rounded-2xl bg-[var(--md-sys-color-primary)] opacity-0 group-hover:opacity-[0.08] transition-opacity duration-200" />
+                                    <div className="absolute inset-0 rounded-full bg-[var(--md-sys-color-on-surface)] opacity-0 group-hover:opacity-[0.08] transition-opacity duration-200" />
                                 )}
                             </Button>
                         </Link>
@@ -90,32 +90,32 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
             </nav>
 
             {/* 下部ナビゲーション */}
-            <div className="px-4 pb-4 space-y-2">
+            <div className="px-4 pb-4 space-y-1">
                 {bottomNavigation.map((item) => {
                     const isActive = pathname === item.href;
                     return (
                         <Link key={item.name} href={item.href} className="group relative block">
                             <Button
                                 variant="light"
-                                className="w-full justify-start gap-4 h-14 rounded-2xl relative overflow-hidden"
+                                className="w-full justify-start gap-4 h-14 rounded-full relative overflow-hidden"
                                 aria-current={isActive ? "page" : undefined}
                             >
                                 <div className="relative z-10 flex items-center gap-4">
                                     <item.icon
                                         strokeWidth={1.5}
-                                        className={`w-5 h-5 transition-colors duration-200 ${isActive ? "text-[var(--md-sys-color-on-primary)]" : "text-[var(--md-sys-color-primary)]"}`}
+                                        className={`w-5 h-5 transition-colors duration-200 ${isActive ? "text-[var(--md-sys-color-on-primary-container)]" : "text-[var(--md-sys-color-on-surface-variant)] group-hover:text-[var(--md-sys-color-primary)]"}`}
                                     />
-                                    <span className={`font-medium tracking-tight transition-colors duration-200 ${isActive ? "text-[var(--md-sys-color-on-primary)]" : "text-[var(--md-sys-color-on-surface)] group-hover:text-[var(--md-sys-color-primary)]"}`}>
+                                    <span className={`font-semibold tracking-tight transition-colors duration-200 ${isActive ? "text-[var(--md-sys-color-on-primary-container)]" : "text-[var(--md-sys-color-on-surface-variant)] group-hover:text-[var(--md-sys-color-on-surface)]"}`}>
                                         {item.name}
                                     </span>
                                 </div>
 
                                 {isActive && (
-                                    <div className="absolute inset-0 bg-[var(--md-sys-color-primary)] shadow-md z-0 rounded-2xl" />
+                                    <div className="absolute inset-0 bg-[var(--md-sys-color-primary-container)] z-0 rounded-full" />
                                 )}
 
                                 {!isActive && (
-                                    <div className="absolute inset-0 rounded-2xl bg-[var(--md-sys-color-primary)] opacity-0 group-hover:opacity-[0.08] transition-opacity duration-200" />
+                                    <div className="absolute inset-0 rounded-full bg-[var(--md-sys-color-on-surface)] opacity-0 group-hover:opacity-[0.08] transition-opacity duration-200" />
                                 )}
                             </Button>
                         </Link>
@@ -123,16 +123,16 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
                 })}
             </div>
 
-            {/* ユーザー情報 - Glassmorphism Card */}
+            {/* ユーザー情報 - M3 Surface Container */}
             <div className="px-4 pb-6">
                 <Tooltip content="プロフィール">
-                    <div className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--md-sys-color-surface-container-high)]/80 backdrop-blur-sm hover:bg-[var(--md-sys-color-surface-container-highest)] cursor-pointer transition-all duration-200 shadow-sm">
+                    <div className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--md-sys-color-surface-container)]/80 hover:bg-[var(--md-sys-color-surface-container-high)] cursor-pointer transition-all duration-200">
                         <Avatar
                             size="md"
                             name={displayName[0]}
                             src={userImage || undefined}
                             classNames={{
-                                base: "ring-2 ring-[var(--md-sys-color-primary)]/20 shadow-md",
+                                base: "ring-2 ring-[var(--md-sys-color-outline-variant)]/30",
                             }}
                         />
                         <div className="flex-1 min-w-0">

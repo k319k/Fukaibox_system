@@ -44,7 +44,7 @@ export function Header({ user }: HeaderProps) {
 
     if (!user) {
         return (
-            <header className="h-20 flex items-center justify-end px-8 bg-[var(--md-sys-color-surface-container-lowest)]/95 backdrop-blur-xl shadow-sm border-b border-[var(--md-sys-color-outline-variant)]/30">
+            <header className="h-20 flex items-center justify-end px-8 bg-[var(--md-sys-color-surface)]/98 backdrop-blur-xl border-b border-[var(--md-sys-color-outline-variant)]/20">
                 <a href="/login" className="title-medium text-[var(--md-sys-color-primary)] hover:underline transition-colors flex items-center gap-2 tracking-tight">
                     <UserIcon strokeWidth={1.5} className="w-5 h-5" />
                     ログイン
@@ -54,7 +54,7 @@ export function Header({ user }: HeaderProps) {
     }
 
     return (
-        <header className="h-20 flex items-center justify-end px-8 bg-[var(--md-sys-color-surface-container-lowest)]/95 backdrop-blur-xl shadow-sm border-b border-[var(--md-sys-color-outline-variant)]/30">
+        <header className="h-20 flex items-center justify-end px-8 bg-[var(--md-sys-color-surface)]/98 backdrop-blur-xl border-b border-[var(--md-sys-color-outline-variant)]/20">
             <Dropdown placement="bottom-end">
                 <DropdownTrigger>
                     <div className="flex items-center gap-4 cursor-pointer p-3 rounded-full hover:bg-[var(--md-sys-color-surface-container-high)] transition-all duration-200 group">
