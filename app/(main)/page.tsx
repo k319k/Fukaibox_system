@@ -9,28 +9,7 @@ export default function HomePage() {
     const { data: session } = useSession();
 
     return (
-        <div className="flex-1 space-y-12 p-8 max-w-[1600px] mx-auto">
-            {/* Header Section - Airy & Modern */}
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-8">
-                <div>
-                    <h1 className="display-medium text-[var(--md-sys-color-on-background)] tracking-tight font-bold">ホーム</h1>
-                    <p className="body-large text-[var(--md-sys-color-on-surface-variant)] mt-3 max-w-xl">
-                        封解Boxへようこそ。今日の活動を確認しましょう。
-                    </p>
-                </div>
-                {!session && (
-                    <div className="flex gap-4">
-                        <Button
-                            as={Link}
-                            href="/login"
-                            className="bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-lg hover:shadow-xl px-10 !rounded-full font-bold transition-all duration-300 hover:scale-105"
-                            size="lg"
-                        >
-                            ログイン
-                        </Button>
-                    </div>
-                )}
-            </header>
+        <div className="flex-1 space-y-10 p-6 md:p-8 max-w-[1600px] mx-auto">
 
             {/* Quick Actions Grid - M3 Tonal Surface Hierarchy */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
