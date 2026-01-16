@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { cookingProjects, cookingSections, cookingImages, cookingProposals, type CookingStatus } from "@/lib/db/schema";
 import { eq, desc, asc, and } from "drizzle-orm";
 import { getSession } from "./auth";
+import { generateUploadUrl, getPublicUrl } from "@/lib/r2";
 
 /**
  * 料理プロジェクト一覧を取得
@@ -175,13 +176,14 @@ export async function addCookingImage(
 }
 
 /**
- * セクションの画像一覧を取得
+ * プロジェクトの全画像を取得
  */
-export async function getCookingImages(sectionId: string) {
+export async function getCookingImages(projectId: string) {
     const images = await db
         .select()
         .from(cookingImages)
-        .where(eq(cookingImages.sectionId, sectionId));
+        .where(eq(cookingImages.projectId, projectId))
+        .orderBy(desc(cookingImages.createdAt));
 
     return images;
 }
@@ -288,6 +290,113 @@ export async function applyCookingProposal(proposalId: string) {
         })
         .where(eq(cookingSections.id, proposal.sectionId));
 
-    // 提案のステータスを承認済みに更新
     await updateProposalStatus(proposalId, "approved");
+}
+
+/**
+ * 画像アップロード用の署名付きURLを取得
+ */
+export async function getUploadUrl(filename: string, contentType: string, projectId: string) {
+    const session = await getSession();
+    if (!session?.user) {
+        throw new Error("Unauthorized");
+    }
+
+    // 正しい拡張子を取得
+    const ext = filename.split('.').pop();
+    const uniqueId = crypto.randomUUID();
+    const key = `cooking-images/${projectId}/${uniqueId}.${ext}`;
+
+    const url = await generateUploadUrl(key, contentType);
+
+    return { url, key };
+}
+
+/**
+ * 画像アップロード完了を確認し、DBに登録
+ */
+export async function confirmImageUpload(
+    projectId: string,
+    key: string,
+    sectionId?: string | null
+) {
+    const session = await getSession();
+    const userId = session?.user?.id || "anonymous";
+
+    const publicUrl = getPublicUrl(key);
+
+    const newImage = await db.insert(cookingImages).values({
+        id: crypto.randomUUID(),
+        projectId,
+        sectionId: sectionId || null,
+        uploadedBy: userId,
+        imageUrl: publicUrl,
+        createdAt: new Date(),
+    }).returning();
+
+    return newImage[0];
+}
+
+/**
+ * 画像のセクション割り当てを更新
+ */
+export async function updateImageSelection(
+    imageId: string,
+    sectionId: string | null,
+    isSelected: boolean = true
+) {
+    await db
+        .update(cookingImages)
+        .set({
+            sectionId,
+            isSelected,
+        })
+        .where(eq(cookingImages.id, imageId));
+}
+
+/**
+ * プロジェクトの台本テキストを生成
+ */
+export async function getProjectScript(projectId: string) {
+    const project = await getCookingProject(projectId);
+    const sections = await getCookingSections(projectId);
+
+    if (!project) {
+        throw new Error("Project not found");
+    }
+
+    let script = `# ${project.title}\n\n`;
+    if (project.description) {
+        script += `${project.description}\n\n`;
+    }
+    script += `---\n\n`;
+
+    sections.forEach((section, index) => {
+        script += `## セクション ${index + 1}\n\n`;
+        script += `${section.content}\n\n`;
+        if (section.imageInstruction) {
+            script += `**画像指示**: ${section.imageInstruction}\n\n`;
+        }
+        script += `---\n\n`;
+    });
+
+    return script;
+}
+
+/**
+ * プロジェクトの選択済み画像を取得
+ */
+export async function getSelectedImages(projectId: string) {
+    const images = await db
+        .select()
+        .from(cookingImages)
+        .where(
+            and(
+                eq(cookingImages.projectId, projectId),
+                eq(cookingImages.isSelected, true)
+            )
+        )
+        .orderBy(asc(cookingImages.sectionId));
+
+    return images;
 }

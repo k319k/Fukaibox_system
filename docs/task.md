@@ -31,21 +31,43 @@
 
 ## Phase 2: 台所（料理システム）
 
-- [ ] 料理一覧画面
-- [ ] 新規作成ダイアログ
-- [ ] 料理詳細ページ (Mock廃止, 実DB接続)
-- [ ] 調理タブ
-  - [ ] セクション管理 (Server Actions連携)
-  - [ ] 推敲機能
-  - [ ] 推敲提案機能
-- [ ] AI評価連携（GLM-4.6V-Flash,後回しでもよい）
-- [ ] 画像upタブ
-  - [ ] R2へのアップロード (UI実装済, Point連携済)
-  - [ ] 点数加算処理
-- [ ] 画像採用タブ
-- [ ] ダウンロードタブ
-- [ ] 情報反映機能 (Phase 3へ移行)
-- [ ] 投稿予約機能 (Phase 6へ統合)
+### Phase 2-A: Core Kitchen Features ✅ 完了
+
+- [x] ルートリネーム: /kitchen → /cooking (Redirect Bug Fix)
+- [x] 料理プロジェクト一覧画面
+- [x] 新規プロジェクト作成
+- [x] プロジェクト詳細ページ
+- [x] セクション管理 (追加・編集・削除・並べ替え)
+- [x] 推敲提案機能 (作成・一覧・承認/却下)
+- [x] ロールベースUI制御 (儀長のみ承認可能)
+
+### Phase 2-B: Image Management (R2) ✅ 完了
+
+- [x] AWS SDK インストール
+- [x] R2クライアント設定 (`lib/r2.ts`)
+- [x] 画像アップロードAPI (Presigned URL方式)
+- [x] フロントエンド実装 (ファイル選択・アップロード)
+- [x] `cooking_images` DB登録
+- [x] DBスキーマ更新 (projectId追加、sectionId nullable化)
+- [ ] CORS設定確認 (ユーザー側作業)
+- [ ] 本番環境でのアップロードテスト
+
+### Phase 2-C: Image Selection & Download (未着手)
+
+- [ ] 画像採用タブ実装
+  - [ ] セクションごとに画像選択UI
+  - [ ] 選択状態の保存
+- [ ] ダウンロードタブ実装
+  - [ ] 台本データ(.txt)ダウンロード
+  - [ ] 選択画像の一括ダウンロード(.zip)
+  - [ ] プロジェクト全体のダウンロード
+
+### Phase 2-D: Advanced Features (未着手)
+
+- [ ] AI評価連携 (GLM-4.6V-Flash)
+- [ ] 点数加算処理
+- [ ] 情報反映機能 (Phase 3へ移行可)
+- [ ] 投稿予約機能 (Phase 6へ統合可)
 
 ---
 
@@ -74,13 +96,7 @@
 
 ---
 
-## Phase 5: 封解Box Tools
-
-    - [/] **Refactoring**: Rename /kitchen to /cooking (Redirect Fix)
-      - [x] Verify redirect issue (app-specific)
-      - [x] Test alternative route (/test-kitchen works)
-      - [/] Move files and update references
-    - [ ] Deploy and verify Phase 2-A featuresManager
+## Phase 5: Tools
 
 - [ ] App登録機能
 - [ ] Tools工房
@@ -116,7 +132,7 @@
 ## Phase 8: その他・統合
 
 - [ ] 環状世界wiki連携
-- [ ] Youtube配信検知
+- [×] Youtube配信検知
 - [ ] 通知システム
 - [ ] 総合テスト
 - [ ] 本番デプロイ

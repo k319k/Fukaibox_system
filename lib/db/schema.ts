@@ -128,8 +128,10 @@ export const cookingSections = sqliteTable("cooking_sections", {
 export const cookingImages = sqliteTable("cooking_images", {
     id: text("id").primaryKey(),
     sectionId: text("section_id")
+        .references(() => cookingSections.id, { onDelete: "set null" }), // セクション紐付けは任意（未採用時はnull）
+    projectId: text("project_id")
         .notNull()
-        .references(() => cookingSections.id, { onDelete: "cascade" }),
+        .references(() => cookingProjects.id, { onDelete: "cascade" }), // プロジェクトには必ず紐づく
     uploadedBy: text("uploaded_by")
         .notNull()
         .references(() => users.id),

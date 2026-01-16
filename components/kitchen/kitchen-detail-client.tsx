@@ -14,8 +14,15 @@ import {
     createCookingProposal,
     getCookingProposals,
     updateProposalStatus,
-    applyCookingProposal
+    applyCookingProposal,
+    getUploadUrl,
+    confirmImageUpload,
+    getCookingImages,
+    updateImageSelection,
+    getProjectScript,
+    getSelectedImages
 } from "@/app/actions/kitchen";
+import JSZip from "jszip";
 
 // 型定義
 type Section = {
@@ -87,12 +94,31 @@ export default function KitchenDetailClient({
     const [proposals, setProposals] = useState<Proposal[]>([]);
     const [loadingProposals, setLoadingProposals] = useState(false);
 
-    // 画像アップロード用State
-    const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+    // 画像アップロード用State    // 画像管理
+    const [uploadedImages, setUploadedImages] = useState<any[]>([]); // TODO: 型定義修正
     const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // 画像採用用State
-    const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
+    // 画像セクション割り当て管理: sectionId → imageId
+    const [sectionImageMap, setSectionImageMap] = useState<Record<string, string>>({});
+
+    // 画像初期ロード
+    useEffect(() => {
+        const loadImages = async () => {
+            try {
+                const images = await getCookingImages(project.id);
+                setUploadedImages(images.map(img => ({
+                    id: img.id,
+                    url: img.imageUrl,
+                    uploadedBy: "User", // TODO: ユーザー名解決が必要だが、一旦簡易表示
+                    points: 100 // 仮
+                })));
+            } catch (e) {
+                console.error("Failed to load images", e);
+            }
+        };
+        loadImages();
+    }, [project.id]);
 
     // 儀長かどうか
     const isGicho = userRole === "gicho";
@@ -247,20 +273,184 @@ export default function KitchenDetailClient({
         }
     };
 
-    // 画像アップロードハンドラー（TODO: Vercel Blob連携）
-    const handleImageUpload = () => {
+    // 画像ファイル選択ハンドラー
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // 拡張子チェック
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        if (!['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext || '')) {
+            alert('対応していないファイル形式です (.jpg, .png, .webp, .gif)');
+            return;
+        }
+
         setUploading(true);
-        setTimeout(() => {
-            const newImage: UploadedImage = {
-                id: `img-${Date.now()}`,
-                url: "https://placehold.co/600x400/B3424A/FFF/png?text=New+Image",
-                uploadedBy: "Current User",
+        try {
+            // 1. 署名付きURL取得
+            const { url, key } = await getUploadUrl(file.name, file.type, project.id);
+
+            // 2. R2へアップロード
+            const uploadRes = await fetch(url, {
+                method: 'PUT',
+                body: file,
+                headers: {
+                    'Content-Type': file.type,
+                },
+            });
+
+            if (!uploadRes.ok) {
+                throw new Error('Upload failed');
+            }
+
+            // 3. 完了通知 & DB保存
+            await confirmImageUpload(project.id, key); // sectionIdは指定しない（未割り当て）
+
+            // 4. UI更新
+            const newImage = await getCookingImages(project.id);
+            setUploadedImages(newImage.map(img => ({
+                id: img.id,
+                url: img.imageUrl,
+                uploadedBy: "User",
                 points: 100
-            };
-            setUploadedImages([...uploadedImages, newImage]);
+            })));
+
+            alert("アップロード完了！");
+        } catch (error) {
+            console.error("Upload error:", error);
+            alert("アップロードに失敗しました");
+        } finally {
             setUploading(false);
-            alert("アップロード完了！100ポイント獲得しました。");
-        }, 1500);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
+    };
+
+    // 画像選択ハンドラー
+    const handleImageSelection = async (sectionId: string, imageId: string) => {
+        try {
+            // 前の選択を解除
+            const previousImageId = sectionImageMap[sectionId];
+            if (previousImageId && previousImageId !== imageId) {
+                await updateImageSelection(previousImageId, null, false);
+            }
+
+            // 新しい画像を選択
+            await updateImageSelection(imageId, sectionId, true);
+
+            // ローカル状態更新
+            setSectionImageMap({ ...sectionImageMap, [sectionId]: imageId });
+
+            // アップロード画像リストも更新
+            setUploadedImages(uploadedImages.map(img => {
+                if (img.id === imageId) {
+                    return { ...img, sectionId, isSelected: true };
+                }
+                if (img.id === previousImageId) {
+                    return { ...img, sectionId: null, isSelected: false };
+                }
+                return img;
+            }));
+
+            alert("画像を選択しました");
+        } catch (error) {
+            console.error("Failed to select image", error);
+            alert("画像の選択に失敗しました");
+        }
+    };
+
+    // 台本ダウンロード
+    const handleDownloadScript = async () => {
+        try {
+            const script = await getProjectScript(project.id);
+            const blob = new Blob([script], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${project.title}_台本.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Failed to download script", error);
+            alert("台本のダウンロードに失敗しました");
+        }
+    };
+
+    // 画像ZIPダウンロード
+    const handleDownloadImagesZip = async () => {
+        try {
+            const selectedImages = await getSelectedImages(project.id);
+
+            if (selectedImages.length === 0) {
+                alert("選択された画像がありません");
+                return;
+            }
+
+            const zip = new JSZip();
+
+            // 各画像をfetchしてZIPに追加
+            for (let i = 0; i < selectedImages.length; i++) {
+                const img = selectedImages[i];
+                const response = await fetch(img.imageUrl);
+                const blob = await response.blob();
+                const ext = img.imageUrl.split('.').pop() || 'jpg';
+                zip.file(`image_${i + 1}.${ext}`, blob);
+            }
+
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(zipBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${project.title}_画像.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Failed to download images", error);
+            alert("画像のダウンロードに失敗しました");
+        }
+    };
+
+    // プロジェクト全体ダウンロード
+    const handleDownloadAll = async () => {
+        try {
+            const script = await getProjectScript(project.id);
+            const selectedImages = await getSelectedImages(project.id);
+
+            const zip = new JSZip();
+
+            // 台本を追加
+            zip.file(`${project.title}_台本.txt`, script);
+
+            // 画像を追加
+            if (selectedImages.length > 0) {
+                const imgFolder = zip.folder('images');
+                for (let i = 0; i < selectedImages.length; i++) {
+                    const img = selectedImages[i];
+                    const response = await fetch(img.imageUrl);
+                    const blob = await response.blob();
+                    const ext = img.imageUrl.split('.').pop() || 'jpg';
+                    imgFolder?.file(`image_${i + 1}.${ext}`, blob);
+                }
+            }
+
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(zipBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${project.title}_完全版.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Failed to download project", error);
+            alert("プロジェクトのダウンロードに失敗しました");
+        }
     };
 
     return (
@@ -404,8 +594,15 @@ export default function KitchenDetailClient({
 
                                 <div
                                     className="border-2 border-dashed border-primary/20 rounded-2xl p-12 text-center hover:bg-primary/5 transition-colors cursor-pointer group"
-                                    onClick={handleImageUpload}
+                                    onClick={handleImageUploadClick}
                                 >
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleFileSelect}
+                                        className="hidden"
+                                        accept="image/png, image/jpeg, image/webp, image/gif"
+                                    />
                                     {uploading ? (
                                         <div className="flex flex-col items-center justify-center gap-4">
                                             <Progress size="sm" isIndeterminate color="primary" className="max-w-xs" />
@@ -449,6 +646,9 @@ export default function KitchenDetailClient({
                         <Tab key="selection" title="3. 画像採用">
                             <div className="p-6 space-y-6">
                                 <h2 className="text-lg font-bold mb-4">最終画像の選定</h2>
+                                <p className="text-sm text-foreground-muted mb-6">
+                                    各セクションに使用する画像を選んでください。選択した画像はダウンロードタブから一括取得できます。
+                                </p>
                                 {sections.map((section, idx) => (
                                     <div key={section.id} className="mb-8 p-4 rounded-xl bg-surface/30 border border-white/5">
                                         <div className="mb-4">
@@ -458,22 +658,27 @@ export default function KitchenDetailClient({
                                             <p className="text-sm text-foreground-muted mt-1 ml-4">
                                                 指示: {section.imageInstruction || "なし"}
                                             </p>
+                                            {sectionImageMap[section.id] && (
+                                                <Chip color="success" size="sm" className="ml-4 mt-2">
+                                                    画像選択済み
+                                                </Chip>
+                                            )}
                                         </div>
 
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ml-4">
-                                            {uploadedImages.map((img) => (
+                                            {uploadedImages.filter(img => !img.sectionId || img.sectionId === section.id).map((img) => (
                                                 <div
-                                                    key={`${section.id}-${img.id}`}
+                                                    key={img.id}
                                                     className={`
                                                         relative rounded-lg overflow-hidden cursor-pointer border-2 transition-all
-                                                        ${selectedImageId === `${section.id}-${img.id}` ? 'border-secondary ring-2 ring-secondary/30' : 'border-transparent hover:border-primary/50'}
+                                                        ${sectionImageMap[section.id] === img.id ? 'border-secondary ring-2 ring-secondary/30' : 'border-transparent hover:border-primary/50'}
                                                     `}
-                                                    onClick={() => setSelectedImageId(`${section.id}-${img.id}`)}
+                                                    onClick={() => handleImageSelection(section.id, img.id)}
                                                 >
                                                     <div className="aspect-video bg-black/20">
                                                         <Image src={img.url} className="w-full h-full object-cover" />
                                                     </div>
-                                                    {selectedImageId === `${section.id}-${img.id}` && (
+                                                    {sectionImageMap[section.id] === img.id && (
                                                         <div className="absolute inset-0 bg-secondary/20 flex items-center justify-center">
                                                             <Chip color="secondary" variant="shadow">採用</Chip>
                                                         </div>
@@ -501,7 +706,12 @@ export default function KitchenDetailClient({
                                                 📄
                                             </div>
                                             <h3 className="font-bold">台本データ</h3>
-                                            <Button color="primary" variant="ghost" className="w-full">
+                                            <Button
+                                                color="primary"
+                                                variant="ghost"
+                                                className="w-full"
+                                                onPress={handleDownloadScript}
+                                            >
                                                 .txt でダウンロード
                                             </Button>
                                         </CardBody>
@@ -513,7 +723,12 @@ export default function KitchenDetailClient({
                                                 🖼️
                                             </div>
                                             <h3 className="font-bold">画像一式</h3>
-                                            <Button color="secondary" variant="ghost" className="w-full">
+                                            <Button
+                                                color="secondary"
+                                                variant="ghost"
+                                                className="w-full"
+                                                onPress={handleDownloadImagesZip}
+                                            >
                                                 .zip でダウンロード
                                             </Button>
                                         </CardBody>
@@ -525,7 +740,12 @@ export default function KitchenDetailClient({
                                                 🎬
                                             </div>
                                             <h3 className="font-bold">プロジェクト全体</h3>
-                                            <Button color="success" variant="shadow" className="w-full text-white">
+                                            <Button
+                                                color="success"
+                                                variant="shadow"
+                                                className="w-full text-white"
+                                                onPress={handleDownloadAll}
+                                            >
                                                 一括ダウンロード
                                             </Button>
                                         </CardBody>
