@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, CardHeader, Button, Chip } from "@heroui/react";
+import { Card, CardBody, CardHeader, Button, Chip, Progress } from "@heroui/react";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
 import { ChefHat, Package, Wrench, Settings, Tv, Play, Trophy } from "lucide-react";
@@ -10,11 +10,11 @@ export default function HomePage() {
 
     return (
         <div className="flex-1 space-y-12 p-8 max-w-[1600px] mx-auto">
-            {/* Header Section */}
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-[var(--md-sys-color-outline-variant)]">
+            {/* Header Section - Airy & Modern */}
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-8">
                 <div>
-                    <h1 className="display-medium text-[var(--md-sys-color-on-background)] tracking-tight">ホーム</h1>
-                    <p className="body-large text-[var(--md-sys-color-on-surface-variant)] mt-2">
+                    <h1 className="display-medium text-[var(--md-sys-color-on-background)] tracking-tight font-bold">ホーム</h1>
+                    <p className="body-large text-[var(--md-sys-color-on-surface-variant)] mt-3 max-w-xl">
                         封解Boxへようこそ。今日の活動を確認しましょう。
                     </p>
                 </div>
@@ -23,7 +23,8 @@ export default function HomePage() {
                         <Button
                             as={Link}
                             href="/login"
-                            className="bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md px-8 shape-full font-semibold"
+                            className="bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-lg hover:shadow-xl px-10 !rounded-full font-bold transition-all duration-300 hover:scale-105"
+                            size="lg"
                         >
                             ログイン
                         </Button>
@@ -126,24 +127,30 @@ export default function HomePage() {
                                 貢献度ランキング
                             </h2>
                         </CardHeader>
-                        <CardBody className="px-10 pb-10 space-y-6">
+                        <CardBody className="px-10 pb-10 space-y-5">
                             {[1, 2, 3, 4, 5].map((rank) => (
-                                <div key={rank} className="flex items-center gap-5 p-4 rounded-3xl hover:bg-[var(--md-sys-color-surface-container-high)] transition-all cursor-pointer group hover:shadow-sm">
-                                    <div className={`w-12 h-12 flex items-center justify-center rounded-full font-bold text-xl shadow-sm transition-transform group-hover:scale-110 ${rank === 1 ? 'bg-[#FFD700] text-white shadow-[#FFD700]/40' :
-                                        rank === 2 ? 'bg-[#C0C0C0] text-white shadow-[#C0C0C0]/40' :
-                                            rank === 3 ? 'bg-[#CD7F32] text-white shadow-[#CD7F32]/40' :
+                                <div key={rank} className="flex items-center gap-5 p-4 rounded-2xl hover:bg-[var(--md-sys-color-surface-container-high)] transition-all cursor-pointer group">
+                                    <div className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold text-lg transition-transform group-hover:scale-110 ${rank === 1 ? 'bg-[#FFD700] text-white' :
+                                        rank === 2 ? 'bg-[#C0C0C0] text-white' :
+                                            rank === 3 ? 'bg-[#CD7F32] text-white' :
                                                 'bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface-variant)]'
                                         }`}>
                                         {rank}
                                     </div>
-                                    <div className="flex-1">
-                                        <p className="title-medium font-bold group-hover:text-[var(--md-sys-color-primary)] transition-colors">ユーザー名</p>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <div className="h-1.5 w-full bg-[var(--md-sys-color-surface-container-highest)] rounded-full overflow-hidden">
-                                                <div className="h-full bg-[var(--md-sys-color-primary)] rounded-full" style={{ width: `${100 - (rank * 15)}%` }} />
-                                            </div>
-                                            <p className="body-small font-mono text-[var(--md-sys-color-on-surface-variant)] whitespace-nowrap">{1000 - rank * 100}pt</p>
+                                    <div className="flex-1 space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <p className="title-small font-semibold tracking-tight group-hover:text-[var(--md-sys-color-primary)] transition-colors">ユーザー名</p>
+                                            <span className="body-small font-mono text-[var(--md-sys-color-on-surface-variant)]">{1000 - rank * 100}pt</span>
                                         </div>
+                                        <Progress
+                                            size="sm"
+                                            value={100 - (rank * 15)}
+                                            color="primary"
+                                            classNames={{
+                                                track: "bg-[var(--md-sys-color-surface-container-highest)]",
+                                                indicator: "bg-[var(--md-sys-color-primary)]"
+                                            }}
+                                        />
                                     </div>
                                 </div>
                             ))}
