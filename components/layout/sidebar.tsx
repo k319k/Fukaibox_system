@@ -4,16 +4,17 @@ import { Button, Avatar, Tooltip } from "@heroui/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Home, ChefHat, Book, Wrench, Settings } from "lucide-react";
 
 const navigation = [
-    { name: "ホーム", href: "/", icon: HomeIcon },
-    { name: "台所", href: "/kitchen", icon: KitchenIcon },
-    { name: "界域百科事典", href: "/dictionary", icon: BookIcon },
-    { name: "封解Box Tools", href: "/tools", icon: ToolsIcon },
+    { name: "ホーム", href: "/", icon: Home },
+    { name: "台所", href: "/kitchen", icon: ChefHat },
+    { name: "界域百科事典", href: "/dictionary", icon: Book },
+    { name: "封解Box Tools", href: "/tools", icon: Wrench },
 ];
 
 const bottomNavigation = [
-    { name: "設定", href: "/settings", icon: SettingsIcon },
+    { name: "設定", href: "/settings", icon: Settings },
 ];
 
 interface SidebarProps {

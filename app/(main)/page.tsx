@@ -3,6 +3,7 @@
 import { Card, CardBody, CardHeader, Button, Chip } from "@heroui/react";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
+import { ChefHat, Package, Wrench, Settings, Tv, Play, Trophy } from "lucide-react";
 
 export default function HomePage() {
     const { data: session } = useSession();
@@ -30,18 +31,18 @@ export default function HomePage() {
                 )}
             </header>
 
-            {/* Quick Actions Grid - Tonal Palette Harmony & Pill Shape */}
+            {/* Quick Actions Grid - Mono-hue Red Harmony & Pill Shape */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 {[
-                    { label: "料理をする", href: "/kitchen", icon: "🍳", color: "bg-[#FFDAD9] text-[#40000A]" }, // Red 90
-                    { label: "保管庫を見る", href: "/storage", icon: "📦", color: "bg-[#FFEDE6] text-[#40000A]" }, // Orange 95
-                    { label: "道具を使う", href: "/tools", icon: "🛠️", color: "bg-[#F5F0DC] text-[#1E1B16]" },   // Beige
-                    { label: "設定", href: "/settings", icon: "⚙️", color: "bg-[#EBEBD4] text-[#191C1C]" },      // Greige
+                    { label: "料理をする", href: "/kitchen", icon: ChefHat, color: "bg-[#FFDAD9] text-[#40000A]" }, // Primary Container (Red 90)
+                    { label: "保管庫を見る", href: "/storage", icon: Package, color: "bg-[#FFEDEA] text-[#40000A]" }, // Red 95
+                    { label: "道具を使う", href: "/tools", icon: Wrench, color: "bg-[#FFF0EE] text-[#40000A]" },    // Red 98
+                    { label: "設定", href: "/settings", icon: Settings, color: "bg-[#FFF8F7] text-[#40000A]" },     // Red 99
                 ].map((action) => (
                     <Link key={action.label} href={action.href} className="group">
                         <Card className={`h-36 border-none shadow-lg hover:shadow-xl transition-all duration-300 ${action.color} !rounded-[32px]`}>
                             <CardBody className="flex flex-col items-center justify-center gap-4">
-                                <span className="text-5xl group-hover:scale-110 transition-transform duration-300">{action.icon}</span>
+                                <action.icon strokeWidth={1.5} className="w-12 h-12 group-hover:scale-110 transition-transform duration-300" />
                                 <span className="title-medium font-bold tracking-wide">{action.label}</span>
                             </CardBody>
                         </Card>
@@ -53,7 +54,7 @@ export default function HomePage() {
                 {/* Main Content Area (2 cols) */}
                 <div className="lg:col-span-2 space-y-12">
                     {/* Live Stream Widget - Stronger Gravity & Depth */}
-                    <Card className="card-elevated shadow-lg min-h-[440px] relative overflow-hidden group !rounded-[32px] bg-white">
+                    <Card className="card-elevated shadow-lg min-h-[440px] relative overflow-hidden group !rounded-[32px] bg-white border-none">
                         <CardHeader className="px-12 pt-12 pb-6 flex justify-between items-center z-10">
                             <div>
                                 <h2 className="headline-small text-[var(--md-sys-color-on-surface)] flex items-center gap-4 font-bold">
@@ -66,8 +67,8 @@ export default function HomePage() {
                         </CardHeader>
                         <CardBody className="px-12 pb-12 flex flex-col items-center justify-center z-10 flex-grow">
                             <div className="text-center space-y-8 opacity-70 hover:opacity-100 transition-opacity duration-500">
-                                <div className="w-40 h-40 mx-auto rounded-full bg-[var(--md-sys-color-surface-container-highest)] flex items-center justify-center text-8xl shadow-inner mb-6 ring-4 ring-white">
-                                    📺
+                                <div className="w-40 h-40 mx-auto rounded-full bg-[var(--md-sys-color-surface-container-highest)] flex items-center justify-center shadow-inner mb-6 ring-4 ring-white">
+                                    <Tv strokeWidth={1} className="w-20 h-20 text-[var(--md-sys-color-on-surface-variant)]" />
                                 </div>
                                 <div className="space-y-3">
                                     <p className="headline-medium text-[var(--md-sys-color-on-surface-variant)] font-bold tracking-tight">現在配信されていません</p>
@@ -83,17 +84,22 @@ export default function HomePage() {
                     </Card>
 
                     {/* Latest Videos - Consistent P-10 Padding */}
-                    <Card className="card-outlined shadow-md !rounded-[32px] bg-[var(--md-sys-color-surface-container-lowest)] border border-[var(--md-sys-color-outline-variant)]/50">
+                    <Card className="card-outlined shadow-md !rounded-[32px] bg-[var(--md-sys-color-surface-container-lowest)] border-none">
                         <CardHeader className="px-12 pt-12 pb-6">
-                            <h2 className="headline-small text-[var(--md-sys-color-on-surface)] font-bold">最新の動画</h2>
+                            <h2 className="headline-small text-[var(--md-sys-color-on-surface)] font-bold flex items-center gap-3">
+                                <Play className="w-6 h-6 fill-current text-[var(--md-sys-color-primary)]" />
+                                最新の動画
+                            </h2>
                         </CardHeader>
                         <CardBody className="px-12 pb-12">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                 {[1, 2].map((i) => (
                                     <div key={i} className="group cursor-pointer">
-                                        <div className="aspect-video rounded-[24px] bg-[var(--md-sys-color-surface-container-highest)] mb-5 overflow-hidden border border-[var(--md-sys-color-outline-variant)] relative shadow-sm group-hover:shadow-lg transition-all duration-300">
+                                        <div className="aspect-video rounded-[24px] bg-[var(--md-sys-color-surface-container-highest)] mb-5 overflow-hidden relative shadow-sm group-hover:shadow-lg transition-all duration-300">
                                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px]">
-                                                <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform text-3xl text-[var(--md-sys-color-primary)] pl-1">▶</div>
+                                                <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform text-[var(--md-sys-color-primary)] pl-1">
+                                                    <Play className="w-8 h-8 fill-current" />
+                                                </div>
                                             </div>
                                         </div>
                                         <h3 className="title-large text-[var(--md-sys-color-on-surface)] group-hover:text-[var(--md-sys-color-primary)] transition-colors line-clamp-2 leading-relaxed font-bold tracking-tight">
@@ -113,9 +119,12 @@ export default function HomePage() {
                 {/* Sidebar Widgets (1 col) */}
                 <div className="space-y-12">
                     {/* Ranking Widget */}
-                    <Card className="card-filled h-auto shadow-md !rounded-[32px] bg-white border border-[var(--md-sys-color-outline-variant)]/30">
+                    <Card className="card-filled h-auto shadow-md !rounded-[32px] bg-white border-none">
                         <CardHeader className="px-10 pt-10 pb-4">
-                            <h2 className="headline-small text-[var(--md-sys-color-on-surface)] font-bold">貢献度ランキング</h2>
+                            <h2 className="headline-small text-[var(--md-sys-color-on-surface)] font-bold flex items-center gap-3">
+                                <Trophy className="w-6 h-6 text-[#E8A127]" />
+                                貢献度ランキング
+                            </h2>
                         </CardHeader>
                         <CardBody className="px-10 pb-10 space-y-6">
                             {[1, 2, 3, 4, 5].map((rank) => (
