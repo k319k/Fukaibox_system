@@ -163,19 +163,29 @@ export default function MyComponent() {
 
 ## 重要な注意事項
 
+### コードを更新する際、毎回以下の手順を実行すること
+
+1. コードを更新する
+   - 何回も何回もできるまで終わるまで完璧になるまで複数回以上PDCA回してください。途中で勝手にスタックしたり止まったらしないでください。
+
+2. GitHubにプッシュする
+   - <https://github.com/k319k/Fukaibox_system>
+   - GitHubにプッシュすると自動的にVercelで本番デプロイされます。
+
+3. Vercelダッシュボードでビルドログを見守る。
+   - <https://vercel.com/k319ks-projects/fukai-box/deployments>
+
 ### ❌ やってはいけないこと
 
-1. **Cloudflare関連パッケージの追加**
-   - `@opennextjs/cloudflare`
-   - `wrangler`
-   - これらは過去の遺物です
-
-2. **Turbopackの無効化**
+1. **Turbopackの無効化**
    - Next.js 16ではTurbopackがデフォルトで有効
    - Vercelは完全対応しているため無効化不要
 
-3. **直接的なWebpack設定**
+2. **直接的なWebpack設定**
    - Next.js 16 + Vercelでは不要
+
+3. **ローカルでのビルド**
+   - ローカルでやると重くなるので禁止。Vercelでやること。
 
 ### ✅ 推奨事項
 
@@ -188,7 +198,6 @@ export default function MyComponent() {
    - カスタムスタイルよりHeroUI variantsを優先
 
 3. **環境変数の適切な管理**
-   - ローカル: `.env`ファイル
    - 本番: Vercelダッシュボード
 
 4. **型安全性の維持**
@@ -231,10 +240,11 @@ PORT=3001 npm run dev
 
 ## 履歴
 
+- **2026-01-17**: ユーザーによっていろいろ編集
 - **2026-01-11**: CloudflareからVercelに移行、Next.js 16 + Turbopack対応
 - **2025-12-XX**: プロジェクト開始、初期セットアップ
 
 ---
 
-**最終更新**: 2026-01-16
+**最終更新**: 2026-01-17
 **担当エージェント**: Antigravity by Google DeepMind
