@@ -117,13 +117,20 @@ export const cookingSections = sqliteTable("cooking_sections", {
     projectId: text("project_id")
         .notNull()
         .references(() => cookingProjects.id, { onDelete: "cascade" }),
-    orderIndex: integer("order_index").notNull(),
-    content: text("content").notNull(),
+    // Old columns that exist in production
+    title: text("title"),
+    description: text("description"),
+    order: integer("order"),
+    isImageSubmissionAllowed: integer("is_image_submission_allowed", { mode: "boolean" }),
+    assignedTo: text("assigned_to"),
+    // New columns added by migration
+    orderIndex: integer("order_index"),
+    content: text("content"),
     imageInstruction: text("image_instruction"),
     referenceImageUrl: text("reference_image_url"),
-    allowImageSubmission: integer("allow_image_submission", { mode: "boolean" }).default(true),
-    createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+    allowImageSubmission: integer("allow_image_submission", { mode: "boolean" }),
+    createdAt: integer("created_at", { mode: "timestamp" }),
+    updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
 
 export const cookingImages = sqliteTable("cooking_images", {
