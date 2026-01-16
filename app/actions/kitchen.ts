@@ -2,7 +2,8 @@
 
 import { db } from "@/lib/db";
 import { cookingProjects, cookingSections, cookingImages, cookingProposals, type CookingStatus } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, asc, and } from "drizzle-orm";
+import { getSession } from "./auth";
 
 /**
  * 料理プロジェクト一覧を取得
@@ -24,13 +25,17 @@ export async function getCookingProjects() {
 /**
  * 料理プロジェクトを作成
  */
-export async function createCookingProject(title: string, description?: string, createdBy?: string) {
+export async function createCookingProject(title: string, description?: string) {
+    // セッションからユーザーIDを取得
+    const session = await getSession();
+    const createdBy = session?.user?.id || "anonymous";
+
     const newProject = await db.insert(cookingProjects).values({
-        id: `${Date.now()}-${Math.random().toString(36).substring(7)}`,
+        id: crypto.randomUUID(),
         title,
         description: description || "",
         status: "cooking",
-        createdBy: createdBy || "system",
+        createdBy,
         createdAt: new Date(),
         updatedAt: new Date(),
     }).returning();
@@ -73,7 +78,7 @@ export async function createCookingSection(
     imageInstruction?: string
 ) {
     const newSection = await db.insert(cookingSections).values({
-        id: `${Date.now()}-${Math.random().toString(36).substring(7)}`,
+        id: crypto.randomUUID(),
         projectId,
         orderIndex,
         content,
@@ -93,7 +98,7 @@ export async function getCookingSections(projectId: string) {
         .select()
         .from(cookingSections)
         .where(eq(cookingSections.projectId, projectId))
-        .orderBy(cookingSections.orderIndex);
+        .orderBy(asc(cookingSections.orderIndex));
 
     return sections;
 }
@@ -101,14 +106,50 @@ export async function getCookingSections(projectId: string) {
 /**
  * セクションのコンテンツを更新
  */
-export async function updateCookingSection(sectionId: string, content: string) {
+export async function updateCookingSection(
+    sectionId: string,
+    content: string,
+    imageInstruction?: string
+) {
     await db
         .update(cookingSections)
         .set({
             content,
+            imageInstruction: imageInstruction ?? undefined,
             updatedAt: new Date(),
         })
         .where(eq(cookingSections.id, sectionId));
+}
+
+/**
+ * セクションを削除
+ */
+export async function deleteCookingSection(sectionId: string) {
+    await db
+        .delete(cookingSections)
+        .where(eq(cookingSections.id, sectionId));
+}
+
+/**
+ * セクションの並び順を更新
+ */
+export async function reorderCookingSections(
+    projectId: string,
+    orderMap: { id: string; order: number }[]
+) {
+    // トランザクション的に各セクションのorderIndexを更新
+    for (const item of orderMap) {
+        await db
+            .update(cookingSections)
+            .set({
+                orderIndex: item.order,
+                updatedAt: new Date(),
+            })
+            .where(and(
+                eq(cookingSections.id, item.id),
+                eq(cookingSections.projectId, projectId)
+            ));
+    }
 }
 
 /**
@@ -117,12 +158,15 @@ export async function updateCookingSection(sectionId: string, content: string) {
 export async function addCookingImage(
     sectionId: string,
     imageUrl: string,
-    uploadedBy: string
+    uploadedBy?: string
 ) {
+    const session = await getSession();
+    const userId = uploadedBy || session?.user?.id || "anonymous";
+
     const newImage = await db.insert(cookingImages).values({
-        id: `${Date.now()}-${Math.random().toString(36).substring(7)}`,
+        id: crypto.randomUUID(),
         sectionId,
-        uploadedBy,
+        uploadedBy: userId,
         imageUrl,
         createdAt: new Date(),
     }).returning();
@@ -148,12 +192,15 @@ export async function getCookingImages(sectionId: string) {
 export async function createCookingProposal(
     sectionId: string,
     proposedContent: string,
-    proposedBy: string
+    proposedBy?: string
 ) {
+    const session = await getSession();
+    const userId = proposedBy || session?.user?.id || "anonymous";
+
     const newProposal = await db.insert(cookingProposals).values({
-        id: `${Date.now()}-${Math.random().toString(36).substring(7)}`,
+        id: crypto.randomUUID(),
         sectionId,
-        proposedBy,
+        proposedBy: userId,
         proposedContent,
         status: "pending",
         createdAt: new Date(),
@@ -177,6 +224,31 @@ export async function getCookingProposals(sectionId: string) {
 }
 
 /**
+ * プロジェクト内の全推敲提案を取得
+ */
+export async function getAllProposalsForProject(projectId: string) {
+    // まずプロジェクトのセクションを取得
+    const sections = await getCookingSections(projectId);
+    const sectionIds = sections.map(s => s.id);
+
+    if (sectionIds.length === 0) {
+        return [];
+    }
+
+    // 各セクションの提案を取得
+    const allProposals = [];
+    for (const sectionId of sectionIds) {
+        const proposals = await getCookingProposals(sectionId);
+        allProposals.push(...proposals.map(p => ({
+            ...p,
+            sectionId,
+        })));
+    }
+
+    return allProposals;
+}
+
+/**
  * 推敲提案のステータスを更新
  */
 export async function updateProposalStatus(
@@ -190,4 +262,32 @@ export async function updateProposalStatus(
             updatedAt: new Date(),
         })
         .where(eq(cookingProposals.id, proposalId));
+}
+
+/**
+ * 推敲提案を承認し、元のセクションに適用
+ */
+export async function applyCookingProposal(proposalId: string) {
+    // 提案を取得
+    const proposals = await db
+        .select()
+        .from(cookingProposals)
+        .where(eq(cookingProposals.id, proposalId));
+
+    const proposal = proposals[0];
+    if (!proposal) {
+        throw new Error("Proposal not found");
+    }
+
+    // セクションのコンテンツを更新
+    await db
+        .update(cookingSections)
+        .set({
+            content: proposal.proposedContent,
+            updatedAt: new Date(),
+        })
+        .where(eq(cookingSections.id, proposal.sectionId));
+
+    // 提案のステータスを承認済みに更新
+    await updateProposalStatus(proposalId, "approved");
 }

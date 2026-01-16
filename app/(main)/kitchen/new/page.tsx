@@ -3,6 +3,7 @@
 import { Button, Card, CardBody, CardHeader, Input, Textarea } from "@heroui/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { createCookingProject } from "@/app/actions/kitchen";
 
 export default function NewKitchenPage() {
     const router = useRouter();
@@ -21,10 +22,16 @@ export default function NewKitchenPage() {
         setError("");
 
         try {
-            // 一時的に静的ID生成
-            const projectId = `${Date.now()}`;
-            router.push(`/kitchen/${projectId}`);
+            // Server Actionを使用してプロジェクトを作成
+            const project = await createCookingProject(title, description);
+
+            if (project) {
+                router.push(`/kitchen/${project.id}`);
+            } else {
+                setError("プロジェクトの作成に失敗しました");
+            }
         } catch (err) {
+            console.error("Failed to create project:", err);
             setError("プロジェクトの作成に失敗しました");
         } finally {
             setIsLoading(false);
