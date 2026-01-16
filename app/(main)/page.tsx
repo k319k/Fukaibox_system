@@ -39,7 +39,7 @@ export default function HomePage() {
                     { label: "設定", href: "/settings", icon: "⚙️", color: "bg-[#EBEBD4] text-[#191C1C]" },      // Greige
                 ].map((action) => (
                     <Link key={action.label} href={action.href} className="group">
-                        <Card className={`h-36 border-none shadow-lg hover:shadow-xl transition-all duration-300 ${action.color} shape-xl hover:rounded-[32px]`}>
+                        <Card className={`h-36 border-none shadow-lg hover:shadow-xl transition-all duration-300 ${action.color} !rounded-[32px]`}>
                             <CardBody className="flex flex-col items-center justify-center gap-4">
                                 <span className="text-5xl group-hover:scale-110 transition-transform duration-300">{action.icon}</span>
                                 <span className="title-medium font-bold tracking-wide">{action.label}</span>
@@ -53,7 +53,7 @@ export default function HomePage() {
                 {/* Main Content Area (2 cols) */}
                 <div className="lg:col-span-2 space-y-12">
                     {/* Live Stream Widget - Stronger Gravity & Depth */}
-                    <Card className="card-elevated shadow-lg min-h-[440px] relative overflow-hidden group shape-xl bg-white">
+                    <Card className="card-elevated shadow-lg min-h-[440px] relative overflow-hidden group !rounded-[32px] bg-white">
                         <CardHeader className="px-12 pt-12 pb-6 flex justify-between items-center z-10">
                             <div>
                                 <h2 className="headline-small text-[var(--md-sys-color-on-surface)] flex items-center gap-4 font-bold">
@@ -83,7 +83,7 @@ export default function HomePage() {
                     </Card>
 
                     {/* Latest Videos - Consistent P-10 Padding */}
-                    <Card className="card-outlined shadow-md shape-xl bg-[var(--md-sys-color-surface-container-lowest)] border border-[var(--md-sys-color-outline-variant)]/50">
+                    <Card className="card-outlined shadow-md !rounded-[32px] bg-[var(--md-sys-color-surface-container-lowest)] border border-[var(--md-sys-color-outline-variant)]/50">
                         <CardHeader className="px-12 pt-12 pb-6">
                             <h2 className="headline-small text-[var(--md-sys-color-on-surface)] font-bold">最新の動画</h2>
                         </CardHeader>
@@ -113,7 +113,7 @@ export default function HomePage() {
                 {/* Sidebar Widgets (1 col) */}
                 <div className="space-y-12">
                     {/* Ranking Widget */}
-                    <Card className="card-filled h-auto shadow-md shape-xl bg-white border border-[var(--md-sys-color-outline-variant)]/30">
+                    <Card className="card-filled h-auto shadow-md !rounded-[32px] bg-white border border-[var(--md-sys-color-outline-variant)]/30">
                         <CardHeader className="px-10 pt-10 pb-4">
                             <h2 className="headline-small text-[var(--md-sys-color-on-surface)] font-bold">貢献度ランキング</h2>
                         </CardHeader>
