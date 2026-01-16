@@ -459,9 +459,9 @@ export default function KitchenDetailClient({
     };
 
     return (
-        <div className="max-w-7xl mx-auto space-y-8 pb-20">
+        <div className="max-w-7xl mx-auto space-y-6 pb-20">
             {/* ヘッダー */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between spacing-6 flex-wrap">
                 <div>
                     <Link href="/cooking" className="label-large text-[var(--md-sys-color-primary)] hover:underline mb-3 inline-block transition-colors">
                         ← 台所に戻る
@@ -471,9 +471,9 @@ export default function KitchenDetailClient({
                         <p className="body-medium mt-2">{project.description}</p>
                     )}
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center spacing-4 flex-wrap">
                     <Chip color="warning" variant="flat" classNames={{ base: "shape-sm font-medium" }}>調理中</Chip>
-                    <div className="text-right hidden md:block surface-container shape-md px-4 py-2">
+                    <div className="text-right surface-container-low shape-md p-compact">
                         <p className="label-small">Project ID</p>
                         <p className="title-small font-mono">{project.id.substring(0, 8)}...</p>
                     </div>
@@ -481,18 +481,18 @@ export default function KitchenDetailClient({
             </div>
 
             {/* メインタブエリア */}
-            <Card className="card-elevated">
+            <Card className="card-elevated surface-container-lowest">
                 <CardBody className="p-0">
-                    <Tabs aria-label="料理管理タブ" variant="underlined" classNames={{
-                        tabList: "w-full border-b border-[var(--md-sys-color-outline-variant)] px-6 pt-2 surface-container-low",
-                        cursor: "w-full bg-[var(--md-sys-color-primary)] h-[3px]",
-                        tab: "max-w-fit px-6 h-14 title-medium text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] transition-colors",
-                        tabContent: "group-data-[selected=true]:text-primary font-medium"
+                    <Tabs aria-label="料理管理タブ" variant="bordered" classNames={{
+                        tabList: "w-full border-b border-[var(--md-sys-color-outline-variant)] p-base pt-3 surface-container-lowest",
+                        cursor: "w-full bg-[var(--md-sys-color-primary)] h-1",
+                        tab: "max-w-fit px-8 h-16 title-medium text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] transition-colors data-[selected=true]:elevated-1",
+                        tabContent: "group-data-[selected=true]:text-primary font-semibold"
                     }}>
                         {/* 1. 調理タブ */}
                         <Tab key="cooking" title="1. 調理">
-                            <div className="p-6 space-y-6">
-                                <div className="flex items-center justify-between surface-container-high shape-lg p-5 border border-[var(--md-sys-color-outline-variant)]">
+                            <div className="p-base spacing-6">
+                                <div className="flex items-center justify-between elevated-2 shape-lg p-base">
                                     <div>
                                         <h2 className="title-large text-[var(--md-sys-color-primary)]">セクション構成</h2>
                                         <p className="body-small mt-1">動画の構成要素（台本・指示）を管理します</p>
@@ -502,17 +502,17 @@ export default function KitchenDetailClient({
                                     </Button>
                                 </div>
 
-                                <div className="space-y-4">
+                                <div className="spacing-4">
                                     {sections.map((section, index) => (
-                                        <Card key={section.id} className="card-outlined group hover:elevated-2 transition-all duration-300">
-                                            <CardBody className="p-5">
-                                                <div className="flex flex-col md:flex-row gap-6">
+                                        <Card key={section.id} className="card-elevated surface-container-lowest group hover:shadow-[var(--md-sys-elevation-3)] transition-all duration-300">
+                                            <CardBody className="p-base">
+                                                <div className="flex flex-col md:flex-row spacing-6">
                                                     {/* 左側：インデックス・操作 */}
-                                                    <div className="flex md:flex-col items-center justify-between md:justify-start gap-3 md:w-16 md:border-r border-white/10 md:pr-4">
-                                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold">
+                                                    <div className="flex md:flex-col items-center justify-between md:justify-start spacing-3 md:w-16 md:border-r border-[var(--md-sys-color-outline-variant)] md:pr-4">
+                                                        <div className="flex items-center justify-center w-10 h-10 shape-full bg-primary/20 text-primary font-bold elevated-1">
                                                             {index + 1}
                                                         </div>
-                                                        <div className="flex md:flex-col gap-1">
+                                                        <div className="flex md:flex-col spacing-2">
                                                             <Tooltip content="編集">
                                                                 <Button
                                                                     isIconOnly
@@ -540,27 +540,27 @@ export default function KitchenDetailClient({
                                                     </div>
 
                                                     {/* 右側：コンテンツ */}
-                                                    <div className="flex-1 space-y-4">
+                                                    <div className="flex-1 spacing-4">
                                                         <div>
                                                             <div className="flex items-center justify-between mb-2">
-                                                                <span className="text-xs font-semibold text-primary/80 uppercase tracking-wider">台本・ナレーション</span>
+                                                                <span className="label-medium text-primary/80 uppercase" style={{ letterSpacing: '0.05em' }}>台本・ナレーション</span>
                                                                 <Button
                                                                     size="sm"
                                                                     variant="flat"
                                                                     className="h-6 text-xs bg-primary/10 text-primary"
                                                                     onPress={() => handleProposalOpen(section)}
                                                                 >
-                                                                    推敲提案
+                                                                    推考提案
                                                                 </Button>
                                                             </div>
-                                                            <p className="text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed p-3 bg-surface rounded-lg border border-white/5">
+                                                            <p className="body-medium text-foreground/90 whitespace-pre-wrap p-3 surface-container shape-md border border-[var(--md-sys-color-outline-variant)]" style={{ lineHeight: '1.75' }}>
                                                                 {section.content}
                                                             </p>
                                                         </div>
                                                         {section.imageInstruction && (
                                                             <div>
-                                                                <span className="text-xs font-semibold text-secondary/80 uppercase tracking-wider block mb-2">画像指示</span>
-                                                                <div className="text-sm text-foreground-muted bg-surface/30 p-3 rounded-lg border border-dashed border-white/20 italic">
+                                                                <span className="label-medium text-secondary/80 uppercase block mb-2" style={{ letterSpacing: '0.05em' }}>画像指示</span>
+                                                                <div className="body-medium text-foreground-muted surface-container/30 p-3 shape-md border border-dashed border-[var(--md-sys-color-outline-variant)] italic">
                                                                     {section.imageInstruction}
                                                                 </div>
                                                             </div>

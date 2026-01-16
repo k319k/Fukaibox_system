@@ -86,14 +86,14 @@
 
   /* ═══════════════════════════════════════════════════════════════════════════
      M3 Elevation (Shadow Tokens)
-     5段階のシャドウで視覚的階層を表現
-     ═══════════════════════════════════════════════════════════════════════════  /* M3 Elevation (Shadow) - 空気感のある淡い影 (Opacity 0.05) */
+     5段階のシャドウで視覚的階層を表現 - on-surfaceベースの影で調和
+     ═════════════════════════════════════════════════════════════════════════════ */
   --md-sys-elevation-0: none;
-  --md-sys-elevation-1: 0px 4px 8px -2px rgba(0, 0, 0, 0.05), 0px 2px 4px -2px rgba(0, 0, 0, 0.02);
-  --md-sys-elevation-2: 0px 8px 16px -4px rgba(0, 0, 0, 0.05), 0px 4px 8px -2px rgba(0, 0, 0, 0.02);
-  --md-sys-elevation-3: 0px 12px 24px -6px rgba(0, 0, 0, 0.05), 0px 6px 12px -2px rgba(0, 0, 0, 0.02);
-  --md-sys-elevation-4: 0px 16px 32px -8px rgba(0, 0, 0, 0.05), 0px 8px 16px -2px rgba(0, 0, 0, 0.02);
-  --md-sys-elevation-5: 0px 24px 48px -12px rgba(0, 0, 0, 0.05), 0px 12px 24px -4px rgba(0, 0, 0, 0.02);
+  --md-sys-elevation-1: 0px 4px 8px -2px rgba(29, 27, 22, 0.08), 0px 2px 4px -2px rgba(29, 27, 22, 0.04);
+  --md-sys-elevation-2: 0px 8px 16px -4px rgba(29, 27, 22, 0.08), 0px 4px 8px -2px rgba(29, 27, 22, 0.04);
+  --md-sys-elevation-3: 0px 12px 24px -6px rgba(29, 27, 22, 0.10), 0px 6px 12px -2px rgba(29, 27, 22, 0.05);
+  --md-sys-elevation-4: 0px 16px 32px -8px rgba(29, 27, 22, 0.12), 0px 8px 16px -2px rgba(29, 27, 22, 0.06);
+  --md-sys-elevation-5: 0px 24px 48px -12px rgba(29, 27, 22, 0.14), 0px 12px 24px -4px rgba(29, 27, 22, 0.07);
 
   /* Shape (Corner Radius) */
   --md-sys-shape-corner-none: 0px;
@@ -160,6 +160,54 @@ body {
   min-height: 100vh;
   line-height: 1.6;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Utility Classes - Spacing & Padding (8px Grid)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Gap/Spacing utilities */
+.spacing-2 {
+  gap: var(--space-2);
+}
+
+/* 8px */
+.spacing-3 {
+  gap: var(--space-3);
+}
+
+/* 12px */
+.spacing-4 {
+  gap: var(--space-4);
+}
+
+/* 16px */
+.spacing-6 {
+  gap: var(--space-6);
+}
+
+/* 24px */
+.spacing-8 {
+  gap: var(--space-8);
+}
+
+/* 32px */
+
+/* Padding utilities */
+.p-base {
+  padding: var(--space-6);
+}
+
+/* 24px - 基本カードpadding */
+.p-compact {
+  padding: var(--space-4);
+}
+
+/* 16px - コンパクト要素 */
+.p-spacious {
+  padding: var(--space-8);
+}
+
+/* 32px - 余裕のある要素 */
 
 /* ═══════════════════════════════════════════════════════════════════════════
    M3 Surface & Elevation Classes

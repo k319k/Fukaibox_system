@@ -43,7 +43,7 @@
 
 - **AI**: OpenRouter (GLM-4.6V-Flash, Qwen3)
 - **認証**: Discord OAuth
-- **ストレージ**: Vercel Blob Storage（予定）
+- **ストレージ**: Cloudflare R2
 
 ## プロジェクト構造
 
