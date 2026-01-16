@@ -3,8 +3,9 @@
 import { Button, Avatar, Tooltip } from "@heroui/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Home, ChefHat, Book, Wrench, Settings } from "lucide-react";
+import { Home, ChefHat, Book, Wrench, Settings, Menu, X } from "lucide-react";
 
 const navigation = [
     { name: "ホーム", href: "/", icon: Home },
@@ -25,6 +26,7 @@ interface SidebarProps {
 
 export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProps) {
     const pathname = usePathname();
+    const [isOpen, setIsOpen] = useState(false);
     const isLoggedIn = !!userName;
     const displayName = userName || "ゲスト";
     const roleLabel = {
@@ -41,30 +43,58 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
         guest: "badge-guest",
     }[userRole] || "badge-guest";
 
-    return (
-        <aside className="fixed left-0 top-0 h-screen w-64 flex flex-col z-50 bg-[var(--md-sys-color-sidebar)] border-r border-[var(--md-sys-color-outline-variant)]/15">
+    // Close sidebar on route change
+    useEffect(() => {
+        setIsOpen(false);
+    }, [pathname]);
+
+    // Prevent body scroll when sidebar is open on mobile
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isOpen]);
+
+    const SidebarContent = () => (
+        <>
             {/* ロゴ - M3 Headline Style */}
-            <div className="p-6 flex items-center gap-4">
-                <div className="w-12 h-12 bg-[var(--md-sys-color-primary-container)] rounded-2xl flex items-center justify-center">
-                    <span className="text-xl font-extrabold text-[var(--md-sys-color-on-primary-container)] tracking-tight">封</span>
+            <div className="p-5 md:p-6 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 md:gap-4">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-[var(--md-sys-color-primary-container)] rounded-xl md:rounded-2xl flex items-center justify-center">
+                        <span className="text-lg md:text-xl font-extrabold text-[var(--md-sys-color-on-primary-container)] tracking-tight">封</span>
+                    </div>
+                    <div>
+                        <span className="text-lg md:headline-small block tracking-tight font-extrabold text-[var(--md-sys-color-on-surface)]">封解Box</span>
+                    </div>
                 </div>
-                <div>
-                    <span className="headline-small block tracking-tight font-extrabold text-[var(--md-sys-color-on-surface)]">封解Box</span>
-                </div>
+                {/* Close button - Mobile only */}
+                <Button
+                    isIconOnly
+                    variant="light"
+                    className="md:hidden rounded-full"
+                    onPress={() => setIsOpen(false)}
+                >
+                    <X strokeWidth={1.5} className="w-5 h-5" />
+                </Button>
             </div>
 
             {/* メインナビゲーション */}
-            <nav className="flex-1 px-4 py-6 space-y-1">
+            <nav className="flex-1 px-3 md:px-4 py-4 md:py-6 space-y-1">
                 {navigation.map((item) => {
                     const isActive = pathname === item.href;
                     return (
                         <Link key={item.name} href={item.href} className="group relative block">
                             <Button
                                 variant="light"
-                                className="w-full justify-start gap-4 h-14 rounded-full relative overflow-hidden"
+                                className="w-full justify-start gap-3 md:gap-4 h-12 md:h-14 rounded-full relative overflow-hidden"
                                 aria-current={isActive ? "page" : undefined}
                             >
-                                <div className="relative z-10 flex items-center gap-4">
+                                <div className="relative z-10 flex items-center gap-3 md:gap-4">
                                     <item.icon
                                         strokeWidth={1.5}
                                         className={`w-5 h-5 transition-colors duration-200 ${isActive ? "text-[var(--md-sys-color-on-primary-container)]" : "text-[var(--md-sys-color-on-surface-variant)] group-hover:text-[var(--md-sys-color-primary)]"}`}
@@ -74,7 +104,7 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
                                     </span>
                                 </div>
 
-                                {/* Active Background - M3 Primary Container (NOT solid Primary) */}
+                                {/* Active Background - M3 Primary Container */}
                                 {isActive && (
                                     <div className="absolute inset-0 bg-[var(--md-sys-color-primary-container)] z-0 rounded-full" />
                                 )}
@@ -90,17 +120,17 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
             </nav>
 
             {/* 下部ナビゲーション */}
-            <div className="px-4 pb-4 space-y-1">
+            <div className="px-3 md:px-4 pb-3 md:pb-4 space-y-1">
                 {bottomNavigation.map((item) => {
                     const isActive = pathname === item.href;
                     return (
                         <Link key={item.name} href={item.href} className="group relative block">
                             <Button
                                 variant="light"
-                                className="w-full justify-start gap-4 h-14 rounded-full relative overflow-hidden"
+                                className="w-full justify-start gap-3 md:gap-4 h-12 md:h-14 rounded-full relative overflow-hidden"
                                 aria-current={isActive ? "page" : undefined}
                             >
-                                <div className="relative z-10 flex items-center gap-4">
+                                <div className="relative z-10 flex items-center gap-3 md:gap-4">
                                     <item.icon
                                         strokeWidth={1.5}
                                         className={`w-5 h-5 transition-colors duration-200 ${isActive ? "text-[var(--md-sys-color-on-primary-container)]" : "text-[var(--md-sys-color-on-surface-variant)] group-hover:text-[var(--md-sys-color-primary)]"}`}
@@ -124,9 +154,9 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
             </div>
 
             {/* ユーザー情報 - M3 Surface Container */}
-            <div className="px-4 pb-6">
+            <div className="px-3 md:px-4 pb-4 md:pb-6">
                 <Tooltip content="プロフィール">
-                    <div className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--md-sys-color-surface-container)]/80 hover:bg-[var(--md-sys-color-surface-container-high)] cursor-pointer transition-all duration-200">
+                    <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl bg-[var(--md-sys-color-surface-container)]/80 hover:bg-[var(--md-sys-color-surface-container-high)] cursor-pointer transition-all duration-200">
                         <Avatar
                             size="md"
                             name={displayName[0]}
@@ -146,6 +176,37 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
                     </div>
                 </Tooltip>
             </div>
-        </aside>
+        </>
+    );
+
+    return (
+        <>
+            {/* Hamburger Menu Button - Mobile Only */}
+            <Button
+                isIconOnly
+                variant="light"
+                className="fixed top-4 left-4 z-50 md:hidden rounded-full bg-[var(--md-sys-color-surface-container-lowest)] shadow-sm"
+                onPress={() => setIsOpen(true)}
+            >
+                <Menu strokeWidth={1.5} className="w-5 h-5" />
+            </Button>
+
+            {/* Mobile Overlay */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 md:hidden"
+                    onClick={() => setIsOpen(false)}
+                />
+            )}
+
+            {/* Sidebar - Desktop: Always visible, Mobile: Drawer */}
+            <aside className={cn(
+                "fixed left-0 top-0 h-screen h-dvh w-72 md:w-64 flex flex-col z-50 bg-[var(--md-sys-color-sidebar)] border-r border-[var(--md-sys-color-outline-variant)]/15 transition-transform duration-300 ease-out",
+                // Mobile: slide in/out
+                isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+            )}>
+                <SidebarContent />
+            </aside>
+        </>
     );
 }
