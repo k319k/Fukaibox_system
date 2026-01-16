@@ -123,6 +123,11 @@ export default function KitchenDetailClient({
     // 儀長かどうか
     const isGicho = userRole === "gicho";
 
+    // 画像アップロードエリアクリック
+    const handleImageUploadClick = () => {
+        fileInputRef.current?.click();
+    };
+
     // セクション追加ハンドラー
     const handleAddSection = async () => {
         setIsSubmitting(true);
