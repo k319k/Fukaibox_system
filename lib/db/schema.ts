@@ -106,6 +106,7 @@ export const cookingProjects = sqliteTable("cooking_projects", {
     status: text("status").$type<CookingStatus>().notNull().default("cooking"),
     createdBy: text("created_by")
         .notNull()
+        .default("anonymous")
         .references(() => users.id),
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
