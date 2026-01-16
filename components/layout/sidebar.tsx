@@ -42,7 +42,7 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
     }[userRole] || "badge-guest";
 
     return (
-        <aside className="fixed left-0 top-0 h-screen w-64 flex flex-col z-50 bg-[var(--md-sys-color-surface)] border-r border-[var(--md-sys-color-outline-variant)]/20">
+        <aside className="fixed left-0 top-0 h-screen w-64 flex flex-col z-50 bg-[var(--md-sys-color-sidebar)] border-r border-[var(--md-sys-color-outline-variant)]/15">
             {/* ロゴ - M3 Headline Style */}
             <div className="p-6 flex items-center gap-4">
                 <div className="w-12 h-12 bg-[var(--md-sys-color-primary-container)] rounded-2xl flex items-center justify-center">
