@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Chip } from "@heroui/react";
+import { Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Chip, User, Badge } from "@heroui/react";
 import { signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
@@ -84,9 +84,9 @@ export function Header({ user }: HeaderProps) {
                                             {/* Dummy for alignment */}
                                         </Badge>
                                         <div className={`px-3 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider ${user.role === 'gicho' ? 'bg-[#40000A] text-[#FFDAD9] border border-[#FFB4AB]/30' :
-                                                user.role === 'meiyo_giin' ? 'bg-[#1E1B16] text-[#E8E2D9] border border-[#D1C6B5]/30' :
-                                                    user.role === 'giin' ? 'bg-[#001F25] text-[#A6EEFF] border border-[#4FD8EB]/30' :
-                                                        'bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]'
+                                            user.role === 'meiyo_giin' ? 'bg-[#1E1B16] text-[#E8E2D9] border border-[#D1C6B5]/30' :
+                                                user.role === 'giin' ? 'bg-[#001F25] text-[#A6EEFF] border border-[#4FD8EB]/30' :
+                                                    'bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]'
                                             }`}>
                                             {user.role}
                                         </div>
