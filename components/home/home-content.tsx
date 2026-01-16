@@ -19,7 +19,7 @@ export function HomeContent({ latestStream, shorts }: HomeContentProps) {
             {/* Quick Actions Grid - M3 Tonal Surface Hierarchy */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {[
-                    { label: "料理をする", href: "/kitchen", icon: ChefHat, color: "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]" },
+                    { label: "料理をする", href: "/cooking", icon: ChefHat, color: "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]" },
                     { label: "保管庫を見る", href: "/storage", icon: Package, color: "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]" },
                     { label: "道具を使う", href: "/tools", icon: Wrench, color: "bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]" },
                     { label: "設定", href: "/settings", icon: Settings, color: "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)]" },

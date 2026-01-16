@@ -268,7 +268,7 @@ export default function KitchenDetailClient({
             {/* ヘッダー */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <Link href="/kitchen" className="label-large text-[var(--md-sys-color-primary)] hover:underline mb-3 inline-block transition-colors">
+                    <Link href="/cooking" className="label-large text-[var(--md-sys-color-primary)] hover:underline mb-3 inline-block transition-colors">
                         ← 台所に戻る
                     </Link>
                     <h1 className="headline-large">{project.title}</h1>

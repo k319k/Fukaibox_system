@@ -9,7 +9,7 @@ import { Home, ChefHat, Book, Wrench, Settings, Menu, X } from "lucide-react";
 
 const navigation = [
     { name: "ホーム", href: "/", icon: Home },
-    { name: "台所", href: "/kitchen", icon: ChefHat },
+    { name: "台所", href: "/cooking", icon: ChefHat },
     { name: "界域百科事典", href: "/dictionary", icon: Book },
     { name: "封解Box Tools", href: "/tools", icon: Wrench },
 ];

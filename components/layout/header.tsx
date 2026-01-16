@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 // ページタイトルのマッピング
 const pageTitles: Record<string, string> = {
     "/": "ホーム",
-    "/kitchen": "台所",
+    "/cooking": "台所",
     "/dictionary": "界域百科事典",
     "/tools": "封解Box Tools",
     "/settings": "設定",

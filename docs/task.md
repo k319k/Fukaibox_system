@@ -76,6 +76,12 @@
 
 ## Phase 5: 封解Box Tools
 
+    - [/] **Refactoring**: Rename /kitchen to /cooking (Redirect Fix)
+      - [x] Verify redirect issue (app-specific)
+      - [x] Test alternative route (/test-kitchen works)
+      - [/] Move files and update references
+    - [ ] Deploy and verify Phase 2-A featuresManager
+
 - [ ] App登録機能
 - [ ] Tools工房
   - [ ] AIによるApp作成

@@ -42,7 +42,7 @@ export default function KitchenPage() {
                         進行中の調理プロジェクトを管理します
                     </p>
                 </div>
-                <Link href="/kitchen/new">
+                <Link href="/cooking/new">
                     <Button
                         className="bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md px-6 shape-full font-semibold"
                         startContent={<span className="text-xl">+</span>}
@@ -66,7 +66,7 @@ export default function KitchenPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {projects.map((project) => (
-                        <Link href={`/kitchen/${project.id}`} key={project.id}>
+                        <Link href={`/cooking/${project.id}`} key={project.id}>
                             <Card className="card-elevated h-full group hover:shadow-[var(--md-sys-elevation-3)] hover:-translate-y-1 transition-all duration-300">
                                 <CardHeader className="flex justify-between items-start px-6 pt-6 pb-2">
                                     <div className="flex flex-col gap-1">

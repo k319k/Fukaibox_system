@@ -26,7 +26,7 @@ export default function NewKitchenPage() {
             const project = await createCookingProject(title, description);
 
             if (project) {
-                router.push(`/kitchen/${project.id}`);
+                router.push(`/cooking/${project.id}`);
             } else {
                 setError("プロジェクトの作成に失敗しました");
             }
