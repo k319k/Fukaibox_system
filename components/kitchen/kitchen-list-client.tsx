@@ -97,13 +97,14 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
             {/* ヘッダー */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-foreground">炊事場</h1>
+                    <h1 className="text-3xl font-bold" style={{ color: 'var(--md-sys-color-primary)' }}>炊事場</h1>
                     <p className="text-foreground-muted mt-1">ショート動画制作プロジェクトを管理します</p>
                 </div>
                 {isGicho && (
                     <Button
                         color="primary"
-                        variant="shadow"
+                        variant="solid"
+                        radius="lg"
                         startContent={<Icon icon="mdi:plus" className="text-xl" />}
                         onPress={onOpen}
                     >
@@ -114,13 +115,14 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
 
             {/* プロジェクト一覧 */}
             {projects.length === 0 ? (
-                <Card className="card-gradient">
+                <Card className="card-elevated">
                     <CardBody className="text-center py-12">
                         <Icon icon="mdi:pot-steam-outline" className="text-6xl text-foreground-muted mx-auto mb-4" />
                         <p className="text-foreground-muted">まだプロジェクトがありません</p>
                         {isGicho && (
                             <Button
                                 color="primary"
+                                radius="lg"
                                 className="mt-4"
                                 onPress={onOpen}
                             >
@@ -136,7 +138,7 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                             key={project.id}
                             isPressable
                             onPress={() => router.push(`/cooking/${project.id}`)}
-                            className="card-gradient hover:scale-[1.02] transition-transform"
+                            className="card-elevated hover:scale-[1.02] transition-transform"
                         >
                             <CardHeader className="flex justify-between items-start">
                                 <div className="flex-1">
@@ -242,6 +244,7 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                     <ModalFooter className="pt-2">
                         <Button
                             variant="light"
+                            radius="lg"
                             onPress={handleClose}
                             isDisabled={isLoading}
                         >
@@ -249,6 +252,7 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                         </Button>
                         <Button
                             color="primary"
+                            radius="lg"
                             onPress={handleCreate}
                             isLoading={isLoading}
                             startContent={!isLoading && <Icon icon="mdi:plus" />}

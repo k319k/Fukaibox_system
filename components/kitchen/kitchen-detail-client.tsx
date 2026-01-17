@@ -3,7 +3,7 @@
 import {
     Card, CardBody, CardHeader, Button, Tabs, Tab, Chip,
     useDisclosure, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
-    Textarea, Divider, Image, Progress, Spinner, Checkbox
+    Textarea, Divider, Progress, Spinner, Checkbox
 } from "@heroui/react";
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -304,13 +304,14 @@ export default function KitchenDetailClient({
                     <Button
                         variant="light"
                         size="sm"
+                        radius="lg"
                         onPress={() => router.push('/cooking')}
                         startContent={<Icon icon="mdi:arrow-left" />}
                         className="mb-3"
                     >
                         一覧に戻る
                     </Button>
-                    <h1 className="text-2xl md:text-3xl font-bold">{project.title}</h1>
+                    <h1 className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--md-sys-color-primary)' }}>{project.title}</h1>
                     {project.description && (
                         <p className="text-foreground-muted mt-1 text-sm md:text-base">{project.description}</p>
                     )}
@@ -326,7 +327,7 @@ export default function KitchenDetailClient({
             </div>
 
             {/* タブ */}
-            <Card className="card-gradient">
+            <Card className="card-elevated">
                 <CardBody className="p-0 md:p-2">
                     <Tabs
                         selectedKey={selectedTab}
@@ -396,6 +397,7 @@ export default function KitchenDetailClient({
                                                     <Button
                                                         color="primary"
                                                         size="lg"
+                                                        radius="lg"
                                                         onPress={handleCreateSections}
                                                         isLoading={isCreatingSections}
                                                         startContent={!isCreatingSections && <Icon icon="mdi:content-cut" />}
@@ -416,7 +418,7 @@ export default function KitchenDetailClient({
                                     // セクションがある場合: セクション一覧
                                     sections.map((section, index) => (
                                         <div key={section.id}>
-                                            <Card className="bg-default-50">
+                                            <Card className="card-elevated">
                                                 <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 pb-2">
                                                     <div className="flex flex-wrap items-center gap-2">
                                                         <Chip size="sm" color="primary" variant="flat">
@@ -436,6 +438,7 @@ export default function KitchenDetailClient({
                                                                 size="sm"
                                                                 color="primary"
                                                                 variant="flat"
+                                                                radius="lg"
                                                                 startContent={<Icon icon="mdi:pencil" />}
                                                                 onPress={() => handleEditSection(section)}
                                                             >
@@ -446,6 +449,7 @@ export default function KitchenDetailClient({
                                                                 size="sm"
                                                                 color="secondary"
                                                                 variant="flat"
+                                                                radius="lg"
                                                                 startContent={<Icon icon="mdi:comment-text-outline" />}
                                                                 onPress={() => handleOpenProposal(section)}
                                                             >
@@ -485,6 +489,7 @@ export default function KitchenDetailClient({
                                                             <Button
                                                                 size="sm"
                                                                 color="success"
+                                                                radius="lg"
                                                                 startContent={<Icon icon="mdi:check" />}
                                                                 onPress={() => handleApproveProposal(proposal.id)}
                                                             >
@@ -494,6 +499,7 @@ export default function KitchenDetailClient({
                                                                 size="sm"
                                                                 color="danger"
                                                                 variant="flat"
+                                                                radius="lg"
                                                                 startContent={<Icon icon="mdi:close" />}
                                                                 onPress={() => handleRejectProposal(proposal.id)}
                                                             >
@@ -535,7 +541,7 @@ export default function KitchenDetailClient({
                                         const originalIndex = sections.indexOf(section);
 
                                         return (
-                                            <Card key={section.id} className="bg-default-50">
+                                            <Card key={section.id} className="card-elevated">
                                                 <CardHeader className="pb-2">
                                                     <Chip size="sm" color="primary" variant="flat">
                                                         セクション {originalIndex + 1}
@@ -641,7 +647,7 @@ export default function KitchenDetailClient({
                                     sections.map((section, index) => {
                                         const sectionImages = images.filter(img => img.sectionId === section.id);
                                         return (
-                                            <Card key={section.id} className="bg-default-50">
+                                            <Card key={section.id} className="card-elevated">
                                                 <CardHeader className="pb-2">
                                                     <Chip size="sm" color="primary" variant="flat">
                                                         セクション {index + 1}
@@ -702,7 +708,7 @@ export default function KitchenDetailClient({
                         >
                             <div className="p-4 md:p-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Card className="bg-default-50">
+                                    <Card className="card-elevated">
                                         <CardBody className="space-y-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="p-3 bg-primary/10 rounded-lg">
@@ -715,6 +721,7 @@ export default function KitchenDetailClient({
                                             </div>
                                             <Button
                                                 color="primary"
+                                                radius="lg"
                                                 className="w-full"
                                                 startContent={<Icon icon="mdi:download" />}
                                                 onPress={handleDownloadScript}
@@ -725,7 +732,7 @@ export default function KitchenDetailClient({
                                         </CardBody>
                                     </Card>
 
-                                    <Card className="bg-default-50">
+                                    <Card className="card-elevated">
                                         <CardBody className="space-y-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="p-3 bg-secondary/10 rounded-lg">
@@ -740,6 +747,7 @@ export default function KitchenDetailClient({
                                             </div>
                                             <Button
                                                 color="secondary"
+                                                radius="lg"
                                                 className="w-full"
                                                 startContent={<Icon icon="mdi:download" />}
                                                 onPress={handleDownloadImagesZip}
@@ -805,11 +813,12 @@ export default function KitchenDetailClient({
                         </div>
                     </ModalBody>
                     <ModalFooter>
-                        <Button variant="light" onPress={onEditClose} isDisabled={isSaving}>
+                        <Button variant="light" radius="lg" onPress={onEditClose} isDisabled={isSaving}>
                             キャンセル
                         </Button>
                         <Button
                             color="primary"
+                            radius="lg"
                             onPress={handleSaveEdit}
                             isLoading={isSaving}
                             startContent={!isSaving && <Icon icon="mdi:check" />}
@@ -857,11 +866,12 @@ export default function KitchenDetailClient({
                         />
                     </ModalBody>
                     <ModalFooter>
-                        <Button variant="light" onPress={onProposalClose}>
+                        <Button variant="light" radius="lg" onPress={onProposalClose}>
                             キャンセル
                         </Button>
                         <Button
                             color="primary"
+                            radius="lg"
                             onPress={handleSubmitProposal}
                             startContent={<Icon icon="mdi:send" />}
                         >
