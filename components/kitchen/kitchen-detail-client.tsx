@@ -607,7 +607,8 @@ export default function KitchenDetailClient({
                                                                         src={img.imageUrl}
                                                                         alt="uploaded"
                                                                         className="w-full h-24 md:h-32 object-cover rounded-lg"
-                                                                        disableAnimation
+                                                                        loading="eager"
+                                                                        radius="lg"
                                                                     />
                                                                 </div>
                                                             ))}
@@ -667,7 +668,8 @@ export default function KitchenDetailClient({
                                                                         src={img.imageUrl}
                                                                         alt="section image"
                                                                         className="w-full h-24 md:h-32 object-cover"
-                                                                        disableAnimation
+                                                                        loading="eager"
+                                                                        radius="lg"
                                                                     />
                                                                     {img.isSelected && (
                                                                         <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1.5">
