@@ -59,8 +59,16 @@ export async function deleteImage(key: string) {
  */
 export function getPublicUrl(key: string) {
     if (!R2_PUBLIC_URL) return key; // フォールバック
-    // 末尾のスラッシュ処理などは簡易的に
-    const baseUrl = R2_PUBLIC_URL.endsWith("/") ? R2_PUBLIC_URL : `${R2_PUBLIC_URL}/`;
+
+    // R2_PUBLIC_URLにプロトコルがない場合はhttps://を付与
+    let baseUrl = R2_PUBLIC_URL;
+    if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+        baseUrl = `https://${baseUrl}`;
+    }
+
+    // 末尾のスラッシュ処理
+    baseUrl = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+
     // keyの先頭スラッシュを削除
     const cleanKey = key.startsWith("/") ? key.slice(1) : key;
     return `${baseUrl}${cleanKey}`;
