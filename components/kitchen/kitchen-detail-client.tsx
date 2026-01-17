@@ -5,7 +5,7 @@ import {
     useDisclosure, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
     Textarea, Divider, Image, Progress, Spinner, Checkbox
 } from "@heroui/react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
 import {
@@ -20,7 +20,8 @@ import {
     updateImageSelection,
     getProjectScript,
     getSelectedImages,
-    getCookingSections
+    getCookingSections,
+    setProjectScript
 } from "@/app/actions/kitchen";
 import JSZip from "jszip";
 
@@ -81,6 +82,10 @@ export default function KitchenDetailClient({
     const [images, setImages] = useState<UploadedImage[]>([]);
     const [proposals, setProposals] = useState<Proposal[]>([]);
 
+    // 台本入力（セクションがない場合用）
+    const [fullScript, setFullScript] = useState("");
+    const [isCreatingSections, setIsCreatingSections] = useState(false);
+
     // 編集モーダル
     const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
     const [editingSection, setEditingSection] = useState<Section | null>(null);
@@ -99,6 +104,15 @@ export default function KitchenDetailClient({
     const [uploadProgress, setUploadProgress] = useState(0);
 
     const isGicho = userRole === "gicho";
+
+    // セクション数プレビュー
+    const sectionPreviewCount = useMemo(() => {
+        if (!fullScript.trim()) return 0;
+        return fullScript
+            .split(/\n\n+|\r\n\r\n+/)
+            .map(s => s.trim())
+            .filter(s => s.length > 0).length;
+    }, [fullScript]);
 
     // 画像一覧を読み込み
     useEffect(() => {
@@ -121,6 +135,23 @@ export default function KitchenDetailClient({
     const reloadSections = async () => {
         const updated = await getCookingSections(project.id);
         setSections(updated);
+    };
+
+    // 台本からセクションを作成
+    const handleCreateSections = async () => {
+        if (!fullScript.trim()) return;
+
+        setIsCreatingSections(true);
+        try {
+            await setProjectScript(project.id, fullScript);
+            await reloadSections();
+            setFullScript("");
+        } catch (error) {
+            console.error("Failed to create sections:", error);
+            alert("セクションの作成に失敗しました");
+        } finally {
+            setIsCreatingSections(false);
+        }
     };
 
     // セクション編集を開く
@@ -320,12 +351,69 @@ export default function KitchenDetailClient({
                             }
                         >
                             <div className="p-4 md:p-6 space-y-4">
-                                {sections.length === 0 ? (
+                                {/* セクションがない場合: 台本入力エリア */}
+                                {sections.length === 0 && isGicho ? (
+                                    <div className="space-y-4">
+                                        <div className="bg-primary/5 border border-primary/20 rounded-xl p-6">
+                                            <div className="flex items-start gap-3 mb-4">
+                                                <div className="p-2 bg-primary/10 rounded-lg">
+                                                    <Icon icon="mdi:script-text-outline" className="text-2xl text-primary" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-bold text-lg">台本を入力</h3>
+                                                    <p className="text-sm text-foreground-muted">
+                                                        台本全体を下に入力してください。改行を2回入れると、自動でセクションに分割されます。
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <Textarea
+                                                placeholder={"セクション1の内容を入力\n\n（↑改行2回でセクション分割↓）\n\nセクション2の内容を入力\n\n（↑改行2回でセクション分割↓）\n\nセクション3の内容を入力"}
+                                                variant="bordered"
+                                                value={fullScript}
+                                                onValueChange={setFullScript}
+                                                isDisabled={isCreatingSections}
+                                                minRows={12}
+                                                classNames={{
+                                                    input: "font-mono text-sm",
+                                                    inputWrapper: "bg-white dark:bg-default-100",
+                                                }}
+                                            />
+
+                                            {fullScript.trim() && (
+                                                <div className="flex items-center justify-between mt-4 p-4 bg-primary/10 rounded-lg">
+                                                    <div className="flex items-center gap-3">
+                                                        <Icon icon="mdi:format-list-numbered" className="text-2xl text-primary" />
+                                                        <div>
+                                                            <p className="font-bold text-primary text-lg">
+                                                                {sectionPreviewCount} セクション
+                                                            </p>
+                                                            <p className="text-xs text-foreground-muted">
+                                                                に自動分割されます
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <Button
+                                                        color="primary"
+                                                        size="lg"
+                                                        onPress={handleCreateSections}
+                                                        isLoading={isCreatingSections}
+                                                        startContent={!isCreatingSections && <Icon icon="mdi:content-cut" />}
+                                                    >
+                                                        セクション分割して保存
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ) : sections.length === 0 ? (
                                     <div className="text-center py-12">
                                         <Icon icon="mdi:file-document-outline" className="text-5xl text-foreground-muted mx-auto mb-4" />
                                         <p className="text-foreground-muted">セクションがありません</p>
+                                        <p className="text-sm text-foreground-muted mt-1">儀長が台本を入力するまでお待ちください</p>
                                     </div>
                                 ) : (
+                                    // セクションがある場合: セクション一覧
                                     sections.map((section, index) => (
                                         <div key={section.id}>
                                             <Card className="bg-default-50">
@@ -435,7 +523,11 @@ export default function KitchenDetailClient({
                                 {sections.filter(s => s.allowImageSubmission ?? true).length === 0 ? (
                                     <div className="text-center py-12">
                                         <Icon icon="mdi:image-off" className="text-5xl text-foreground-muted mx-auto mb-4" />
-                                        <p className="text-foreground-muted">画像提出が許可されているセクションがありません</p>
+                                        <p className="text-foreground-muted">
+                                            {sections.length === 0
+                                                ? "まずは調理タブで台本を入力してください"
+                                                : "画像提出が許可されているセクションがありません"}
+                                        </p>
                                     </div>
                                 ) : (
                                     sections.filter(s => s.allowImageSubmission ?? true).map((section) => {
@@ -481,8 +573,8 @@ export default function KitchenDetailClient({
                                                         />
                                                         <label htmlFor={`file-input-${section.id}`}>
                                                             <div className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${uploadingSection === section.id
-                                                                    ? 'border-primary bg-primary/5'
-                                                                    : 'border-default-300 hover:border-primary hover:bg-primary/5'
+                                                                ? 'border-primary bg-primary/5'
+                                                                : 'border-default-300 hover:border-primary hover:bg-primary/5'
                                                                 }`}>
                                                                 {uploadingSection === section.id ? (
                                                                     <div className="space-y-3">
@@ -539,53 +631,60 @@ export default function KitchenDetailClient({
                             }
                         >
                             <div className="p-4 md:p-6 space-y-6">
-                                {sections.map((section, index) => {
-                                    const sectionImages = images.filter(img => img.sectionId === section.id);
-                                    return (
-                                        <Card key={section.id} className="bg-default-50">
-                                            <CardHeader className="pb-2">
-                                                <Chip size="sm" color="primary" variant="flat">
-                                                    セクション {index + 1}
-                                                </Chip>
-                                            </CardHeader>
-                                            <CardBody className="space-y-4">
-                                                <div className="text-sm text-foreground-muted line-clamp-2">
-                                                    {section.content}
-                                                </div>
+                                {sections.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <Icon icon="mdi:image-off" className="text-5xl text-foreground-muted mx-auto mb-4" />
+                                        <p className="text-foreground-muted">まずは調理タブで台本を入力してください</p>
+                                    </div>
+                                ) : (
+                                    sections.map((section, index) => {
+                                        const sectionImages = images.filter(img => img.sectionId === section.id);
+                                        return (
+                                            <Card key={section.id} className="bg-default-50">
+                                                <CardHeader className="pb-2">
+                                                    <Chip size="sm" color="primary" variant="flat">
+                                                        セクション {index + 1}
+                                                    </Chip>
+                                                </CardHeader>
+                                                <CardBody className="space-y-4">
+                                                    <div className="text-sm text-foreground-muted line-clamp-2">
+                                                        {section.content}
+                                                    </div>
 
-                                                {sectionImages.length > 0 ? (
-                                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                                        {sectionImages.map((img) => (
-                                                            <div
-                                                                key={img.id}
-                                                                className={`relative cursor-pointer rounded-lg overflow-hidden transition-all ${img.isSelected
+                                                    {sectionImages.length > 0 ? (
+                                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                                            {sectionImages.map((img) => (
+                                                                <div
+                                                                    key={img.id}
+                                                                    className={`relative cursor-pointer rounded-lg overflow-hidden transition-all ${img.isSelected
                                                                         ? 'ring-4 ring-primary ring-offset-2'
                                                                         : 'hover:ring-2 hover:ring-default-300'
-                                                                    }`}
-                                                                onClick={() => handleToggleImageSelection(img.id, section.id)}
-                                                            >
-                                                                <Image
-                                                                    src={img.imageUrl}
-                                                                    alt="section image"
-                                                                    className="w-full h-24 md:h-32 object-cover"
-                                                                />
-                                                                {img.isSelected && (
-                                                                    <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1.5">
-                                                                        <Icon icon="mdi:check" className="text-sm" />
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <p className="text-sm text-foreground-muted text-center py-4">
-                                                        まだ画像がアップロードされていません
-                                                    </p>
-                                                )}
-                                            </CardBody>
-                                        </Card>
-                                    );
-                                })}
+                                                                        }`}
+                                                                    onClick={() => handleToggleImageSelection(img.id, section.id)}
+                                                                >
+                                                                    <Image
+                                                                        src={img.imageUrl}
+                                                                        alt="section image"
+                                                                        className="w-full h-24 md:h-32 object-cover"
+                                                                    />
+                                                                    {img.isSelected && (
+                                                                        <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1.5">
+                                                                            <Icon icon="mdi:check" className="text-sm" />
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-sm text-foreground-muted text-center py-4">
+                                                            まだ画像がアップロードされていません
+                                                        </p>
+                                                    )}
+                                                </CardBody>
+                                            </Card>
+                                        );
+                                    })
+                                )}
                             </div>
                         </Tab>
 
@@ -617,6 +716,7 @@ export default function KitchenDetailClient({
                                                 className="w-full"
                                                 startContent={<Icon icon="mdi:download" />}
                                                 onPress={handleDownloadScript}
+                                                isDisabled={sections.length === 0}
                                             >
                                                 ダウンロード (.txt)
                                             </Button>
@@ -655,7 +755,17 @@ export default function KitchenDetailClient({
             </Card>
 
             {/* セクション編集モーダル */}
-            <Modal isOpen={isEditOpen} onClose={onEditClose} size="3xl" scrollBehavior="inside">
+            <Modal
+                isOpen={isEditOpen}
+                onClose={onEditClose}
+                size="3xl"
+                scrollBehavior="inside"
+                backdrop="blur"
+                classNames={{
+                    backdrop: "bg-gradient-to-br from-primary/10 via-background/80 to-secondary/10 backdrop-blur-md",
+                    base: "border border-default-200 bg-background/95 shadow-2xl",
+                }}
+            >
                 <ModalContent>
                     <ModalHeader className="flex items-center gap-2">
                         <Icon icon="mdi:pencil" className="text-primary" />
@@ -709,7 +819,17 @@ export default function KitchenDetailClient({
             </Modal>
 
             {/* 推敲提案モーダル */}
-            <Modal isOpen={isProposalOpen} onClose={onProposalClose} size="3xl" scrollBehavior="inside">
+            <Modal
+                isOpen={isProposalOpen}
+                onClose={onProposalClose}
+                size="3xl"
+                scrollBehavior="inside"
+                backdrop="blur"
+                classNames={{
+                    backdrop: "bg-gradient-to-br from-warning/10 via-background/80 to-secondary/10 backdrop-blur-md",
+                    base: "border border-default-200 bg-background/95 shadow-2xl",
+                }}
+            >
                 <ModalContent>
                     <ModalHeader className="flex items-center gap-2">
                         <Icon icon="mdi:lightbulb-outline" className="text-warning" />

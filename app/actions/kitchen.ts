@@ -101,6 +101,49 @@ export async function createCookingProject(title: string, description?: string) 
 }
 
 /**
+ * 既存プロジェクトに台本を設定し、セクションを一括作成
+ * 既存のセクションがあれば削除して上書き
+ */
+export async function setProjectScript(projectId: string, fullScript: string) {
+    const session = await getSession();
+    if (!session?.user) {
+        throw new Error("認証が必要です");
+    }
+
+    console.log("[setProjectScript] Request:", { projectId, scriptLength: fullScript.length });
+
+    // 既存のセクションを削除
+    await db.delete(cookingSections).where(eq(cookingSections.projectId, projectId));
+
+    // 改行*2で分割
+    const sections = fullScript
+        .split(/\n\n+|\r\n\r\n+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+
+    console.log("[setProjectScript] Creating sections:", sections.length);
+
+    // セクション一括作成
+    const createdSections = [];
+    for (let i = 0; i < sections.length; i++) {
+        const newSection = await db.insert(cookingSections).values({
+            id: crypto.randomUUID(),
+            projectId,
+            orderIndex: i,
+            content: sections[i],
+            imageInstruction: "",
+            allowImageSubmission: true,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }).returning();
+        createdSections.push(newSection[0]);
+    }
+
+    console.log("[setProjectScript] Success:", createdSections.length);
+    return createdSections;
+}
+
+/**
  * 特定の料理プロジェクトを取得
  */
 export async function getCookingProject(projectId: string) {

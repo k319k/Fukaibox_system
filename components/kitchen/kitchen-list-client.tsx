@@ -1,10 +1,10 @@
 "use client";
 
-import { Button, Card, CardBody, CardHeader, Input, Textarea, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Chip, Spinner } from "@heroui/react";
-import { useState, useMemo } from "react";
+import { Button, Card, CardBody, CardHeader, Input, Textarea, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Chip } from "@heroui/react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
-import { createProjectWithScript } from "@/app/actions/kitchen";
+import { createCookingProject } from "@/app/actions/kitchen";
 
 // 型定義
 interface Project {
@@ -26,36 +26,14 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [fullScript, setFullScript] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
-    const [step, setStep] = useState<1 | 2>(1);
 
     const isGicho = userRole === "gicho";
 
-    // セクション数のプレビュー
-    const sectionCount = useMemo(() => {
-        if (!fullScript.trim()) return 0;
-        return fullScript
-            .split(/\n\n+|\r\n\r\n+/)
-            .map(s => s.trim())
-            .filter(s => s.length > 0).length;
-    }, [fullScript]);
-
     const handleCreate = async () => {
-        if (step === 1) {
-            if (!title.trim()) {
-                setError("タイトルを入力してください");
-                return;
-            }
-            setStep(2);
-            setError("");
-            return;
-        }
-
-        // Step 2: 台本入力して作成
-        if (!fullScript.trim()) {
-            setError("台本を入力してください");
+        if (!title.trim()) {
+            setError("タイトルを入力してください");
             return;
         }
 
@@ -63,10 +41,12 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
         setError("");
 
         try {
-            const project = await createProjectWithScript(title, description, fullScript);
+            // タイトルと説明のみでプロジェクト作成
+            const project = await createCookingProject(title, description);
             if (project) {
                 onClose();
                 resetForm();
+                // 調理タブに遷移（ここで台本を入力する）
                 router.push(`/cooking/${project.id}`);
             } else {
                 setError("プロジェクトの作成に失敗しました");
@@ -82,8 +62,6 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
     const resetForm = () => {
         setTitle("");
         setDescription("");
-        setFullScript("");
-        setStep(1);
         setError("");
     };
 
@@ -187,105 +165,81 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                 </div>
             )}
 
-            {/* 新規作成モーダル */}
-            <Modal isOpen={isOpen} onClose={handleClose} size="3xl" scrollBehavior="inside">
+            {/* 新規作成モーダル - タイトルと説明のみ */}
+            <Modal
+                isOpen={isOpen}
+                onClose={handleClose}
+                size="lg"
+                backdrop="blur"
+                classNames={{
+                    backdrop: "bg-gradient-to-br from-primary/20 via-background/80 to-secondary/20 backdrop-blur-md",
+                    base: "border border-default-200 bg-background/95 shadow-2xl",
+                }}
+            >
                 <ModalContent>
-                    <ModalHeader className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                            <Icon icon="mdi:pot-steam" className="text-2xl text-primary" />
-                            <span>新しい料理を作る</span>
-                            <Chip size="sm" variant="flat">
-                                ステップ {step}/2
-                            </Chip>
+                    <ModalHeader className="flex flex-col gap-1 pb-2">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-primary/10 rounded-lg">
+                                <Icon icon="mdi:pot-steam" className="text-2xl text-primary" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold">新しい料理を作る</h2>
+                                <p className="text-sm text-foreground-muted font-normal">
+                                    台本は作成後に調理タブで入力できます
+                                </p>
+                            </div>
                         </div>
-                        <p className="text-sm text-foreground-muted font-normal">
-                            {step === 1
-                                ? "プロジェクトの基本情報を入力してください"
-                                : "台本を入力してください（改行2回でセクション分割）"
-                            }
-                        </p>
                     </ModalHeader>
-                    <ModalBody>
+                    <ModalBody className="py-4">
                         {error && (
-                            <div className="bg-danger/10 border border-danger/20 rounded-lg p-3 text-danger text-sm mb-4">
+                            <div className="bg-danger/10 border border-danger/20 rounded-lg p-3 text-danger text-sm flex items-center gap-2">
+                                <Icon icon="mdi:alert-circle" />
                                 {error}
                             </div>
                         )}
 
-                        {step === 1 ? (
-                            <div className="space-y-4">
-                                <Input
-                                    label="タイトル"
-                                    placeholder="例: 封解公儀の新年挨拶"
-                                    variant="bordered"
-                                    value={title}
-                                    onValueChange={setTitle}
-                                    isDisabled={isLoading}
-                                    isRequired
-                                    startContent={<Icon icon="mdi:format-title" className="text-foreground-muted" />}
-                                />
-                                <Textarea
-                                    label="説明（任意）"
-                                    placeholder="このプロジェクトの内容や目的を記載"
-                                    variant="bordered"
-                                    value={description}
-                                    onValueChange={setDescription}
-                                    isDisabled={isLoading}
-                                    minRows={3}
-                                />
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                <div className="bg-default-100 rounded-lg p-4 mb-4">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Icon icon="mdi:information-outline" className="text-primary text-xl" />
-                                        <p className="font-semibold text-sm">台本の入力方法</p>
-                                    </div>
-                                    <p className="text-sm text-foreground-muted">
-                                        改行を2回（Enterキーを2回）入れると、その場所でセクションが分割されます。
-                                        各セクションには後から画像指示や参考画像を追加できます。
+                        <div className="space-y-4">
+                            <Input
+                                label="タイトル"
+                                placeholder="例: 封解公儀の新年挨拶"
+                                variant="bordered"
+                                value={title}
+                                onValueChange={setTitle}
+                                isDisabled={isLoading}
+                                isRequired
+                                startContent={<Icon icon="mdi:format-title" className="text-foreground-muted" />}
+                                classNames={{
+                                    inputWrapper: "bg-default-50",
+                                }}
+                            />
+                            <Textarea
+                                label="説明（任意）"
+                                placeholder="このプロジェクトの内容や目的を記載"
+                                variant="bordered"
+                                value={description}
+                                onValueChange={setDescription}
+                                isDisabled={isLoading}
+                                minRows={3}
+                                classNames={{
+                                    inputWrapper: "bg-default-50",
+                                }}
+                            />
+                        </div>
+
+                        <div className="bg-primary/5 border border-primary/10 rounded-lg p-4 mt-4">
+                            <div className="flex items-start gap-3">
+                                <Icon icon="mdi:information-outline" className="text-primary text-xl mt-0.5" />
+                                <div>
+                                    <p className="font-semibold text-sm text-primary">次のステップ</p>
+                                    <p className="text-sm text-foreground-muted mt-1">
+                                        作成後、調理タブで台本全体を入力してください。
+                                        改行を2回入れると、自動でセクションに分割されます。
                                     </p>
                                 </div>
-
-                                <Textarea
-                                    label="台本全体"
-                                    placeholder={"セクション1の内容を入力\n\n（↑改行2回でセクション分割↓）\n\nセクション2の内容を入力\n\n（↑改行2回でセクション分割↓）\n\nセクション3の内容を入力"}
-                                    variant="bordered"
-                                    value={fullScript}
-                                    onValueChange={setFullScript}
-                                    isDisabled={isLoading}
-                                    minRows={12}
-                                    classNames={{
-                                        input: "font-mono text-sm"
-                                    }}
-                                />
-
-                                {fullScript.trim() && (
-                                    <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg">
-                                        <Icon icon="mdi:format-list-numbered" className="text-2xl text-primary" />
-                                        <div>
-                                            <p className="font-semibold text-primary">
-                                                {sectionCount} セクション
-                                            </p>
-                                            <p className="text-xs text-foreground-muted">
-                                                に自動分割されます
-                                            </p>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
-                        )}
+                        </div>
                     </ModalBody>
-                    <ModalFooter>
-                        {step === 2 && (
-                            <Button
-                                variant="light"
-                                onPress={() => setStep(1)}
-                                isDisabled={isLoading}
-                            >
-                                戻る
-                            </Button>
-                        )}
+                    <ModalFooter className="pt-2">
                         <Button
                             variant="light"
                             onPress={handleClose}
@@ -297,12 +251,9 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                             color="primary"
                             onPress={handleCreate}
                             isLoading={isLoading}
-                            startContent={step === 1
-                                ? <Icon icon="mdi:arrow-right" />
-                                : <Icon icon="mdi:check" />
-                            }
+                            startContent={!isLoading && <Icon icon="mdi:plus" />}
                         >
-                            {step === 1 ? "次へ" : "作成"}
+                            作成
                         </Button>
                     </ModalFooter>
                 </ModalContent>
