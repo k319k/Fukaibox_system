@@ -100,7 +100,7 @@
 
 - [ ] App登録機能
 - [ ] Tools工房
-  - [ ] AIによるApp作成
+  - [ ] AIによるApp作成(E2B Fragmentsを使用)
   - [ ] クレジット管理
 - [ ] Gallery
   - [ ] カテゴリ表示
