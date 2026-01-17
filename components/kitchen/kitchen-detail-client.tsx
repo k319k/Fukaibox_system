@@ -603,12 +603,11 @@ export default function KitchenDetailClient({
                                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                                             {sectionImages.map((img) => (
                                                                 <div key={img.id} className="relative group">
-                                                                    <Image
+                                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                                    <img
                                                                         src={img.imageUrl}
                                                                         alt="uploaded"
                                                                         className="w-full h-24 md:h-32 object-cover rounded-lg"
-                                                                        loading="eager"
-                                                                        radius="lg"
                                                                     />
                                                                 </div>
                                                             ))}
@@ -664,12 +663,11 @@ export default function KitchenDetailClient({
                                                                         }`}
                                                                     onClick={() => handleToggleImageSelection(img.id, section.id)}
                                                                 >
-                                                                    <Image
+                                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                                    <img
                                                                         src={img.imageUrl}
                                                                         alt="section image"
-                                                                        className="w-full h-24 md:h-32 object-cover"
-                                                                        loading="eager"
-                                                                        radius="lg"
+                                                                        className="w-full h-24 md:h-32 object-cover rounded-lg"
                                                                     />
                                                                     {img.isSelected && (
                                                                         <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1.5">
