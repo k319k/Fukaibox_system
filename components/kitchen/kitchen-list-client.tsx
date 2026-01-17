@@ -4,7 +4,7 @@ import { Button, Card, CardBody, CardHeader, Input, Textarea, Modal, ModalConten
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
-import { getCookingProjects, createProjectWithScript } from "@/app/actions/kitchen";
+import { createProjectWithScript } from "@/app/actions/kitchen";
 
 // 型定義
 interface Project {
