@@ -355,59 +355,54 @@ export default function KitchenDetailClient({
                                 {/* セクションがない場合: 台本入力エリア */}
                                 {sections.length === 0 && isGicho ? (
                                     <div className="space-y-4">
-                                        <div className="bg-primary/5 border border-primary/20 rounded-xl p-6">
-                                            <div className="flex items-start gap-3 mb-4">
-                                                <div className="p-2 bg-primary/10 rounded-lg">
-                                                    <Icon icon="mdi:script-text-outline" className="text-2xl text-primary" />
-                                                </div>
-                                                <div>
-                                                    <h3 className="font-bold text-lg">台本を入力</h3>
-                                                    <p className="text-sm text-foreground-muted">
-                                                        台本全体を下に入力してください。改行を2回入れると、自動でセクションに分割されます。
-                                                    </p>
-                                                </div>
+                                        <div className="flex items-center gap-3">
+                                            <Icon icon="mdi:script-text-outline" className="text-2xl text-primary" />
+                                            <div>
+                                                <h3 className="font-bold text-lg">台本を入力</h3>
+                                                <p className="text-sm text-foreground-muted">
+                                                    空行（改行2回）でセクションに分割されます
+                                                </p>
                                             </div>
-
-                                            <Textarea
-                                                placeholder="セクション1の内容...\n\nセクション2の内容...\n\nセクション3の内容..."
-                                                variant="bordered"
-                                                value={fullScript}
-                                                onValueChange={setFullScript}
-                                                isDisabled={isCreatingSections}
-                                                minRows={8}
-                                                radius="lg"
-                                                classNames={{
-                                                    input: "font-mono text-sm leading-relaxed",
-                                                    inputWrapper: "bg-white dark:bg-default-100 border-2",
-                                                }}
-                                            />
-
-                                            {fullScript.trim() && (
-                                                <div className="flex items-center justify-between mt-4 p-4 bg-primary/10 rounded-lg">
-                                                    <div className="flex items-center gap-3">
-                                                        <Icon icon="mdi:format-list-numbered" className="text-2xl text-primary" />
-                                                        <div>
-                                                            <p className="font-bold text-primary text-lg">
-                                                                {sectionPreviewCount} セクション
-                                                            </p>
-                                                            <p className="text-xs text-foreground-muted">
-                                                                に自動分割されます
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <Button
-                                                        color="primary"
-                                                        size="lg"
-                                                        radius="lg"
-                                                        onPress={handleCreateSections}
-                                                        isLoading={isCreatingSections}
-                                                        startContent={!isCreatingSections && <Icon icon="mdi:content-cut" />}
-                                                    >
-                                                        セクション分割して保存
-                                                    </Button>
-                                                </div>
-                                            )}
                                         </div>
+
+                                        <Textarea
+                                            placeholder="ここに台本を入力してください..."
+                                            variant="bordered"
+                                            value={fullScript}
+                                            onValueChange={setFullScript}
+                                            isDisabled={isCreatingSections}
+                                            minRows={12}
+                                            classNames={{
+                                                input: "font-mono text-sm",
+                                                inputWrapper: "bg-white dark:bg-default-100",
+                                            }}
+                                        />
+
+                                        {fullScript.trim() && (
+                                            <div className="flex items-center justify-between mt-4 p-4 bg-primary/10 rounded-lg">
+                                                <div className="flex items-center gap-3">
+                                                    <Icon icon="mdi:format-list-numbered" className="text-2xl text-primary" />
+                                                    <div>
+                                                        <p className="font-bold text-primary text-lg">
+                                                            {sectionPreviewCount} セクション
+                                                        </p>
+                                                        <p className="text-xs text-foreground-muted">
+                                                            に自動分割されます
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <Button
+                                                    color="primary"
+                                                    size="lg"
+                                                    radius="lg"
+                                                    onPress={handleCreateSections}
+                                                    isLoading={isCreatingSections}
+                                                    startContent={!isCreatingSections && <Icon icon="mdi:content-cut" />}
+                                                >
+                                                    セクション分割して保存
+                                                </Button>
+                                            </div>
+                                        )}
                                     </div>
                                 ) : sections.length === 0 ? (
                                     <div className="text-center py-12">
@@ -881,6 +876,6 @@ export default function KitchenDetailClient({
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-        </div>
+        </div >
     );
 }

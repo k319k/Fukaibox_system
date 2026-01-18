@@ -168,15 +168,16 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                 </div>
             )}
 
-            {/* 新規作成モーダル - タイトルと説明のみ */}
+            {/* 新規作成モーダル */}
             <Modal
                 isOpen={isOpen}
                 onClose={handleClose}
-                size="lg"
+                size="md"
+                placement="center"
                 backdrop="blur"
                 classNames={{
-                    backdrop: "bg-gradient-to-br from-primary/20 via-background/80 to-secondary/20 backdrop-blur-md",
-                    base: "border border-default-200 bg-background shadow-2xl rounded-2xl",
+                    backdrop: "bg-black/50 backdrop-blur-sm",
+                    base: "bg-background shadow-xl",
                 }}
             >
                 <ModalContent>
@@ -201,47 +202,27 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                             </div>
                         )}
 
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             <Input
                                 label="タイトル"
                                 placeholder="例: 封解公儀の新年挨拶"
                                 variant="bordered"
+                                labelPlacement="outside"
                                 value={title}
                                 onValueChange={setTitle}
                                 isDisabled={isLoading}
                                 isRequired
-                                radius="lg"
-                                startContent={<Icon icon="mdi:format-title" className="text-foreground-muted" />}
-                                classNames={{
-                                    inputWrapper: "bg-default-50",
-                                }}
                             />
                             <Textarea
                                 label="説明（任意）"
-                                placeholder="このプロジェクトの内容や目的を記載"
+                                placeholder="このプロジェクトの内容や目的"
                                 variant="bordered"
+                                labelPlacement="outside"
                                 value={description}
                                 onValueChange={setDescription}
                                 isDisabled={isLoading}
-                                minRows={3}
-                                radius="lg"
-                                classNames={{
-                                    inputWrapper: "bg-default-50",
-                                }}
+                                minRows={2}
                             />
-                        </div>
-
-                        <div className="bg-primary/5 border border-primary/10 rounded-lg p-4 mt-4">
-                            <div className="flex items-start gap-3">
-                                <Icon icon="mdi:information-outline" className="text-primary text-xl mt-0.5" />
-                                <div>
-                                    <p className="font-semibold text-sm text-primary">次のステップ</p>
-                                    <p className="text-sm text-foreground-muted mt-1">
-                                        作成後、調理タブで台本全体を入力してください。
-                                        改行を2回入れると、自動でセクションに分割されます。
-                                    </p>
-                                </div>
-                            </div>
                         </div>
                     </ModalBody>
                     <ModalFooter className="pt-2">
