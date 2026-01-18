@@ -63,6 +63,7 @@ export const auth = betterAuth({
 
                 // ロールが未設定の場合のみ作成
                 if (existingRoles.length === 0) {
+                    // ... (existing role creation logic) ...
                     // accountsテーブルからDiscord IDを取得
                     const accounts = await db.select()
                         .from(schema.accounts)
@@ -89,6 +90,41 @@ export const auth = betterAuth({
                         createdAt: new Date(),
                         updatedAt: new Date(),
                     });
+                }
+
+                // アバター画像の強制同期（既存ユーザー含む）
+                try {
+                    // 最新のDiscordアクセストークンを取得
+                    const accounts = await db.select()
+                        .from(schema.accounts)
+                        .where(eq(schema.accounts.userId, userId));
+
+                    const discordAccount = accounts.find(a => a.providerId === "discord");
+
+                    if (discordAccount?.accessToken) {
+                        // Discord APIからプロファイルを取得
+                        const response = await fetch("https://discord.com/api/users/@me", {
+                            headers: {
+                                Authorization: `Bearer ${discordAccount.accessToken}`,
+                            },
+                        });
+
+                        if (response.ok) {
+                            const profile = await response.json();
+                            const avatarUrl = profile.avatar
+                                ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`
+                                : null;
+
+                            // usersテーブルを更新
+                            if (avatarUrl) {
+                                await db.update(schema.users)
+                                    .set({ image: avatarUrl, updatedAt: new Date() })
+                                    .where(eq(schema.users.id, userId));
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to sync Discord avatar:", e);
                 }
             }
         }),
