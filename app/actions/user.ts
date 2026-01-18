@@ -10,8 +10,8 @@ import { eq, desc, gte } from "drizzle-orm";
  */
 export async function getAllUsersWithStatus() {
     try {
-        // 5分前のタイムスタンプ
-        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        // 現在時刻
+        const now = new Date();
 
         // すべてのユーザーを取得
         const allUsers = await db
@@ -23,13 +23,13 @@ export async function getAllUsersWithStatus() {
             .from(users)
             .orderBy(desc(users.createdAt));
 
-        // アクティブセッションを持つユーザーIDを取得
+        // 有効なセッション（expiresAtが現在より後）を持つユーザーIDを取得
         const activeSessions = await db
             .select({
                 userId: sessions.userId,
             })
             .from(sessions)
-            .where(gte(sessions.updatedAt, fiveMinutesAgo));
+            .where(gte(sessions.expiresAt, now));
 
         const activeUserIds = new Set(activeSessions.map(s => s.userId));
 
