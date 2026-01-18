@@ -187,6 +187,12 @@ export default function MyComponent() {
 3. **ローカルでのビルド**
    - ローカルでやると重くなるので禁止。Vercelでやること。
 
+4. **標準HTMLの原則使用禁止**
+   - `<input>`, `<textarea>`, `<button>` などの標準HTMLは使用禁止
+   - 代わりにHeroUIの `Input`, `Textarea`, `Button` 等を使用すること
+   - モーダル、カード、チップ等もすべてHeroUIコンポーネントを使用
+   - 標準HTMLが必要になったらユーザーに許可をもらうこと
+
 ### ✅ 推奨事項
 
 1. **Server Componentsを優先**

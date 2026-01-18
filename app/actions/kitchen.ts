@@ -101,6 +101,38 @@ export async function createCookingProject(title: string, description?: string) 
 }
 
 /**
+ * 料理プロジェクトを削除（関連セクション・画像も削除）
+ */
+export async function deleteCookingProject(projectId: string) {
+    const session = await getSession();
+    if (!session?.user) {
+        throw new Error("認証が必要です");
+    }
+
+    console.log("[deleteCookingProject] Deleting project:", projectId);
+
+    // 関連する画像を削除
+    await db.delete(cookingImages).where(eq(cookingImages.projectId, projectId));
+
+    // 関連するセクションを取得
+    const sections = await getCookingSections(projectId);
+
+    // 各セクションに関連する推敲提案を削除
+    for (const section of sections) {
+        await db.delete(cookingProposals).where(eq(cookingProposals.sectionId, section.id));
+    }
+
+    // 関連するセクションを削除
+    await db.delete(cookingSections).where(eq(cookingSections.projectId, projectId));
+
+    // プロジェクトを削除
+    await db.delete(cookingProjects).where(eq(cookingProjects.id, projectId));
+
+    console.log("[deleteCookingProject] Success");
+    return { success: true };
+}
+
+/**
  * 既存プロジェクトに台本を設定し、セクションを一括作成
  * 既存のセクションがあれば削除して上書き
  */

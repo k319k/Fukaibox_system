@@ -1,10 +1,10 @@
 "use client";
 
-import { Button, Card, CardBody, CardHeader, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Chip } from "@heroui/react";
+import { Button, Card, CardBody, CardHeader, Input, Textarea, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Chip } from "@heroui/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
-import { createCookingProject } from "@/app/actions/kitchen";
+import { createCookingProject, deleteCookingProject } from "@/app/actions/kitchen";
 
 // 型定義
 interface Project {
@@ -21,13 +21,17 @@ interface KitchenListClientProps {
     userRole: string;
 }
 
-export default function KitchenListClient({ projects, userRole }: KitchenListClientProps) {
+export default function KitchenListClient({ projects: initialProjects, userRole }: KitchenListClientProps) {
     const router = useRouter();
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [projects, setProjects] = useState(initialProjects);
+    const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const isGicho = userRole === "gicho";
 
@@ -41,12 +45,10 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
         setError("");
 
         try {
-            // タイトルと説明のみでプロジェクト作成
             const project = await createCookingProject(title, description);
             if (project) {
                 onClose();
                 resetForm();
-                // 調理タブに遷移（ここで台本を入力する）
                 router.push(`/cooking/${project.id}`);
             } else {
                 setError("プロジェクトの作成に失敗しました");
@@ -56,6 +58,28 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
             setError("プロジェクトの作成に失敗しました");
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleDeleteClick = (e: React.MouseEvent, project: Project) => {
+        e.stopPropagation();
+        setDeleteTarget(project);
+        onDeleteOpen();
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!deleteTarget) return;
+
+        setIsDeleting(true);
+        try {
+            await deleteCookingProject(deleteTarget.id);
+            setProjects(projects.filter(p => p.id !== deleteTarget.id));
+            onDeleteClose();
+            setDeleteTarget(null);
+        } catch (err) {
+            console.error("Failed to delete project:", err);
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -81,7 +105,8 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
         }
     };
 
-    const getStatusColor = (status: string) => {
+    type ChipColor = "warning" | "primary" | "secondary" | "success" | "default";
+    const getStatusColor = (status: string): ChipColor => {
         switch (status) {
             case "cooking": return "warning";
             case "image_upload": return "primary";
@@ -150,13 +175,27 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                                         </p>
                                     )}
                                 </div>
-                                <Chip
-                                    size="sm"
-                                    color={getStatusColor(project.status) as any}
-                                    variant="solid"
-                                >
-                                    {getStatusLabel(project.status)}
-                                </Chip>
+                                <div className="flex items-center gap-2">
+                                    <Chip
+                                        size="sm"
+                                        color={getStatusColor(project.status)}
+                                        variant="solid"
+                                    >
+                                        {getStatusLabel(project.status)}
+                                    </Chip>
+                                    {isGicho && (
+                                        <Button
+                                            isIconOnly
+                                            size="sm"
+                                            variant="light"
+                                            radius="lg"
+                                            color="danger"
+                                            onPress={(e) => handleDeleteClick(e as unknown as React.MouseEvent, project)}
+                                        >
+                                            <Icon icon="mdi:delete" className="text-lg" />
+                                        </Button>
+                                    )}
+                                </div>
                             </CardHeader>
                             <CardBody className="pt-0">
                                 <p className="text-xs text-foreground-muted">
@@ -175,10 +214,7 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                 size="md"
                 placement="center"
                 backdrop="blur"
-                classNames={{
-                    backdrop: "bg-black/50 backdrop-blur-sm",
-                    base: "bg-background shadow-xl rounded-2xl",
-                }}
+                radius="lg"
             >
                 <ModalContent>
                     <ModalHeader className="flex flex-col gap-1 pb-2">
@@ -203,34 +239,28 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                         )}
 
                         <div className="flex flex-col gap-4">
-                            {/* タイトル入力 */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium">
-                                    タイトル <span className="text-danger">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="例: 封解公儀の新年挨拶"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    disabled={isLoading}
-                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-white dark:bg-default-100 focus:border-primary focus:outline-none transition-colors"
-                                />
-                            </div>
-                            {/* 説明入力 */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium">
-                                    説明（任意）
-                                </label>
-                                <textarea
-                                    placeholder="このプロジェクトの内容や目的"
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    disabled={isLoading}
-                                    rows={2}
-                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-white dark:bg-default-100 focus:border-primary focus:outline-none transition-colors resize-none"
-                                />
-                            </div>
+                            <Input
+                                label="タイトル"
+                                placeholder="例: 封解公儀の新年挨拶"
+                                variant="bordered"
+                                labelPlacement="outside"
+                                value={title}
+                                onValueChange={setTitle}
+                                isDisabled={isLoading}
+                                isRequired
+                                radius="lg"
+                            />
+                            <Textarea
+                                label="説明（任意）"
+                                placeholder="このプロジェクトの内容や目的"
+                                variant="bordered"
+                                labelPlacement="outside"
+                                value={description}
+                                onValueChange={setDescription}
+                                isDisabled={isLoading}
+                                minRows={2}
+                                radius="lg"
+                            />
                         </div>
                     </ModalBody>
                     <ModalFooter className="pt-2">
@@ -250,6 +280,54 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                             startContent={!isLoading && <Icon icon="mdi:plus" />}
                         >
                             作成
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+
+            {/* 削除確認モーダル */}
+            <Modal
+                isOpen={isDeleteOpen}
+                onClose={onDeleteClose}
+                size="sm"
+                placement="center"
+                backdrop="blur"
+                radius="lg"
+            >
+                <ModalContent>
+                    <ModalHeader className="flex flex-col gap-1">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-danger/10 rounded-lg">
+                                <Icon icon="mdi:delete-alert" className="text-2xl text-danger" />
+                            </div>
+                            <h2 className="text-xl font-bold">削除の確認</h2>
+                        </div>
+                    </ModalHeader>
+                    <ModalBody>
+                        <p className="text-foreground-muted">
+                            「<span className="font-semibold text-foreground">{deleteTarget?.title}</span>」を削除しますか？
+                        </p>
+                        <p className="text-sm text-danger mt-2">
+                            この操作は取り消せません。関連するセクション・画像もすべて削除されます。
+                        </p>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button
+                            variant="light"
+                            radius="lg"
+                            onPress={onDeleteClose}
+                            isDisabled={isDeleting}
+                        >
+                            キャンセル
+                        </Button>
+                        <Button
+                            color="danger"
+                            radius="lg"
+                            onPress={handleDeleteConfirm}
+                            isLoading={isDeleting}
+                            startContent={!isDeleting && <Icon icon="mdi:delete" />}
+                        >
+                            削除
                         </Button>
                     </ModalFooter>
                 </ModalContent>

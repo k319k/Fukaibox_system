@@ -367,17 +367,19 @@ export default function KitchenDetailClient({
                                         </div>
 
                                         {/* テキストエリア */}
-                                        <div className="w-full">
-                                            <textarea
-                                                placeholder="ここに台本を入力してください..."
-                                                value={fullScript}
-                                                onChange={(e) => setFullScript(e.target.value)}
-                                                disabled={isCreatingSections}
-                                                rows={12}
-                                                className="w-full p-4 border-2 border-default-200 rounded-xl bg-white dark:bg-default-100 font-mono text-sm resize-y focus:border-primary focus:outline-none transition-colors"
-                                                style={{ minHeight: '200px' }}
-                                            />
-                                        </div>
+                                        <Textarea
+                                            placeholder="ここに台本を入力してください..."
+                                            value={fullScript}
+                                            onValueChange={setFullScript}
+                                            isDisabled={isCreatingSections}
+                                            minRows={12}
+                                            variant="bordered"
+                                            radius="lg"
+                                            classNames={{
+                                                input: "font-mono text-sm",
+                                                inputWrapper: "bg-white dark:bg-default-100 min-h-[200px]",
+                                            }}
+                                        />
 
                                         {/* セクションプレビューとボタン */}
                                         {fullScript.trim() && (
