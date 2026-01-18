@@ -2,8 +2,7 @@
 
 import {
     Card, CardBody, CardHeader, Button, Tabs, Tab, Chip,
-    Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
-    Textarea, Divider, Progress, Spinner, Checkbox
+    Divider, Progress, Spinner, Checkbox
 } from "@heroui/react";
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -158,14 +157,6 @@ export default function KitchenDetailClient({
         setEditContent(section.content);
         setEditImageInstruction(section.imageInstruction || "");
         setEditAllowSubmission(section.allowImageSubmission ?? true);
-    };
-
-    // セクション編集をキャンセル
-    const handleCancelEdit = () => {
-        setEditingSection(null);
-        setEditContent("");
-        setEditImageInstruction("");
-        setEditAllowSubmission(true);
     };
 
     // セクション編集を保存
@@ -447,38 +438,26 @@ export default function KitchenDetailClient({
                                                     </div>
                                                     <div className="flex gap-2">
                                                         {editingSection?.id === section.id ? (
-                                                            <>
-                                                                <Button
-                                                                    size="sm"
-                                                                    color="default"
-                                                                    variant="flat"
-                                                                    radius="full"
-                                                                    onPress={handleCancelEdit}
-                                                                    isDisabled={isSaving}
-                                                                >
-                                                                    キャンセル
-                                                                </Button>
-                                                                <Button
-                                                                    size="sm"
-                                                                    color="primary"
-                                                                    radius="full"
-                                                                    startContent={<Icon icon="mdi:content-save" />}
-                                                                    onPress={handleSaveEdit}
-                                                                    isLoading={isSaving}
-                                                                >
-                                                                    保存
-                                                                </Button>
-                                                            </>
+                                                            <Button
+                                                                size="sm"
+                                                                color="primary"
+                                                                radius="full"
+                                                                isIconOnly
+                                                                onPress={handleSaveEdit}
+                                                                isLoading={isSaving}
+                                                            >
+                                                                <Icon icon="mdi:content-save" />
+                                                            </Button>
                                                         ) : isGicho ? (
                                                             <Button
                                                                 size="sm"
                                                                 color="primary"
                                                                 variant="flat"
                                                                 radius="full"
-                                                                startContent={<Icon icon="mdi:pencil" />}
+                                                                isIconOnly
                                                                 onPress={() => handleEditSection(section)}
                                                             >
-                                                                編集
+                                                                <Icon icon="mdi:pencil" />
                                                             </Button>
                                                         ) : proposalSection?.id === section.id ? (
                                                             <>
@@ -874,123 +853,6 @@ export default function KitchenDetailClient({
                     </Tabs>
                 </CardBody>
             </Card>
-
-            {/* セクション編集モーダル */}
-            <Modal
-                isOpen={isEditOpen}
-                onClose={onEditClose}
-                size="3xl"
-                scrollBehavior="inside"
-                backdrop="blur"
-                classNames={{
-                    backdrop: "bg-gradient-to-br from-primary/10 via-background/80 to-secondary/10 backdrop-blur-md",
-                    base: "border border-default-200 bg-background/95 shadow-2xl",
-                }}
-            >
-                <ModalContent>
-                    <ModalHeader className="flex items-center gap-2">
-                        <Icon icon="mdi:pencil" className="text-primary" />
-                        <span>セクション編集</span>
-                    </ModalHeader>
-                    <ModalBody className="space-y-4">
-                        <Textarea
-                            label="セクション内容"
-                            value={editContent}
-                            onValueChange={setEditContent}
-                            minRows={6}
-                            variant="bordered"
-                            classNames={{ input: "font-mono text-sm" }}
-                        />
-                        <Textarea
-                            label="画像指示（任意）"
-                            value={editImageInstruction}
-                            onValueChange={setEditImageInstruction}
-                            placeholder="儀員に対する画像の指示を入力"
-                            minRows={3}
-                            variant="bordered"
-                        />
-                        <div className="bg-default-100 rounded-lg p-4">
-                            <Checkbox
-                                isSelected={editAllowSubmission}
-                                onValueChange={setEditAllowSubmission}
-                            >
-                                <div className="ml-2">
-                                    <p className="font-semibold">儀員の画像提出を許可</p>
-                                    <p className="text-sm text-foreground-muted">
-                                        オフにすると、このセクションは画像UPタブに表示されません
-                                    </p>
-                                </div>
-                            </Checkbox>
-                        </div>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button variant="light" radius="lg" onPress={onEditClose} isDisabled={isSaving}>
-                            キャンセル
-                        </Button>
-                        <Button
-                            color="primary"
-                            radius="lg"
-                            onPress={handleSaveEdit}
-                            isLoading={isSaving}
-                            startContent={!isSaving && <Icon icon="mdi:check" />}
-                        >
-                            保存
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-
-            {/* 推敲提案モーダル */}
-            <Modal
-                isOpen={isProposalOpen}
-                onClose={onProposalClose}
-                size="3xl"
-                scrollBehavior="inside"
-                backdrop="blur"
-                classNames={{
-                    backdrop: "bg-gradient-to-br from-warning/10 via-background/80 to-secondary/10 backdrop-blur-md",
-                    base: "border border-default-200 bg-background/95 shadow-2xl",
-                }}
-            >
-                <ModalContent>
-                    <ModalHeader className="flex items-center gap-2">
-                        <Icon icon="mdi:lightbulb-outline" className="text-warning" />
-                        <span>推敲提案</span>
-                    </ModalHeader>
-                    <ModalBody className="space-y-4">
-                        <div className="bg-default-100 rounded-lg p-4">
-                            <p className="text-sm font-semibold mb-2 flex items-center gap-2">
-                                <Icon icon="mdi:file-document-outline" />
-                                現在の内容
-                            </p>
-                            <div className="text-sm whitespace-pre-wrap text-foreground-muted">
-                                {proposalSection?.content}
-                            </div>
-                        </div>
-                        <Textarea
-                            label="提案内容"
-                            value={proposalContent}
-                            onValueChange={setProposalContent}
-                            minRows={6}
-                            variant="bordered"
-                            placeholder="改善案を入力してください"
-                        />
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button variant="light" radius="lg" onPress={onProposalClose}>
-                            キャンセル
-                        </Button>
-                        <Button
-                            color="primary"
-                            radius="lg"
-                            onPress={handleSubmitProposal}
-                            startContent={<Icon icon="mdi:send" />}
-                        >
-                            送信
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-        </div >
+        </div>
     );
 }
