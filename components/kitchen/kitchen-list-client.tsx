@@ -212,6 +212,9 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                                 onValueChange={setTitle}
                                 isDisabled={isLoading}
                                 isRequired
+                                classNames={{
+                                    label: "text-sm font-medium mb-1",
+                                }}
                             />
                             <Textarea
                                 label="説明（任意）"
@@ -222,6 +225,9 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                                 onValueChange={setDescription}
                                 isDisabled={isLoading}
                                 minRows={2}
+                                classNames={{
+                                    label: "text-sm font-medium mb-1",
+                                }}
                             />
                         </div>
                     </ModalBody>
