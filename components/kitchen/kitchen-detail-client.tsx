@@ -2,7 +2,7 @@
 
 import {
     Card, CardBody, CardHeader, Button, Tabs, Tab, Chip,
-    useDisclosure, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
+    Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
     Textarea, Divider, Progress, Spinner, Checkbox
 } from "@heroui/react";
 import { useState, useEffect, useMemo } from "react";
@@ -86,16 +86,14 @@ export default function KitchenDetailClient({
     const [fullScript, setFullScript] = useState("");
     const [isCreatingSections, setIsCreatingSections] = useState(false);
 
-    // 編集モーダル
-    const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
+    // 編集ステート（インライン）
     const [editingSection, setEditingSection] = useState<Section | null>(null);
     const [editContent, setEditContent] = useState("");
     const [editImageInstruction, setEditImageInstruction] = useState("");
     const [editAllowSubmission, setEditAllowSubmission] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
 
-    // 推敲提案モーダル
-    const { isOpen: isProposalOpen, onOpen: onProposalOpen, onClose: onProposalClose } = useDisclosure();
+    // 推敲提案ステート（インライン）
     const [proposalSection, setProposalSection] = useState<Section | null>(null);
     const [proposalContent, setProposalContent] = useState("");
 
@@ -154,13 +152,20 @@ export default function KitchenDetailClient({
         }
     };
 
-    // セクション編集を開く
+    // セクション編集を開始（インライン）
     const handleEditSection = (section: Section) => {
         setEditingSection(section);
         setEditContent(section.content);
         setEditImageInstruction(section.imageInstruction || "");
         setEditAllowSubmission(section.allowImageSubmission ?? true);
-        onEditOpen();
+    };
+
+    // セクション編集をキャンセル
+    const handleCancelEdit = () => {
+        setEditingSection(null);
+        setEditContent("");
+        setEditImageInstruction("");
+        setEditAllowSubmission(true);
     };
 
     // セクション編集を保存
@@ -176,17 +181,22 @@ export default function KitchenDetailClient({
                 editAllowSubmission
             );
             await reloadSections();
-            onEditClose();
+            setEditingSection(null);
         } finally {
             setIsSaving(false);
         }
     };
 
-    // 推敲提案を開く
+    // 推敲提案を開始（インライン）
     const handleOpenProposal = (section: Section) => {
         setProposalSection(section);
         setProposalContent(section.content);
-        onProposalOpen();
+    };
+
+    // 推敲提案をキャンセル
+    const handleCancelProposal = () => {
+        setProposalSection(null);
+        setProposalContent("");
     };
 
     // 推敲提案を送信
@@ -195,7 +205,8 @@ export default function KitchenDetailClient({
 
         await createCookingProposal(proposalSection.id, proposalContent);
         await loadProposals();
-        onProposalClose();
+        setProposalSection(null);
+        setProposalContent("");
     };
 
     // 推敲提案を承認
@@ -427,25 +438,75 @@ export default function KitchenDetailClient({
                                                                 画像なし
                                                             </Chip>
                                                         )}
+                                                        {editingSection?.id === section.id && (
+                                                            <Chip size="sm" color="secondary" variant="flat">
+                                                                <Icon icon="mdi:pencil" className="mr-1" />
+                                                                編集中
+                                                            </Chip>
+                                                        )}
                                                     </div>
                                                     <div className="flex gap-2">
-                                                        {isGicho ? (
+                                                        {editingSection?.id === section.id ? (
+                                                            <>
+                                                                <Button
+                                                                    size="sm"
+                                                                    color="default"
+                                                                    variant="flat"
+                                                                    radius="full"
+                                                                    onPress={handleCancelEdit}
+                                                                    isDisabled={isSaving}
+                                                                >
+                                                                    キャンセル
+                                                                </Button>
+                                                                <Button
+                                                                    size="sm"
+                                                                    color="primary"
+                                                                    radius="full"
+                                                                    startContent={<Icon icon="mdi:content-save" />}
+                                                                    onPress={handleSaveEdit}
+                                                                    isLoading={isSaving}
+                                                                >
+                                                                    保存
+                                                                </Button>
+                                                            </>
+                                                        ) : isGicho ? (
                                                             <Button
                                                                 size="sm"
                                                                 color="primary"
                                                                 variant="flat"
-                                                                radius="lg"
+                                                                radius="full"
                                                                 startContent={<Icon icon="mdi:pencil" />}
                                                                 onPress={() => handleEditSection(section)}
                                                             >
                                                                 編集
                                                             </Button>
+                                                        ) : proposalSection?.id === section.id ? (
+                                                            <>
+                                                                <Button
+                                                                    size="sm"
+                                                                    color="default"
+                                                                    variant="flat"
+                                                                    radius="full"
+                                                                    onPress={handleCancelProposal}
+                                                                >
+                                                                    キャンセル
+                                                                </Button>
+                                                                <Button
+                                                                    size="sm"
+                                                                    color="secondary"
+                                                                    radius="full"
+                                                                    startContent={<Icon icon="mdi:send" />}
+                                                                    onPress={handleSubmitProposal}
+                                                                >
+                                                                    送信
+                                                                </Button>
+                                                            </>
                                                         ) : (
                                                             <Button
                                                                 size="sm"
                                                                 color="secondary"
                                                                 variant="flat"
-                                                                radius="lg"
+                                                                radius="full"
                                                                 startContent={<Icon icon="mdi:comment-text-outline" />}
                                                                 onPress={() => handleOpenProposal(section)}
                                                             >
@@ -455,17 +516,71 @@ export default function KitchenDetailClient({
                                                     </div>
                                                 </CardHeader>
                                                 <CardBody className="pt-0 space-y-3">
-                                                    <div className="whitespace-pre-wrap text-sm md:text-base leading-relaxed">
-                                                        {section.content}
-                                                    </div>
-                                                    {section.imageInstruction && (
-                                                        <div className="bg-primary/5 border-l-4 border-primary pl-4 py-3 rounded-r">
-                                                            <div className="flex items-center gap-2 mb-1">
-                                                                <Icon icon="mdi:image-text" className="text-primary" />
-                                                                <p className="text-sm font-semibold text-primary">画像指示</p>
+                                                    {/* 編集中の場合: textarea */}
+                                                    {editingSection?.id === section.id ? (
+                                                        <div className="space-y-4">
+                                                            <div className="flex flex-col gap-2">
+                                                                <label className="text-sm font-medium">セクション内容</label>
+                                                                <textarea
+                                                                    value={editContent}
+                                                                    onChange={(e) => setEditContent(e.target.value)}
+                                                                    disabled={isSaving}
+                                                                    rows={6}
+                                                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors resize-y disabled:opacity-50"
+                                                                />
                                                             </div>
-                                                            <p className="text-sm text-foreground-muted">{section.imageInstruction}</p>
+                                                            <div className="flex flex-col gap-2">
+                                                                <label className="text-sm font-medium">画像指示（任意）</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={editImageInstruction}
+                                                                    onChange={(e) => setEditImageInstruction(e.target.value)}
+                                                                    disabled={isSaving}
+                                                                    placeholder="例: 商品のアップ画像"
+                                                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors disabled:opacity-50"
+                                                                />
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <Checkbox
+                                                                    isSelected={editAllowSubmission}
+                                                                    onValueChange={setEditAllowSubmission}
+                                                                    isDisabled={isSaving}
+                                                                >
+                                                                    <span className="text-sm">画像投稿を許可</span>
+                                                                </Checkbox>
+                                                            </div>
                                                         </div>
+                                                    ) : proposalSection?.id === section.id ? (
+                                                        /* 推敲提案入力中の場合 */
+                                                        <div className="space-y-3">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <Icon icon="mdi:lightbulb-outline" className="text-secondary" />
+                                                                <span className="text-sm font-medium text-secondary">推敲提案を入力</span>
+                                                            </div>
+                                                            <textarea
+                                                                value={proposalContent}
+                                                                onChange={(e) => setProposalContent(e.target.value)}
+                                                                rows={6}
+                                                                placeholder="修正案を入力してください..."
+                                                                className="w-full px-4 py-3 border-2 border-secondary/50 rounded-xl bg-secondary/5 focus:border-secondary focus:outline-none transition-colors resize-y"
+                                                            />
+                                                        </div>
+                                                    ) : (
+                                                        /* 通常表示 */
+                                                        <>
+                                                            <div className="whitespace-pre-wrap text-sm md:text-base leading-relaxed">
+                                                                {section.content}
+                                                            </div>
+                                                            {section.imageInstruction && (
+                                                                <div className="bg-primary/5 border-l-4 border-primary pl-4 py-3 rounded-r">
+                                                                    <div className="flex items-center gap-2 mb-1">
+                                                                        <Icon icon="mdi:image-text" className="text-primary" />
+                                                                        <p className="text-sm font-semibold text-primary">画像指示</p>
+                                                                    </div>
+                                                                    <p className="text-sm text-foreground-muted">{section.imageInstruction}</p>
+                                                                </div>
+                                                            )}
+                                                        </>
                                                     )}
                                                 </CardBody>
                                             </Card>
@@ -485,7 +600,7 @@ export default function KitchenDetailClient({
                                                             <Button
                                                                 size="sm"
                                                                 color="success"
-                                                                radius="lg"
+                                                                radius="full"
                                                                 startContent={<Icon icon="mdi:check" />}
                                                                 onPress={() => handleApproveProposal(proposal.id)}
                                                             >
@@ -495,7 +610,7 @@ export default function KitchenDetailClient({
                                                                 size="sm"
                                                                 color="danger"
                                                                 variant="flat"
-                                                                radius="lg"
+                                                                radius="full"
                                                                 startContent={<Icon icon="mdi:close" />}
                                                                 onPress={() => handleRejectProposal(proposal.id)}
                                                             >
