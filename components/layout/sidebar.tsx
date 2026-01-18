@@ -1,12 +1,13 @@
 "use client";
 
-import { Button, Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
+import { Button, Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Tooltip } from "@heroui/react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { Home, ChefHat, Book, Wrench, Settings, Menu, X, LogIn, LogOut } from "lucide-react";
+import { Home, ChefHat, Book, Wrench, Settings, Menu, X, LogIn, LogOut, Users } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
+import { getAllUsersWithStatus } from "@/app/actions/user";
 
 const navigation = [
     { name: "ホーム", href: "/", icon: Home },
@@ -28,6 +29,15 @@ interface SidebarProps {
 export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProps) {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
+    const [onlineUsers, setOnlineUsers] = useState<Array<{
+        id: string;
+        name: string;
+        image: string | null;
+        isOnline: boolean;
+        discordUsername: string | null;
+        role: string;
+    }>>([]);
+
     const isLoggedIn = !!userName;
     const displayName = userName || "ゲスト";
     const roleLabel = {
@@ -44,9 +54,27 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
         guest: "badge-guest",
     }[userRole] || "badge-guest";
 
-    // Close sidebar on route change
+    // Load online users
+    const loadUsers = useCallback(async () => {
+        try {
+            const users = await getAllUsersWithStatus();
+            setOnlineUsers(users);
+        } catch (error) {
+            console.error("Failed to load users:", error);
+        }
+    }, []);
+
     useEffect(() => {
-        setIsOpen(false);
+        loadUsers();
+        // Refresh every 30 seconds
+        const interval = setInterval(loadUsers, 30000);
+        return () => clearInterval(interval);
+    }, [loadUsers]);
+
+    // Close sidebar on route change - wrapped in setTimeout to avoid cascading renders
+    useEffect(() => {
+        const timer = setTimeout(() => setIsOpen(false), 0);
+        return () => clearTimeout(timer);
     }, [pathname]);
 
     // Prevent body scroll when sidebar is open on mobile
@@ -153,6 +181,52 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
                     );
                 })}
             </div>
+
+            {/* オンラインユーザー一覧 - Discord風 */}
+            {onlineUsers.length > 0 && (
+                <div className="px-3 md:px-4 pb-3 md:pb-4">
+                    <div className="flex items-center gap-2 mb-3 px-2">
+                        <Users strokeWidth={1.5} className="w-4 h-4 text-[var(--md-sys-color-on-surface-variant)]" />
+                        <span className="text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider">
+                            ユーザー — {onlineUsers.filter(u => u.isOnline).length}人オンライン
+                        </span>
+                    </div>
+                    <div className="space-y-1 max-h-32 overflow-y-auto custom-scrollbar">
+                        {onlineUsers.slice(0, 10).map((user) => (
+                            <Tooltip
+                                key={user.id}
+                                content={`${user.discordUsername || user.name} (${user.isOnline ? 'オンライン' : 'オフライン'})`}
+                                placement="right"
+                            >
+                                <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[var(--md-sys-color-surface-container-high)] transition-colors">
+                                    <div className="relative">
+                                        <Avatar
+                                            size="sm"
+                                            name={user.name?.[0] || "?"}
+                                            src={user.image || undefined}
+                                            classNames={{
+                                                base: "w-7 h-7",
+                                            }}
+                                        />
+                                        {/* オンラインステータスインジケーター */}
+                                        <div
+                                            className={cn(
+                                                "absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[var(--md-sys-color-surface)]",
+                                                user.isOnline
+                                                    ? "bg-green-500"
+                                                    : "bg-gray-400"
+                                            )}
+                                        />
+                                    </div>
+                                    <span className="text-xs font-medium text-[var(--md-sys-color-on-surface)] truncate flex-1">
+                                        {user.discordUsername || user.name}
+                                    </span>
+                                </div>
+                            </Tooltip>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* ユーザー情報 - M3 Surface Container */}
             <div className="px-3 md:px-4 pb-4 md:pb-6">
