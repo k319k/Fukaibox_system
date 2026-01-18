@@ -29,16 +29,21 @@ export const auth = betterAuth({
     },
     socialProviders: {
         discord: {
-            clientId: env.DISCORD_CLIENT_ID,
-            clientSecret: env.DISCORD_CLIENT_SECRET,
+            clientId: env.DISCORD_CLIENT_ID!,
+            clientSecret: env.DISCORD_CLIENT_SECRET!,
+            mapProfileToUser: (profile) => {
+                return {
+                    image: profile.avatar ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` : undefined,
+                };
+            },
         },
     },
     session: {
         expiresIn: 60 * 60 * 24 * 7, // 7日
         updateAge: 60 * 60 * 24, // 1日
     },
-    secret: env.BETTER_AUTH_SECRET,
-    baseURL: env.BETTER_AUTH_URL,
+    secret: env.BETTER_AUTH_SECRET!,
+    baseURL: env.BETTER_AUTH_URL!,
     trustedOrigins: [
         "http://localhost:3000",
         "http://127.0.0.1:3000",

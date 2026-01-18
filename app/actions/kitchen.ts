@@ -109,27 +109,46 @@ export async function deleteCookingProject(projectId: string) {
         throw new Error("認証が必要です");
     }
 
-    console.log("[deleteCookingProject] Deleting project:", projectId);
+    console.log("[deleteCookingProject] Starting deletion for project:", projectId);
 
-    // 関連する画像を削除
-    await db.delete(cookingImages).where(eq(cookingImages.projectId, projectId));
+    try {
+        // 関連するセクションを取得
+        const sections = await db
+            .select({ id: cookingSections.id })
+            .from(cookingSections)
+            .where(eq(cookingSections.projectId, projectId));
 
-    // 関連するセクションを取得
-    const sections = await getCookingSections(projectId);
+        console.log("[deleteCookingProject] Found sections:", sections.length);
 
-    // 各セクションに関連する推敲提案を削除
-    for (const section of sections) {
-        await db.delete(cookingProposals).where(eq(cookingProposals.sectionId, section.id));
+        // 各セクションの推敲提案を削除
+        for (const section of sections) {
+            await db.delete(cookingProposals).where(eq(cookingProposals.sectionId, section.id));
+        }
+        console.log("[deleteCookingProject] Deleted proposals");
+
+        // 画像のsectionId参照を解除（set null）してから削除
+        await db.update(cookingImages)
+            .set({ sectionId: null })
+            .where(eq(cookingImages.projectId, projectId));
+        console.log("[deleteCookingProject] Cleared image section references");
+
+        // 関連する画像を削除
+        await db.delete(cookingImages).where(eq(cookingImages.projectId, projectId));
+        console.log("[deleteCookingProject] Deleted images");
+
+        // 関連するセクションを削除
+        await db.delete(cookingSections).where(eq(cookingSections.projectId, projectId));
+        console.log("[deleteCookingProject] Deleted sections");
+
+        // プロジェクトを削除
+        await db.delete(cookingProjects).where(eq(cookingProjects.id, projectId));
+        console.log("[deleteCookingProject] Deleted project - Success");
+
+        return { success: true };
+    } catch (error) {
+        console.error("[deleteCookingProject] Error:", error);
+        throw new Error(`プロジェクトの削除に失敗しました: ${error instanceof Error ? error.message : String(error)}`);
     }
-
-    // 関連するセクションを削除
-    await db.delete(cookingSections).where(eq(cookingSections.projectId, projectId));
-
-    // プロジェクトを削除
-    await db.delete(cookingProjects).where(eq(cookingProjects.id, projectId));
-
-    console.log("[deleteCookingProject] Success");
-    return { success: true };
 }
 
 /**
