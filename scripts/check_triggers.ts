@@ -26,12 +26,17 @@ async function main() {
     const { db } = await import("@/lib/db");
     const { sql } = await import("drizzle-orm");
 
-    console.log("Checking user images...");
+    console.log("Checking accounts table data...");
     try {
-        const users = await db.all(sql`SELECT id, name, image FROM users LIMIT 10`);
-        console.log("Users:", JSON.stringify(users, null, 2));
+        const accounts = await db.all(sql`SELECT user_id, provider_id, access_token FROM accounts LIMIT 5`);
+        // トークンは長いので先頭だけ表示
+        const masked = accounts.map((a: any) => ({
+            ...a,
+            access_token: a.access_token ? a.access_token.substring(0, 10) + "..." : "null"
+        }));
+        console.log("Accounts:", JSON.stringify(masked, null, 2));
     } catch (e) {
-        console.error("Error checking users:", e);
+        console.error("Error checking accounts:", e);
     }
 }
 

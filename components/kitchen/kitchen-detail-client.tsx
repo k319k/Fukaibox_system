@@ -303,7 +303,10 @@ export default function KitchenDetailClient({
 
         for (const img of selectedImages) {
             try {
-                const response = await fetch(img.imageUrl);
+                // CORS回避のためプロキシ経由で取得
+                const response = await fetch(`/api/proxy-image?url=${encodeURIComponent(img.imageUrl)}`);
+                if (!response.ok) throw new Error(`Failed to fetch image: ${response.status}`);
+
                 const blob = await response.blob();
                 const filename = img.imageUrl.split('/').pop() || `image_${img.id}.jpg`;
                 zip.file(filename, blob);
