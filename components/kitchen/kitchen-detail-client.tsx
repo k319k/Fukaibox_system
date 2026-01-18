@@ -301,6 +301,18 @@ export default function KitchenDetailClient({
 
         const zip = new JSZip();
 
+        // ZIP生成用に最新の投稿者名を取得
+        const userIds = [...new Set(selectedImages.map(img => img.uploadedBy))];
+        let currentUploaderNames = { ...uploaderNames };
+        if (userIds.length > 0) {
+            try {
+                const names = await getUserDisplayNames(userIds);
+                currentUploaderNames = { ...currentUploaderNames, ...names };
+            } catch (error) {
+                console.error("Failed to fetch uploader names for ZIP:", error);
+            }
+        }
+
         for (const img of selectedImages) {
             try {
                 // CORS回避のためプロキシ経由で取得
@@ -318,7 +330,7 @@ export default function KitchenDetailClient({
                 }
                 const safeSectionName = sectionName.replace(/[\\/:*?"<>|]/g, '');
 
-                const uploaderName = uploaderNames[img.uploadedBy] || "不明";
+                const uploaderName = currentUploaderNames[img.uploadedBy] || "不明";
                 const safeUploaderName = uploaderName.replace(/[\\/:*?"<>|]/g, '');
 
                 const originalExt = img.imageUrl.split('.').pop()?.split('?')[0] || "jpg";
