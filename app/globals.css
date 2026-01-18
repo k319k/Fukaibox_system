@@ -272,42 +272,42 @@ body {
   box-shadow: var(--md-sys-elevation-5);
 }
 
-/* M3 カードスタイル (コントラスト強化版) */
+/* M3 カードスタイル (HeroUIオーバーライド) */
 .card-gradient {
-  background: var(--md-sys-color-surface-container-low);
-  border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: var(--md-sys-shape-corner-large);
-  box-shadow: var(--md-sys-elevation-1);
+  background: var(--md-sys-color-surface-container-low) !important;
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  border-radius: var(--md-sys-shape-corner-lg) !important;
+  box-shadow: var(--md-sys-elevation-1) !important;
 }
 
 .card-gradient:hover {
-  box-shadow: var(--md-sys-elevation-2);
+  box-shadow: var(--md-sys-elevation-2) !important;
 }
 
 /* M3 Elevated Card */
 .card-elevated {
-  background: var(--md-sys-color-surface-container-lowest);
-  border-radius: var(--md-sys-shape-corner-large);
-  box-shadow: var(--md-sys-elevation-2);
+  background: var(--md-sys-color-surface-container-lowest) !important;
+  border-radius: var(--md-sys-shape-corner-lg) !important;
+  box-shadow: var(--md-sys-elevation-2) !important;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .card-elevated:hover {
-  box-shadow: var(--md-sys-elevation-3);
+  box-shadow: var(--md-sys-elevation-3) !important;
   transform: translateY(-2px);
 }
 
 /* M3 Filled Card */
 .card-filled {
-  background: var(--md-sys-color-surface-container-highest);
-  border-radius: var(--md-sys-shape-corner-large);
+  background: var(--md-sys-color-surface-container-highest) !important;
+  border-radius: var(--md-sys-shape-corner-lg) !important;
 }
 
 /* M3 Outlined Card */
 .card-outlined {
-  background: var(--md-sys-color-surface);
-  border: 1px solid var(--md-sys-color-outline);
-  border-radius: var(--md-sys-shape-corner-large);
+  background: var(--md-sys-color-surface) !important;
+  border: 1px solid var(--md-sys-color-outline) !important;
+  border-radius: var(--md-sys-shape-corner-lg) !important;
 }
 
 /* Glass Effect (改善版) */

@@ -115,7 +115,7 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
 
             {/* プロジェクト一覧 */}
             {projects.length === 0 ? (
-                <Card className="card-elevated">
+                <Card className="card-elevated" radius="lg">
                     <CardBody className="text-center py-12">
                         <Icon icon="mdi:pot-steam-outline" className="text-6xl text-foreground-muted mx-auto mb-4" />
                         <p className="text-foreground-muted">まだプロジェクトがありません</p>
@@ -139,6 +139,7 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                             isPressable
                             onPress={() => router.push(`/cooking/${project.id}`)}
                             className="card-elevated hover:scale-[1.02] transition-transform"
+                            radius="lg"
                         >
                             <CardHeader className="flex justify-between items-start">
                                 <div className="flex-1">

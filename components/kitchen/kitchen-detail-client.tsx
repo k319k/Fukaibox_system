@@ -327,7 +327,7 @@ export default function KitchenDetailClient({
             </div>
 
             {/* タブ */}
-            <Card className="card-elevated">
+            <Card className="card-elevated" radius="lg">
                 <CardBody className="p-0 md:p-2">
                     <Tabs
                         selectedKey={selectedTab}
@@ -335,10 +335,10 @@ export default function KitchenDetailClient({
                         variant="underlined"
                         color="primary"
                         classNames={{
-                            tabList: "gap-0 w-full relative rounded-none p-2 md:p-4 border-b border-divider",
-                            cursor: "w-full bg-primary",
+                            tabList: "gap-0 w-full relative rounded-none p-2 md:p-4 border-b-2 border-divider bg-transparent",
+                            cursor: "w-full bg-primary h-[3px]",
                             tab: "max-w-fit px-3 md:px-6 h-10 md:h-12",
-                            tabContent: "group-data-[selected=true]:text-primary font-medium text-sm md:text-base"
+                            tabContent: "group-data-[selected=true]:text-primary group-data-[selected=true]:font-bold font-medium text-sm md:text-base text-foreground-muted"
                         }}
                     >
                         {/* 1. 調理タブ */}
@@ -369,15 +369,16 @@ export default function KitchenDetailClient({
                                             </div>
 
                                             <Textarea
-                                                placeholder={"セクション1の内容を入力\n\n（↑改行2回でセクション分割↓）\n\nセクション2の内容を入力\n\n（↑改行2回でセクション分割↓）\n\nセクション3の内容を入力"}
+                                                placeholder="セクション1の内容...\n\nセクション2の内容...\n\nセクション3の内容..."
                                                 variant="bordered"
                                                 value={fullScript}
                                                 onValueChange={setFullScript}
                                                 isDisabled={isCreatingSections}
-                                                minRows={12}
+                                                minRows={8}
+                                                radius="lg"
                                                 classNames={{
-                                                    input: "font-mono text-sm",
-                                                    inputWrapper: "bg-white dark:bg-default-100",
+                                                    input: "font-mono text-sm leading-relaxed",
+                                                    inputWrapper: "bg-white dark:bg-default-100 border-2",
                                                 }}
                                             />
 
@@ -418,7 +419,7 @@ export default function KitchenDetailClient({
                                     // セクションがある場合: セクション一覧
                                     sections.map((section, index) => (
                                         <div key={section.id}>
-                                            <Card className="card-elevated">
+                                            <Card className="card-elevated" radius="lg">
                                                 <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 pb-2">
                                                     <div className="flex flex-wrap items-center gap-2">
                                                         <Chip size="sm" color="primary" variant="flat">
@@ -476,7 +477,7 @@ export default function KitchenDetailClient({
 
                                             {/* このセクションの推敲提案 */}
                                             {isGicho && proposals.filter(p => p.sectionId === section.id && p.status === "pending").map((proposal) => (
-                                                <Card key={proposal.id} className="mt-3 border-2 border-warning bg-warning/5">
+                                                <Card key={proposal.id} className="mt-3 border-2 border-warning bg-warning/5" radius="lg">
                                                     <CardHeader className="pb-2">
                                                         <Chip size="sm" color="warning" variant="flat">
                                                             <Icon icon="mdi:lightbulb-outline" className="mr-1" />
@@ -541,7 +542,7 @@ export default function KitchenDetailClient({
                                         const originalIndex = sections.indexOf(section);
 
                                         return (
-                                            <Card key={section.id} className="card-elevated">
+                                            <Card key={section.id} className="card-elevated" radius="lg">
                                                 <CardHeader className="pb-2">
                                                     <Chip size="sm" color="primary" variant="flat">
                                                         セクション {originalIndex + 1}
@@ -647,7 +648,7 @@ export default function KitchenDetailClient({
                                     sections.map((section, index) => {
                                         const sectionImages = images.filter(img => img.sectionId === section.id);
                                         return (
-                                            <Card key={section.id} className="card-elevated">
+                                            <Card key={section.id} className="card-elevated" radius="lg">
                                                 <CardHeader className="pb-2">
                                                     <Chip size="sm" color="primary" variant="flat">
                                                         セクション {index + 1}
@@ -663,7 +664,7 @@ export default function KitchenDetailClient({
                                                             {sectionImages.map((img) => (
                                                                 <div
                                                                     key={img.id}
-                                                                    className={`relative cursor-pointer rounded-lg overflow-hidden transition-all ${img.isSelected
+                                                                    className={`card-elevated hover:scale-[1.02] transition-transform rounded-lg overflow-hidden ${img.isSelected
                                                                         ? 'ring-4 ring-primary ring-offset-2'
                                                                         : 'hover:ring-2 hover:ring-default-300'
                                                                         }`}
@@ -708,7 +709,7 @@ export default function KitchenDetailClient({
                         >
                             <div className="p-4 md:p-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Card className="card-elevated">
+                                    <Card className="card-elevated" radius="lg">
                                         <CardBody className="space-y-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="p-3 bg-primary/10 rounded-lg">
@@ -732,7 +733,7 @@ export default function KitchenDetailClient({
                                         </CardBody>
                                     </Card>
 
-                                    <Card className="card-elevated">
+                                    <Card className="card-elevated" radius="lg">
                                         <CardBody className="space-y-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="p-3 bg-secondary/10 rounded-lg">
