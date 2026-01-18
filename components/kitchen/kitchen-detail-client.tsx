@@ -2,9 +2,9 @@
 
 import {
     Card, CardBody, CardHeader, Button, Tabs, Tab, Chip,
-    Divider, Progress, Spinner, Checkbox
+    Divider, Progress, Spinner, Checkbox, Modal, ModalContent, ModalBody
 } from "@heroui/react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
 import {
@@ -22,18 +22,19 @@ import {
     getCookingSections,
     setProjectScript
 } from "@/app/actions/kitchen";
+import { getUserDisplayNames } from "@/app/actions/user";
 import JSZip from "jszip";
 
 // 型定義
 interface Section {
     id: string;
     projectId: string;
-    orderIndex: number;
-    content: string;
+    orderIndex: number | null;
+    content: string | null;
     imageInstruction: string | null;
     allowImageSubmission: boolean | null;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: Date | null;
+    updatedAt: Date | null;
 }
 
 interface Project {
@@ -100,6 +101,14 @@ export default function KitchenDetailClient({
     const [uploadingSection, setUploadingSection] = useState<string | null>(null);
     const [uploadProgress, setUploadProgress] = useState(0);
 
+    // 画像拡大モーダル
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [lightboxImages, setLightboxImages] = useState<UploadedImage[]>([]);
+    const [lightboxIndex, setLightboxIndex] = useState(0);
+
+    // 投稿者名表示用
+    const [uploaderNames, setUploaderNames] = useState<Record<string, string>>({});
+
     const isGicho = userRole === "gicho";
 
     // セクション数プレビュー
@@ -112,22 +121,29 @@ export default function KitchenDetailClient({
     }, [fullScript]);
 
     // 画像一覧を読み込み
+    const loadImages = useCallback(async () => {
+        const imgs = await getCookingImages(project.id);
+        setImages(imgs);
+
+        // 投稿者名を取得
+        const userIds = [...new Set(imgs.map(img => img.uploadedBy))];
+        if (userIds.length > 0) {
+            const names = await getUserDisplayNames(userIds);
+            setUploaderNames(names);
+        }
+    }, [project.id]);
+
+    const loadProposals = useCallback(async () => {
+        const props = await getAllProposalsForProject(project.id);
+        setProposals(props);
+    }, [project.id]);
+
     useEffect(() => {
         loadImages();
         if (isGicho) {
             loadProposals();
         }
-    }, []);
-
-    const loadImages = async () => {
-        const imgs = await getCookingImages(project.id);
-        setImages(imgs);
-    };
-
-    const loadProposals = async () => {
-        const props = await getAllProposalsForProject(project.id);
-        setProposals(props);
-    };
+    }, [loadImages, loadProposals, isGicho]);
 
     const reloadSections = async () => {
         const updated = await getCookingSections(project.id);
@@ -289,13 +305,37 @@ export default function KitchenDetailClient({
             }
         }
 
-        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        const zipBlob = await zip.generateAsync({
+            type: 'blob',
+            mimeType: 'application/zip'
+        });
         const url = URL.createObjectURL(zipBlob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `${project.title}_選択画像.zip`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    };
+
+    // 画像拡大モーダルのハンドラー
+    const openLightbox = (imageList: UploadedImage[], startIndex: number) => {
+        setLightboxImages(imageList);
+        setLightboxIndex(startIndex);
+        setLightboxOpen(true);
+    };
+
+    const closeLightbox = () => {
+        setLightboxOpen(false);
+    };
+
+    const goToPrevImage = () => {
+        setLightboxIndex((prev) => (prev > 0 ? prev - 1 : lightboxImages.length - 1));
+    };
+
+    const goToNextImage = () => {
+        setLightboxIndex((prev) => (prev < lightboxImages.length - 1 ? prev + 1 : 0));
     };
 
     return (
@@ -697,14 +737,24 @@ export default function KitchenDetailClient({
                                                     {/* このセクションの画像一覧 */}
                                                     {sectionImages.length > 0 && (
                                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                                            {sectionImages.map((img) => (
-                                                                <div key={img.id} className="relative group">
+                                                            {sectionImages.map((img, imgIndex) => (
+                                                                <div key={img.id} className="relative group cursor-pointer" onClick={() => openLightbox(sectionImages, imgIndex)}>
                                                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                                                     <img
                                                                         src={img.imageUrl}
                                                                         alt="uploaded"
-                                                                        className="w-full h-24 md:h-32 object-cover rounded-lg"
+                                                                        className="w-full h-24 md:h-32 object-cover rounded-lg hover:opacity-90 transition-opacity"
                                                                     />
+                                                                    {/* 拡大アイコン */}
+                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 rounded-lg">
+                                                                        <Icon icon="mdi:magnify-plus" className="text-white text-2xl" />
+                                                                    </div>
+                                                                    {/* 投稿者名 */}
+                                                                    {uploaderNames[img.uploadedBy] && (
+                                                                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1 rounded-b-lg">
+                                                                            <p className="text-white text-xs truncate">{uploaderNames[img.uploadedBy]}</p>
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                             ))}
                                                         </div>
@@ -736,24 +786,40 @@ export default function KitchenDetailClient({
                                 ) : (
                                     sections.map((section, index) => {
                                         const sectionImages = images.filter(img => img.sectionId === section.id);
+                                        const allowsImages = section.allowImageSubmission ?? true;
+
                                         return (
-                                            <Card key={section.id} className="card-elevated" radius="lg">
-                                                <CardHeader className="pb-2">
+                                            <Card
+                                                key={section.id}
+                                                className={`card-elevated ${!allowsImages ? 'opacity-60' : ''}`}
+                                                radius="lg"
+                                            >
+                                                <CardHeader className="pb-2 flex flex-row items-center gap-2">
                                                     <Chip size="sm" color="primary" variant="flat">
                                                         セクション {index + 1}
                                                     </Chip>
+                                                    {!allowsImages && (
+                                                        <Chip size="sm" color="warning" variant="flat">
+                                                            <Icon icon="mdi:image-off" className="mr-1" />
+                                                            画像なし
+                                                        </Chip>
+                                                    )}
                                                 </CardHeader>
                                                 <CardBody className="space-y-4">
                                                     <div className="text-sm text-foreground-muted line-clamp-2">
                                                         {section.content}
                                                     </div>
 
-                                                    {sectionImages.length > 0 ? (
+                                                    {!allowsImages ? (
+                                                        <p className="text-sm text-foreground-muted text-center py-4 bg-warning/10 rounded-lg">
+                                                            このセクションは画像を募集していません
+                                                        </p>
+                                                    ) : sectionImages.length > 0 ? (
                                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                                            {sectionImages.map((img) => (
+                                                            {sectionImages.map((img, imgIndex) => (
                                                                 <div
                                                                     key={img.id}
-                                                                    className={`card-elevated hover:scale-[1.02] transition-transform rounded-lg overflow-hidden ${img.isSelected
+                                                                    className={`relative card-elevated hover:scale-[1.02] transition-transform rounded-lg overflow-hidden cursor-pointer ${img.isSelected
                                                                         ? 'ring-4 ring-primary ring-offset-2'
                                                                         : 'hover:ring-2 hover:ring-default-300'
                                                                         }`}
@@ -763,11 +829,27 @@ export default function KitchenDetailClient({
                                                                     <img
                                                                         src={img.imageUrl}
                                                                         alt="section image"
-                                                                        className="w-full h-24 md:h-32 object-cover rounded-lg"
+                                                                        className="w-full h-24 md:h-32 object-cover"
                                                                     />
                                                                     {img.isSelected && (
                                                                         <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1.5">
                                                                             <Icon icon="mdi:check" className="text-sm" />
+                                                                        </div>
+                                                                    )}
+                                                                    {/* 拡大ボタン */}
+                                                                    <div
+                                                                        className="absolute top-2 left-2 bg-black/40 hover:bg-black/60 min-w-6 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            openLightbox(sectionImages, imgIndex);
+                                                                        }}
+                                                                    >
+                                                                        <Icon icon="mdi:magnify-plus" className="text-white text-xs" />
+                                                                    </div>
+                                                                    {/* 投稿者名 */}
+                                                                    {uploaderNames[img.uploadedBy] && (
+                                                                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1">
+                                                                            <p className="text-white text-xs truncate">{uploaderNames[img.uploadedBy]}</p>
                                                                         </div>
                                                                     )}
                                                                 </div>
@@ -853,6 +935,78 @@ export default function KitchenDetailClient({
                     </Tabs>
                 </CardBody>
             </Card>
+
+            {/* 画像拡大モーダル */}
+            <Modal
+                isOpen={lightboxOpen}
+                onClose={closeLightbox}
+                size="full"
+                classNames={{
+                    base: "bg-black/95",
+                    body: "p-0",
+                }}
+            >
+                <ModalContent>
+                    <ModalBody className="flex items-center justify-center relative">
+                        {lightboxImages.length > 0 && (
+                            <>
+                                {/* 前へボタン */}
+                                <Button
+                                    isIconOnly
+                                    variant="flat"
+                                    radius="full"
+                                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/40"
+                                    onPress={goToPrevImage}
+                                >
+                                    <Icon icon="mdi:chevron-left" className="text-2xl text-white" />
+                                </Button>
+
+                                {/* 画像 */}
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={lightboxImages[lightboxIndex]?.imageUrl}
+                                    alt="拡大画像"
+                                    className="max-h-[90vh] max-w-[90vw] object-contain"
+                                />
+
+                                {/* 次へボタン */}
+                                <Button
+                                    isIconOnly
+                                    variant="flat"
+                                    radius="full"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/40"
+                                    onPress={goToNextImage}
+                                >
+                                    <Icon icon="mdi:chevron-right" className="text-2xl text-white" />
+                                </Button>
+
+                                {/* 閉じるボタン */}
+                                <Button
+                                    isIconOnly
+                                    variant="flat"
+                                    radius="full"
+                                    className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/40"
+                                    onPress={closeLightbox}
+                                >
+                                    <Icon icon="mdi:close" className="text-xl text-white" />
+                                </Button>
+
+                                {/* 画像情報 */}
+                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 px-4 py-2 rounded-lg">
+                                    <p className="text-white text-sm">
+                                        {lightboxIndex + 1} / {lightboxImages.length}
+                                        {lightboxImages[lightboxIndex]?.uploadedBy && uploaderNames[lightboxImages[lightboxIndex].uploadedBy] && (
+                                            <span className="ml-2 text-white/70">
+                                                by {uploaderNames[lightboxImages[lightboxIndex].uploadedBy]}
+                                            </span>
+                                        )}
+                                    </p>
+                                </div>
+                            </>
+                        )}
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </div>
     );
 }
