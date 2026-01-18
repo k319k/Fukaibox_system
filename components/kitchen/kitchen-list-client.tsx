@@ -127,8 +127,7 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                 {isGicho && (
                     <Button
                         color="primary"
-                        variant="solid"
-                        radius="lg"
+                        radius="full"
                         startContent={<Icon icon="mdi:plus" className="text-xl" />}
                         onPress={onOpen}
                     >
@@ -146,7 +145,7 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                         {isGicho && (
                             <Button
                                 color="primary"
-                                radius="lg"
+                                radius="full"
                                 className="mt-4"
                                 onPress={onOpen}
                             >
@@ -160,13 +159,12 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                     {projects.map((project) => (
                         <Card
                             key={project.id}
-                            className="card-elevated hover:scale-[1.02] transition-transform cursor-pointer"
+                            isPressable
+                            onPress={() => router.push(`/cooking/${project.id}`)}
+                            className="card-elevated hover:scale-[1.02] transition-transform"
                             radius="lg"
                         >
-                            <CardHeader
-                                className="flex justify-between items-start"
-                                onClick={() => router.push(`/cooking/${project.id}`)}
-                            >
+                            <CardHeader className="flex justify-between items-start pb-1">
                                 <div className="flex-1">
                                     <h3 className="text-lg font-semibold">{project.title}</h3>
                                     {project.description && (
@@ -175,32 +173,35 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                                         </p>
                                     )}
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Chip
-                                        size="sm"
-                                        color={getStatusColor(project.status)}
-                                        variant="solid"
-                                    >
-                                        {getStatusLabel(project.status)}
-                                    </Chip>
-                                </div>
+                                <Chip
+                                    size="sm"
+                                    color={getStatusColor(project.status)}
+                                    variant="solid"
+                                >
+                                    {getStatusLabel(project.status)}
+                                </Chip>
                             </CardHeader>
-                            <CardBody className="pt-0 flex justify-between items-center">
-                                <p className="text-xs text-foreground-muted">
-                                    作成: {new Date(project.createdAt).toLocaleDateString('ja-JP')}
-                                </p>
-                                {isGicho && (
-                                    <Button
-                                        isIconOnly
-                                        size="sm"
-                                        variant="flat"
-                                        radius="lg"
-                                        color="danger"
-                                        onPress={() => openDeleteModal(project)}
-                                    >
-                                        <Icon icon="mdi:delete" className="text-lg" />
-                                    </Button>
-                                )}
+                            <CardBody className="pt-0">
+                                <div className="flex justify-between items-center">
+                                    <p className="text-xs text-foreground-muted">
+                                        作成: {new Date(project.createdAt).toLocaleDateString('ja-JP')}
+                                    </p>
+                                    {isGicho && (
+                                        <Button
+                                            isIconOnly
+                                            size="sm"
+                                            variant="flat"
+                                            radius="full"
+                                            color="danger"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                openDeleteModal(project);
+                                            }}
+                                        >
+                                            <Icon icon="mdi:delete" className="text-lg" />
+                                        </Button>
+                                    )}
+                                </div>
                             </CardBody>
                         </Card>
                     ))}
@@ -276,7 +277,7 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                     <ModalFooter className="pt-2">
                         <Button
                             variant="light"
-                            radius="lg"
+                            radius="full"
                             onPress={handleClose}
                             isDisabled={isLoading}
                         >
@@ -284,7 +285,7 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                         </Button>
                         <Button
                             color="primary"
-                            radius="lg"
+                            radius="full"
                             onPress={handleCreate}
                             isLoading={isLoading}
                             startContent={!isLoading && <Icon icon="mdi:plus" />}
@@ -328,7 +329,7 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                     <ModalFooter>
                         <Button
                             variant="light"
-                            radius="lg"
+                            radius="full"
                             onPress={onDeleteClose}
                             isDisabled={isDeleting}
                         >
@@ -336,7 +337,7 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                         </Button>
                         <Button
                             color="danger"
-                            radius="lg"
+                            radius="full"
                             onPress={handleDeleteConfirm}
                             isLoading={isDeleting}
                             startContent={!isDeleting && <Icon icon="mdi:delete" />}
