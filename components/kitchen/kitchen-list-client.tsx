@@ -153,7 +153,7 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                                 <Chip
                                     size="sm"
                                     color={getStatusColor(project.status) as any}
-                                    variant="flat"
+                                    variant="solid"
                                 >
                                     {getStatusLabel(project.status)}
                                 </Chip>
@@ -176,7 +176,7 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                 backdrop="blur"
                 classNames={{
                     backdrop: "bg-gradient-to-br from-primary/20 via-background/80 to-secondary/20 backdrop-blur-md",
-                    base: "border border-default-200 bg-background/95 shadow-2xl",
+                    base: "border border-default-200 bg-background shadow-2xl rounded-2xl",
                 }}
             >
                 <ModalContent>
@@ -210,6 +210,7 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                                 onValueChange={setTitle}
                                 isDisabled={isLoading}
                                 isRequired
+                                radius="lg"
                                 startContent={<Icon icon="mdi:format-title" className="text-foreground-muted" />}
                                 classNames={{
                                     inputWrapper: "bg-default-50",
@@ -223,6 +224,7 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                                 onValueChange={setDescription}
                                 isDisabled={isLoading}
                                 minRows={3}
+                                radius="lg"
                                 classNames={{
                                     inputWrapper: "bg-default-50",
                                 }}
