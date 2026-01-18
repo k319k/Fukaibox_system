@@ -1,11 +1,12 @@
 "use client";
 
-import { Button, Avatar, Tooltip } from "@heroui/react";
+import { Button, Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Home, ChefHat, Book, Wrench, Settings, Menu, X } from "lucide-react";
+import { Home, ChefHat, Book, Wrench, Settings, Menu, X, LogIn, LogOut } from "lucide-react";
+import { signOut } from "@/lib/auth-client";
 
 const navigation = [
     { name: "ホーム", href: "/", icon: Home },
@@ -155,26 +156,49 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
 
             {/* ユーザー情報 - M3 Surface Container */}
             <div className="px-3 md:px-4 pb-4 md:pb-6">
-                <Tooltip content="プロフィール">
-                    <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl bg-[var(--md-sys-color-surface-container)]/80 hover:bg-[var(--md-sys-color-surface-container-high)] cursor-pointer transition-all duration-200">
-                        <Avatar
-                            size="md"
-                            name={displayName[0]}
-                            src={userImage || undefined}
-                            classNames={{
-                                base: "ring-2 ring-[var(--md-sys-color-outline-variant)]/30",
-                            }}
-                        />
-                        <div className="flex-1 min-w-0">
-                            <p className="title-medium truncate tracking-tight font-semibold text-[var(--md-sys-color-on-surface)]">
-                                {displayName}
-                            </p>
-                            <span className={cn("inline-block px-3 py-1 text-xs mt-1 rounded-full font-medium", roleBadgeClass)}>
-                                {isLoggedIn ? roleLabel : "未ログイン"}
-                            </span>
+                <Dropdown placement="top-start" radius="lg">
+                    <DropdownTrigger>
+                        <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl bg-[var(--md-sys-color-surface-container)]/80 hover:bg-[var(--md-sys-color-surface-container-high)] cursor-pointer transition-all duration-200">
+                            <Avatar
+                                size="md"
+                                name={displayName[0]}
+                                src={userImage || undefined}
+                                classNames={{
+                                    base: "ring-2 ring-[var(--md-sys-color-outline-variant)]/30",
+                                }}
+                            />
+                            <div className="flex-1 min-w-0">
+                                <p className="title-medium truncate tracking-tight font-semibold text-[var(--md-sys-color-on-surface)]">
+                                    {displayName}
+                                </p>
+                                <span className={cn("inline-block px-3 py-1 text-xs mt-1 rounded-full font-medium", roleBadgeClass)}>
+                                    {isLoggedIn ? roleLabel : "未ログイン"}
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                </Tooltip>
+                    </DropdownTrigger>
+                    <DropdownMenu aria-label="ユーザーメニュー">
+                        {isLoggedIn ? (
+                            <DropdownItem
+                                key="logout"
+                                color="danger"
+                                startContent={<LogOut className="w-4 h-4" />}
+                                onPress={() => signOut()}
+                            >
+                                ログアウト
+                            </DropdownItem>
+                        ) : (
+                            <DropdownItem
+                                key="login"
+                                color="primary"
+                                startContent={<LogIn className="w-4 h-4" />}
+                                href="/login"
+                            >
+                                ログイン
+                            </DropdownItem>
+                        )}
+                    </DropdownMenu>
+                </Dropdown>
             </div>
         </>
     );
