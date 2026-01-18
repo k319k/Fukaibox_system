@@ -308,7 +308,29 @@ export default function KitchenDetailClient({
                 if (!response.ok) throw new Error(`Failed to fetch image: ${response.status}`);
 
                 const blob = await response.blob();
-                const filename = img.imageUrl.split('/').pop() || `image_${img.id}.jpg`;
+
+                // ファイル名を生成: (セクション名)_(投稿者名)作.拡張子
+                const section = sections.find(s => s.id === img.sectionId);
+                let sectionName = "未分類";
+                if (section?.content) {
+                    // 最初の1行、または先頭15文字を取得
+                    sectionName = section.content.split('\n')[0].substring(0, 15).trim();
+                }
+                const safeSectionName = sectionName.replace(/[\\/:*?"<>|]/g, '');
+
+                const uploaderName = uploaderNames[img.uploadedBy] || "不明";
+                const safeUploaderName = uploaderName.replace(/[\\/:*?"<>|]/g, '');
+
+                const originalExt = img.imageUrl.split('.').pop()?.split('?')[0] || "jpg";
+                let filename = `${safeSectionName}_${safeUploaderName}作.${originalExt}`;
+
+                // 重複チェック
+                let counter = 1;
+                while (zip.file(filename)) {
+                    filename = `${safeSectionName}_${safeUploaderName}作_${counter}.${originalExt}`;
+                    counter++;
+                }
+
                 zip.file(filename, blob);
             } catch (error) {
                 console.error(`Failed to fetch image ${img.id}:`, error);
