@@ -61,11 +61,7 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
         }
     };
 
-    const handleDeleteClick = (e: React.MouseEvent, project: Project) => {
-        e.stopPropagation();
-        setDeleteTarget(project);
-        onDeleteOpen();
-    };
+
 
     const handleDeleteConfirm = async () => {
         if (!deleteTarget) return;
@@ -190,7 +186,12 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                                             variant="light"
                                             radius="lg"
                                             color="danger"
-                                            onPress={(e) => handleDeleteClick(e as unknown as React.MouseEvent, project)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                setDeleteTarget(project);
+                                                onDeleteOpen();
+                                            }}
                                         >
                                             <Icon icon="mdi:delete" className="text-lg" />
                                         </Button>
