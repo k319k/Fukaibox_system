@@ -366,19 +366,15 @@ export default function KitchenDetailClient({
                                             </div>
                                         </div>
 
-                                        {/* テキストエリア */}
-                                        <Textarea
+                                        {/* テキストエリア - 標準HTML */}
+                                        <textarea
                                             placeholder="ここに台本を入力してください..."
                                             value={fullScript}
-                                            onValueChange={setFullScript}
-                                            isDisabled={isCreatingSections}
-                                            minRows={12}
-                                            variant="bordered"
-                                            radius="lg"
-                                            classNames={{
-                                                input: "font-mono text-sm",
-                                                inputWrapper: "bg-white dark:bg-default-100 min-h-[200px]",
-                                            }}
+                                            onChange={(e) => setFullScript(e.target.value)}
+                                            disabled={isCreatingSections}
+                                            rows={12}
+                                            className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background font-mono text-sm focus:border-primary focus:outline-none transition-colors resize-y disabled:opacity-50"
+                                            style={{ minHeight: '250px', maxHeight: '500px' }}
                                         />
 
                                         {/* セクションプレビューとボタン */}

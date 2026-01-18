@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, CardBody, CardHeader, Input, Textarea, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Chip } from "@heroui/react";
+import { Button, Card, CardBody, CardHeader, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Chip } from "@heroui/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
@@ -61,7 +61,10 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
         }
     };
 
-
+    const openDeleteModal = (project: Project) => {
+        setDeleteTarget(project);
+        onDeleteOpen();
+    };
 
     const handleDeleteConfirm = async () => {
         if (!deleteTarget) return;
@@ -157,12 +160,13 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                     {projects.map((project) => (
                         <Card
                             key={project.id}
-                            isPressable
-                            onPress={() => router.push(`/cooking/${project.id}`)}
-                            className="card-elevated hover:scale-[1.02] transition-transform"
+                            className="card-elevated hover:scale-[1.02] transition-transform cursor-pointer"
                             radius="lg"
                         >
-                            <CardHeader className="flex justify-between items-start">
+                            <CardHeader
+                                className="flex justify-between items-start"
+                                onClick={() => router.push(`/cooking/${project.id}`)}
+                            >
                                 <div className="flex-1">
                                     <h3 className="text-lg font-semibold">{project.title}</h3>
                                     {project.description && (
@@ -179,29 +183,24 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                                     >
                                         {getStatusLabel(project.status)}
                                     </Chip>
-                                    {isGicho && (
-                                        <Button
-                                            isIconOnly
-                                            size="sm"
-                                            variant="light"
-                                            radius="lg"
-                                            color="danger"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                setDeleteTarget(project);
-                                                onDeleteOpen();
-                                            }}
-                                        >
-                                            <Icon icon="mdi:delete" className="text-lg" />
-                                        </Button>
-                                    )}
                                 </div>
                             </CardHeader>
-                            <CardBody className="pt-0">
+                            <CardBody className="pt-0 flex justify-between items-center">
                                 <p className="text-xs text-foreground-muted">
                                     作成: {new Date(project.createdAt).toLocaleDateString('ja-JP')}
                                 </p>
+                                {isGicho && (
+                                    <Button
+                                        isIconOnly
+                                        size="sm"
+                                        variant="flat"
+                                        radius="lg"
+                                        color="danger"
+                                        onPress={() => openDeleteModal(project)}
+                                    >
+                                        <Icon icon="mdi:delete" className="text-lg" />
+                                    </Button>
+                                )}
                             </CardBody>
                         </Card>
                     ))}
@@ -214,8 +213,12 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                 onClose={handleClose}
                 size="md"
                 placement="center"
-                backdrop="blur"
+                backdrop="opaque"
                 radius="lg"
+                classNames={{
+                    backdrop: "bg-black/60 backdrop-blur-sm",
+                    base: "bg-background",
+                }}
             >
                 <ModalContent>
                     <ModalHeader className="flex flex-col gap-1 pb-2">
@@ -239,29 +242,35 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                             </div>
                         )}
 
-                        <div className="flex flex-col gap-4">
-                            <Input
-                                label="タイトル"
-                                placeholder="例: 封解公儀の新年挨拶"
-                                variant="bordered"
-                                labelPlacement="outside"
-                                value={title}
-                                onValueChange={setTitle}
-                                isDisabled={isLoading}
-                                isRequired
-                                radius="lg"
-                            />
-                            <Textarea
-                                label="説明（任意）"
-                                placeholder="このプロジェクトの内容や目的"
-                                variant="bordered"
-                                labelPlacement="outside"
-                                value={description}
-                                onValueChange={setDescription}
-                                isDisabled={isLoading}
-                                minRows={2}
-                                radius="lg"
-                            />
+                        <div className="flex flex-col gap-5">
+                            {/* タイトル入力 - 標準HTML */}
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-medium text-foreground">
+                                    タイトル <span className="text-danger">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="例: 封解公儀の新年挨拶"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    disabled={isLoading}
+                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors disabled:opacity-50"
+                                />
+                            </div>
+                            {/* 説明入力 - 標準HTML */}
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-medium text-foreground">
+                                    説明（任意）
+                                </label>
+                                <textarea
+                                    placeholder="このプロジェクトの内容や目的"
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    disabled={isLoading}
+                                    rows={3}
+                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors resize-none disabled:opacity-50"
+                                />
+                            </div>
                         </div>
                     </ModalBody>
                     <ModalFooter className="pt-2">
@@ -292,8 +301,12 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                 onClose={onDeleteClose}
                 size="sm"
                 placement="center"
-                backdrop="blur"
+                backdrop="opaque"
                 radius="lg"
+                classNames={{
+                    backdrop: "bg-black/60 backdrop-blur-sm",
+                    base: "bg-background",
+                }}
             >
                 <ModalContent>
                     <ModalHeader className="flex flex-col gap-1">
