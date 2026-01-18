@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, CardBody, CardHeader, Input, Textarea, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Chip } from "@heroui/react";
+import { Button, Card, CardBody, CardHeader, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Chip } from "@heroui/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
@@ -177,7 +177,7 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                 backdrop="blur"
                 classNames={{
                     backdrop: "bg-black/50 backdrop-blur-sm",
-                    base: "bg-background shadow-xl",
+                    base: "bg-background shadow-xl rounded-2xl",
                 }}
             >
                 <ModalContent>
@@ -202,33 +202,35 @@ export default function KitchenListClient({ projects, userRole }: KitchenListCli
                             </div>
                         )}
 
-                        <div className="space-y-6">
-                            <Input
-                                label="タイトル"
-                                placeholder="例: 封解公儀の新年挨拶"
-                                variant="bordered"
-                                labelPlacement="outside"
-                                value={title}
-                                onValueChange={setTitle}
-                                isDisabled={isLoading}
-                                isRequired
-                                classNames={{
-                                    label: "text-sm font-medium mb-1",
-                                }}
-                            />
-                            <Textarea
-                                label="説明（任意）"
-                                placeholder="このプロジェクトの内容や目的"
-                                variant="bordered"
-                                labelPlacement="outside"
-                                value={description}
-                                onValueChange={setDescription}
-                                isDisabled={isLoading}
-                                minRows={2}
-                                classNames={{
-                                    label: "text-sm font-medium mb-1",
-                                }}
-                            />
+                        <div className="flex flex-col gap-4">
+                            {/* タイトル入力 */}
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-medium">
+                                    タイトル <span className="text-danger">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="例: 封解公儀の新年挨拶"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    disabled={isLoading}
+                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-white dark:bg-default-100 focus:border-primary focus:outline-none transition-colors"
+                                />
+                            </div>
+                            {/* 説明入力 */}
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-medium">
+                                    説明（任意）
+                                </label>
+                                <textarea
+                                    placeholder="このプロジェクトの内容や目的"
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    disabled={isLoading}
+                                    rows={2}
+                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-white dark:bg-default-100 focus:border-primary focus:outline-none transition-colors resize-none"
+                                />
+                            </div>
                         </div>
                     </ModalBody>
                     <ModalFooter className="pt-2">

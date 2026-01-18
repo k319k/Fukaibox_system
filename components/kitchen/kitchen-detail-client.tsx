@@ -354,7 +354,8 @@ export default function KitchenDetailClient({
                             <div className="p-4 md:p-6 space-y-4">
                                 {/* セクションがない場合: 台本入力エリア */}
                                 {sections.length === 0 && isGicho ? (
-                                    <div className="space-y-4">
+                                    <div className="flex flex-col gap-6">
+                                        {/* ヘッダー */}
                                         <div className="flex items-center gap-3">
                                             <Icon icon="mdi:script-text-outline" className="text-2xl text-primary" />
                                             <div>
@@ -365,21 +366,22 @@ export default function KitchenDetailClient({
                                             </div>
                                         </div>
 
-                                        <Textarea
-                                            placeholder="ここに台本を入力してください..."
-                                            variant="bordered"
-                                            value={fullScript}
-                                            onValueChange={setFullScript}
-                                            isDisabled={isCreatingSections}
-                                            minRows={12}
-                                            classNames={{
-                                                input: "font-mono text-sm",
-                                                inputWrapper: "bg-white dark:bg-default-100",
-                                            }}
-                                        />
+                                        {/* テキストエリア */}
+                                        <div className="w-full">
+                                            <textarea
+                                                placeholder="ここに台本を入力してください..."
+                                                value={fullScript}
+                                                onChange={(e) => setFullScript(e.target.value)}
+                                                disabled={isCreatingSections}
+                                                rows={12}
+                                                className="w-full p-4 border-2 border-default-200 rounded-xl bg-white dark:bg-default-100 font-mono text-sm resize-y focus:border-primary focus:outline-none transition-colors"
+                                                style={{ minHeight: '200px' }}
+                                            />
+                                        </div>
 
+                                        {/* セクションプレビューとボタン */}
                                         {fullScript.trim() && (
-                                            <div className="flex items-center justify-between mt-4 p-4 bg-primary/10 rounded-lg">
+                                            <div className="flex items-center justify-between p-4 bg-primary/10 rounded-xl">
                                                 <div className="flex items-center gap-3">
                                                     <Icon icon="mdi:format-list-numbered" className="text-2xl text-primary" />
                                                     <div>
