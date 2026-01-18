@@ -143,6 +143,13 @@ export default function KitchenDetailClient({
         if (isGicho) {
             loadProposals();
         }
+
+        // 画像のリアルタイム更新: 10秒ごとにポーリング
+        const interval = setInterval(() => {
+            loadImages();
+        }, 10000);
+
+        return () => clearInterval(interval);
     }, [loadImages, loadProposals, isGicho]);
 
     const reloadSections = async () => {
