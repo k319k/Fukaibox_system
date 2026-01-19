@@ -505,3 +505,14 @@ body {
 .dashed-border {
   border: 2px dashed var(--md-sys-color-outline-variant);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HeroUI Avatar Fix
+   Avatarコンポーネントの画像がopacity-0で非表示になる問題を修正
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-slot="avatar"] img,
+.avatar img,
+span[data-loaded] img {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
