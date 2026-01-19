@@ -568,7 +568,7 @@ export default function KitchenDetailClient({
                                                 </div>
                                             )}
                                             <Card className="card-elevated" radius="lg">
-                                                <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 pb-2">
+                                                <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 pb-3">
                                                     <div className="flex flex-wrap items-center gap-2">
                                                         <Chip size="sm" color="primary" variant="flat">
                                                             <Icon icon="mdi:numeric" className="mr-1" />
@@ -645,7 +645,7 @@ export default function KitchenDetailClient({
                                                         )}
                                                     </div>
                                                 </CardHeader>
-                                                <CardBody className="pt-0 space-y-3">
+                                                <CardBody className="pt-2 space-y-3">
                                                     {/* 編集中の場合: textarea */}
                                                     {editingSection?.id === section.id ? (
                                                         <div className="space-y-4">
