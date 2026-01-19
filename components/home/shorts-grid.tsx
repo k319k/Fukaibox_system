@@ -32,10 +32,10 @@ export function ShortsGrid({ shorts }: ShortsGridProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
         >
-            <Card className="bg-content1 rounded-[28px] border-none shadow-none">
+            <Card className="bg-[var(--md-sys-color-surface-container-low)] rounded-[28px] border-none shadow-none">
                 <CardHeader className="p-8 pb-0 flex-col items-start">
-                    <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3">
-                        <Play className="w-6 h-6 fill-current text-[var(--md-sys-color-primary)]" />
+                    <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3 text-[var(--md-sys-color-on-surface)]">
+                        <Play className="w-6 h-6 fill-current text-[#73342b]" />
                         最新のShorts
                     </h2>
                 </CardHeader>
@@ -52,9 +52,9 @@ export function ShortsGrid({ shorts }: ShortsGridProps) {
                                     <Link href={video.videoUrl} target="_blank" className="group cursor-pointer block">
                                         <motion.div
                                             whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                                            whileTap={{ scale: 0.96 }}
+                                            whileTap={{ scale: 0.95 }}
                                         >
-                                            <div className="aspect-[9/16] rounded-[16px] bg-[var(--md-sys-color-surface-container-highest)] mb-3 overflow-hidden relative shadow-sm group-hover:shadow-lg transition-all duration-300">
+                                            <div className="aspect-[9/16] rounded-[20px] bg-[var(--md-sys-color-surface-container-highest)] mb-3 overflow-hidden relative shadow-sm group-hover:shadow-lg transition-all duration-300">
                                                 <Image
                                                     src={video.thumbnailUrl}
                                                     alt={video.title}
@@ -63,12 +63,12 @@ export function ShortsGrid({ shorts }: ShortsGridProps) {
                                                     unoptimized
                                                 />
                                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px]">
-                                                    <div className="w-12 h-12 bg-background/95 rounded-full flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform text-[var(--md-sys-color-primary)] pl-0.5">
+                                                    <div className="w-12 h-12 bg-[#fff8f6]/95 rounded-full flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform text-[#73342b] pl-0.5">
                                                         <Play className="w-6 h-6 fill-current" />
                                                     </div>
                                                 </div>
                                             </div>
-                                            <h3 className="text-base font-normal leading-relaxed group-hover:text-[var(--md-sys-color-primary)] transition-colors line-clamp-2">
+                                            <h3 className="text-base font-normal leading-relaxed group-hover:text-[#73342b] transition-colors line-clamp-2 text-[var(--md-sys-color-on-surface)]">
                                                 {video.title}
                                             </h3>
                                             <span className="text-sm text-[var(--md-sys-color-on-surface-variant)] mt-1 block">

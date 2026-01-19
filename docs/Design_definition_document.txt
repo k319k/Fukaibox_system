@@ -1,0 +1,201 @@
+封解Box × Material Design 3 × HeroUI 究極デザイン聖典 (Ver 12.0 Hardened)
+
+1. コア・システム設定 (Theming & Customization)
+
+AIエージェントは、HeroUIの HeroUIProvider および tailwind.config.ts において以下の設定を「絶対定数」として扱うこと。
+
+A. カラーパレット (Based on light.css/dark.css)
+
+背景色（Container）と文字色（On-Container）の組み合わせは、アクセシビリティを担保するため以下のペア以外を禁止する。
+
+役割
+
+トークン名
+
+背景色 (Container)
+
+文字色 (On-Container)
+
+用途
+
+Primary
+
+primary
+
+#ffdad5 (primary-100)
+
+#73342b
+
+標準的な強調、選択状態
+
+Warning
+
+warning
+
+#fbe7a6 (tertiary-100)
+
+#564419
+
+警告、注意喚起、推敲提案
+
+Danger
+
+danger
+
+#ffdad6 (error-100)
+
+#93000a
+
+エラー、削除、破壊的操作
+
+Success
+
+success
+
+#d7f0cb
+
+#10200a
+
+完了、保存成功
+
+B. レイアウト・幾何学 (Layout & Spacing Tokens)
+
+デザインの「呼吸」を統一するため、以下の px 値以外の余白指定を禁止する。
+
+スペーシング・スケール (8dp Grid)
+
+名称
+
+px値
+
+Tailwindクラス
+
+主な用途
+
+None
+
+0px
+
+p-0 / m-0
+
+余白なし
+
+XXS
+
+4px
+
+p-1 / m-1
+
+チップ内のアイコン間隔
+
+XS
+
+8px
+
+p-2 / m-2
+
+コンポーネント内の要素間 (Icon + Text)
+
+Small
+
+12px
+
+p-3 / m-3
+
+小さなカード、リストアイテムのパディング
+
+Medium
+
+16px
+
+p-4 / m-4
+
+標準的なコンポーネント内パディング、入力欄
+
+Large
+
+24px
+
+p-6 / m-6
+
+コンポーネント間のギャップ、フォームの行間
+
+XL
+
+32px
+
+p-8 / m-8
+
+メインカード、モーダルの内部パディング
+
+角丸階層 (Radius Hierarchy)
+
+28px: Modal, Drawer, Card (Main)
+
+20px: Card (Sub), Table, Image, Accordion
+
+16px: Input, Alert, User, Avatar
+
+Full: Button, Tab, Chip, Search Bar
+
+C. ダークモード & カスタムバリアント
+
+Dark Mode: class ストラテジー。bg-background は #1a1110 を固定。
+
+Glassmorphism: 浮遊要素には backdrop-blur-md と bg-opacity-70 を適用。
+
+2. コンポーネント別・文字色詳細仕様
+
+2.1 Alert (警告・通知)
+
+Alert の文字色は、背景色に合わせて厳格に指定すること。
+
+Warning (警告):
+
+variant="flat" color="warning"
+
+base: bg-[#fbe7a6] (Tertiary Container)
+
+mainWrapper: text-[#564419] (On Tertiary Container)
+
+Danger (危険/エラー):
+
+variant="flat" color="danger"
+
+base: bg-[#ffdad6] (Error Container)
+
+mainWrapper: text-[#93000a] (On Error Container)
+
+2.2 Button (アクション)
+
+最優先: color="primary" className="text-white"
+
+標準 (Tonal): variant="flat" color="primary" className="bg-[#ffdad5] text-[#73342b]"
+
+2.3 Input & Textarea (入力)
+
+エラー状態:
+
+isInvalid={true} 時の errorMessage は必ず #ba1a1a (Error) を使用。
+
+背景は bg-[#ffdad6] への切り替えを許容。
+
+3. 「封解Box」固有の高度なUIパターン
+
+3.1 調理進捗・推敲ボード (Cooking/Drafting)
+
+推敲提案中: セクション全体を bg-[#fbe7a6] (Warning Container) で包み、文字色を #564419 に固定して「検討が必要」であることを示す。
+
+3.2 儀員ランキング
+
+上位ランク: bg-[#ffdad5] (Primary Container) を使用し、文字色を #73342b で表示。
+
+4. 品質保証チェックリスト (Final Guardrails)
+
+❌ 純白 (#FFFFFF) 禁止: 背景は必ず #fff8f6 (background) を使用。
+
+❌ 原色赤 (#FF0000) 禁止: エラーは必ず #ba1a1a または上記の On-Error カラーを使用。
+
+❌ コントラスト不足禁止: 薄い色の背景に白文字を載せることを厳禁とする。必ず定義された On-Container カラーを使用せよ。
+
+✅ マイクロインタラクション: 全ての Button に whileTap={{ scale: 0.95 }} を付与せよ。

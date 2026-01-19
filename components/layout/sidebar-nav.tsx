@@ -4,6 +4,7 @@ import { Button } from "@heroui/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, ChefHat, Book, Wrench, Settings, Users } from "lucide-react";
+import { motion } from "framer-motion";
 
 const navigation = [
     { name: "ホーム", href: "/", icon: Home },
@@ -27,33 +28,24 @@ function NavItem({ item }: { item: typeof navigation[0] }) {
 
     return (
         <Link href={item.href} className="group relative block">
-            <Button
-                variant="light"
-                className="w-full justify-start gap-4 h-14 rounded-full relative overflow-hidden"
-                aria-current={isActive ? "page" : undefined}
-            >
-                <div className="relative z-10 flex items-center gap-4">
+            <motion.div whileTap={{ scale: 0.95 }}>
+                <Button
+                    variant="light"
+                    className={`w-full justify-start gap-4 h-14 rounded-full relative overflow-hidden ${isActive
+                            ? "bg-[#ffdad5] text-[#73342b]"
+                            : "text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-container-high)]"
+                        }`}
+                    aria-current={isActive ? "page" : undefined}
+                >
                     <item.icon
                         strokeWidth={1.5}
-                        className={`w-5 h-5 transition-colors duration-200 ${isActive
-                                ? "text-[var(--md-sys-color-on-primary-container)]"
-                                : "text-[var(--md-sys-color-on-surface-variant)] group-hover:text-[var(--md-sys-color-primary)]"
-                            }`}
+                        className={`w-5 h-5 ${isActive ? "text-[#73342b]" : ""}`}
                     />
-                    <span className={`font-semibold tracking-tight transition-colors duration-200 ${isActive
-                            ? "text-[var(--md-sys-color-on-primary-container)]"
-                            : "text-[var(--md-sys-color-on-surface-variant)] group-hover:text-[var(--md-sys-color-on-surface)]"
-                        }`}>
+                    <span className="font-semibold tracking-tight">
                         {item.name}
                     </span>
-                </div>
-                {isActive && (
-                    <div className="absolute inset-0 bg-[var(--md-sys-color-primary-container)] z-0 rounded-full" />
-                )}
-                {!isActive && (
-                    <div className="absolute inset-0 rounded-full bg-[var(--md-sys-color-on-surface)] opacity-0 group-hover:opacity-[0.08] transition-opacity duration-200" />
-                )}
-            </Button>
+                </Button>
+            </motion.div>
         </Link>
     );
 }

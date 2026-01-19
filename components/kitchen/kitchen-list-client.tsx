@@ -3,6 +3,7 @@
 import { useDisclosure, Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import ProjectList from "./list/ProjectList";
 import CreateProjectModal from "./list/CreateProjectModal";
 import DeleteProjectModal from "./list/DeleteProjectModal";
@@ -31,26 +32,30 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
     };
 
     return (
-        <div className="space-y-6">
-            {/* ヘッダー */}
+        <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+        >
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold" style={{ color: 'var(--md-sys-color-primary)' }}>炊事場</h1>
-                    <p className="text-foreground-muted mt-1">ショート動画制作プロジェクトを管理します</p>
+                    <h1 className="text-3xl font-bold text-[#73342b]">炊事場</h1>
+                    <p className="text-[var(--md-sys-color-on-surface-variant)] mt-1">ショート動画制作プロジェクトを管理します</p>
                 </div>
                 {isGicho && (
-                    <Button
-                        color="primary"
-                        radius="full"
-                        startContent={<Icon icon="mdi:plus" className="text-xl" />}
-                        onPress={onOpen}
-                    >
-                        新しい料理を作る
-                    </Button>
+                    <motion.div whileTap={{ scale: 0.95 }}>
+                        <Button
+                            className="bg-[#ffdad5] text-[#73342b] font-semibold rounded-full"
+                            startContent={<Icon icon="mdi:plus" className="text-xl" />}
+                            onPress={onOpen}
+                        >
+                            新しい料理を作る
+                        </Button>
+                    </motion.div>
                 )}
             </div>
 
-            {/* プロジェクト一覧 */}
             <ProjectList
                 projects={projects}
                 isGicho={isGicho}
@@ -58,18 +63,8 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                 onCreateClick={onOpen}
             />
 
-            {/* モーダル */}
-            <CreateProjectModal
-                isOpen={isOpen}
-                onClose={onClose}
-            />
-
-            <DeleteProjectModal
-                isOpen={isDeleteOpen}
-                onClose={onDeleteClose}
-                project={deleteTarget}
-                onProjectDeleted={handleProjectDeleted}
-            />
-        </div>
+            <CreateProjectModal isOpen={isOpen} onClose={onClose} />
+            <DeleteProjectModal isOpen={isDeleteOpen} onClose={onDeleteClose} project={deleteTarget} onProjectDeleted={handleProjectDeleted} />
+        </motion.div>
     );
 }

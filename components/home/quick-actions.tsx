@@ -10,25 +10,29 @@ const actions = [
         label: "料理をする",
         href: "/cooking",
         icon: ChefHat,
-        color: "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
+        bgColor: "bg-[#ffdad5]",
+        textColor: "text-[#73342b]"
     },
     {
         label: "保管庫を見る",
         href: "/storage",
         icon: Package,
-        color: "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
+        bgColor: "bg-[#fbe7a6]",
+        textColor: "text-[#564419]"
     },
     {
         label: "道具を使う",
         href: "/tools",
         icon: Wrench,
-        color: "bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]"
+        bgColor: "bg-[#d7f0cb]",
+        textColor: "text-[#10200a]"
     },
     {
         label: "設定",
         href: "/settings",
         icon: Settings,
-        color: "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)]"
+        bgColor: "bg-[var(--md-sys-color-surface-container-high)]",
+        textColor: "text-[var(--md-sys-color-on-surface)]"
     },
 ];
 
@@ -58,11 +62,9 @@ export function QuickActions() {
                     <Link href={action.href} className="group block">
                         <motion.div
                             whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                            whileTap={{ scale: 0.96 }}
+                            whileTap={{ scale: 0.95 }}
                         >
-                            <Card
-                                className={`h-44 border-none shadow-none hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300 ${action.color} rounded-[28px]`}
-                            >
+                            <Card className={`h-44 border-none shadow-none hover:shadow-lg transition-all duration-300 ${action.bgColor} ${action.textColor} rounded-[28px]`}>
                                 <CardBody className="flex flex-col items-center justify-center gap-5 p-8">
                                     <action.icon
                                         strokeWidth={1.5}
