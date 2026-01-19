@@ -509,10 +509,10 @@ body {
 /* ═══════════════════════════════════════════════════════════════════════════
    HeroUI Avatar Fix
    Avatarコンポーネントの画像がopacity-0で非表示になる問題を修正
+   data-loaded属性はimg要素自体に付与される
    ═══════════════════════════════════════════════════════════════════════════ */
-[data-slot="avatar"] img,
-.avatar img,
-span[data-loaded] img {
+img[data-loaded="true"],
+img.opacity-0[data-loaded="true"] {
   opacity: 1 !important;
   visibility: visible !important;
 }
