@@ -645,7 +645,8 @@ export default function KitchenDetailClient({
                                                         )}
                                                     </div>
                                                 </CardHeader>
-                                                <CardBody className="pt-0 space-y-3">
+                                                <Divider />
+                                                <CardBody className="pt-4 space-y-4">
                                                     {/* 編集中の場合: textarea */}
                                                     {editingSection?.id === section.id ? (
                                                         <div className="space-y-4">
