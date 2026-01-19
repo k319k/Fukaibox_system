@@ -20,7 +20,10 @@ import {
     getProjectScript,
     getSelectedImages,
     getCookingSections,
-    setProjectScript
+    setProjectScript,
+    deleteCookingImage,
+    createCookingSection,
+    deleteCookingSection
 } from "@/app/actions/kitchen";
 import { getUserDisplayNames } from "@/app/actions/user";
 import JSZip from "jszip";
@@ -32,6 +35,7 @@ interface Section {
     orderIndex: number | null;
     content: string | null;
     imageInstruction: string | null;
+    referenceImageUrl: string | null;
     allowImageSubmission: boolean | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -90,6 +94,7 @@ export default function KitchenDetailClient({
     const [editingSection, setEditingSection] = useState<Section | null>(null);
     const [editContent, setEditContent] = useState("");
     const [editImageInstruction, setEditImageInstruction] = useState("");
+    const [editReferenceImageUrl, setEditReferenceImageUrl] = useState("");
     const [editAllowSubmission, setEditAllowSubmission] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -109,7 +114,47 @@ export default function KitchenDetailClient({
     // 投稿者名表示用
     const [uploaderNames, setUploaderNames] = useState<Record<string, string>>({});
 
+    // 文字サイズ設定 (px)
+    const [editorFontSize, setEditorFontSize] = useState(16);
+
     const isGicho = userRole === "gicho";
+
+    // ハンドラ: 画像削除
+    const handleDeleteImage = async (imageId: string) => {
+        if (!confirm("この画像を削除してもよろしいですか？")) return;
+        try {
+            await deleteCookingImage(imageId, project.id);
+            await loadImages();
+        } catch (error) {
+            console.error("Failed to delete image:", error);
+            alert("画像の削除に失敗しました。権限がない可能性があります。");
+        }
+    };
+
+    // ハンドラ: セクション挿入 (指定インデックスの前に挿入)
+    const handleAddSection = async (targetIndex: number) => {
+        try {
+            await createCookingSection(project.id, targetIndex, "新しいセクション");
+            // リロードして同期
+            window.location.reload();
+        } catch (error) {
+            console.error("Failed to create section:", error);
+            alert("セクションの作成に失敗しました。");
+        }
+    };
+
+    // ハンドラ: セクション削除
+    const handleDeleteSection = async (sectionId: string) => {
+        if (!confirm("このセクションを削除してもよろしいですか？\n紐づく画像や提案がある場合、それらの関連付けも解除されます。")) return;
+        try {
+            await deleteCookingSection(sectionId, project.id);
+            // リロードして同期
+            window.location.reload();
+        } catch (error) {
+            console.error("Failed to delete section:", error);
+            alert("セクションの削除に失敗しました。");
+        }
+    };
 
     // セクション数プレビュー
     const sectionPreviewCount = useMemo(() => {
@@ -177,8 +222,9 @@ export default function KitchenDetailClient({
     // セクション編集を開始（インライン）
     const handleEditSection = (section: Section) => {
         setEditingSection(section);
-        setEditContent(section.content);
+        setEditContent(section.content || "");
         setEditImageInstruction(section.imageInstruction || "");
+        setEditReferenceImageUrl(section.referenceImageUrl || "");
         setEditAllowSubmission(section.allowImageSubmission ?? true);
     };
 
@@ -192,7 +238,8 @@ export default function KitchenDetailClient({
                 editingSection.id,
                 editContent,
                 editImageInstruction,
-                editAllowSubmission
+                editAllowSubmission,
+                editReferenceImageUrl
             );
             await reloadSections();
             setEditingSection(null);
@@ -450,6 +497,15 @@ export default function KitchenDetailClient({
                                                     空行（改行2回）でセクションに分割されます
                                                 </p>
                                             </div>
+                                            <div className="flex justify-end gap-2 items-center">
+                                                <span className="text-sm text-foreground-muted">文字サイズ: {editorFontSize}px</span>
+                                                <Button isIconOnly size="sm" variant="flat" onPress={() => setEditorFontSize(Math.max(12, editorFontSize - 2))}>
+                                                    <Icon icon="mdi:format-font-size-decrease" />
+                                                </Button>
+                                                <Button isIconOnly size="sm" variant="flat" onPress={() => setEditorFontSize(Math.min(32, editorFontSize + 2))}>
+                                                    <Icon icon="mdi:format-font-size-increase" />
+                                                </Button>
+                                            </div>
                                         </div>
 
                                         {/* テキストエリア - 標準HTML */}
@@ -459,8 +515,8 @@ export default function KitchenDetailClient({
                                             onChange={(e) => setFullScript(e.target.value)}
                                             disabled={isCreatingSections}
                                             rows={12}
-                                            className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background font-mono text-sm focus:border-primary focus:outline-none transition-colors resize-y disabled:opacity-50"
-                                            style={{ minHeight: '250px', maxHeight: '500px' }}
+                                            className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background font-mono focus:border-primary focus:outline-none transition-colors resize-y disabled:opacity-50"
+                                            style={{ minHeight: '250px', maxHeight: '500px', fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
                                         />
 
                                         {/* セクションプレビューとボタン */}
@@ -500,6 +556,17 @@ export default function KitchenDetailClient({
                                     // セクションがある場合: セクション一覧
                                     sections.map((section, index) => (
                                         <div key={section.id}>
+                                            {index === 0 && (
+                                                <div className="flex justify-end gap-2 items-center mb-2">
+                                                    <span className="text-sm text-foreground-muted">文字サイズ: {editorFontSize}px</span>
+                                                    <Button isIconOnly size="sm" variant="flat" onPress={() => setEditorFontSize(Math.max(12, editorFontSize - 2))}>
+                                                        <Icon icon="mdi:format-font-size-decrease" />
+                                                    </Button>
+                                                    <Button isIconOnly size="sm" variant="flat" onPress={() => setEditorFontSize(Math.min(32, editorFontSize + 2))}>
+                                                        <Icon icon="mdi:format-font-size-increase" />
+                                                    </Button>
+                                                </div>
+                                            )}
                                             <Card className="card-elevated" radius="lg">
                                                 <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 pb-2">
                                                     <div className="flex flex-wrap items-center gap-2">
@@ -590,6 +657,7 @@ export default function KitchenDetailClient({
                                                                     disabled={isSaving}
                                                                     rows={6}
                                                                     className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors resize-y disabled:opacity-50"
+                                                                    style={{ fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
                                                                 />
                                                             </div>
                                                             <div className="flex flex-col gap-2">
@@ -600,6 +668,17 @@ export default function KitchenDetailClient({
                                                                     onChange={(e) => setEditImageInstruction(e.target.value)}
                                                                     disabled={isSaving}
                                                                     placeholder="例: 商品のアップ画像"
+                                                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors disabled:opacity-50"
+                                                                />
+                                                            </div>
+                                                            <div className="flex flex-col gap-2">
+                                                                <label className="text-sm font-medium">参考画像URL（任意）</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={editReferenceImageUrl}
+                                                                    onChange={(e) => setEditReferenceImageUrl(e.target.value)}
+                                                                    disabled={isSaving}
+                                                                    placeholder="例: https://example.com/ref.jpg"
                                                                     className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors disabled:opacity-50"
                                                                 />
                                                             </div>
@@ -631,7 +710,10 @@ export default function KitchenDetailClient({
                                                     ) : (
                                                         /* 通常表示 */
                                                         <>
-                                                            <div className="whitespace-pre-wrap text-sm md:text-base leading-relaxed">
+                                                            <div
+                                                                className="whitespace-pre-wrap text-foreground leading-relaxed"
+                                                                style={{ fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
+                                                            >
                                                                 {section.content}
                                                             </div>
                                                             {section.imageInstruction && (
@@ -641,6 +723,17 @@ export default function KitchenDetailClient({
                                                                         <p className="text-sm font-semibold text-primary">画像指示</p>
                                                                     </div>
                                                                     <p className="text-sm text-foreground-muted">{section.imageInstruction}</p>
+                                                                </div>
+                                                            )}
+                                                            {section.referenceImageUrl && (
+                                                                <div className="mt-2">
+                                                                    <p className="text-xs font-semibold text-foreground-muted mb-1">参考画像:</p>
+                                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                                    <img
+                                                                        src={section.referenceImageUrl}
+                                                                        alt="参考画像"
+                                                                        className="max-h-48 rounded-lg border border-default-200 object-contain bg-black/5"
+                                                                    />
                                                                 </div>
                                                             )}
                                                         </>
@@ -715,98 +808,183 @@ export default function KitchenDetailClient({
                                         const originalIndex = sections.indexOf(section);
 
                                         return (
-                                            <Card key={section.id} className="card-elevated" radius="lg">
-                                                <CardHeader className="pb-2">
-                                                    <Chip size="sm" color="primary" variant="flat">
-                                                        セクション {originalIndex + 1}
-                                                    </Chip>
-                                                </CardHeader>
-                                                <CardBody className="space-y-4">
-                                                    <div className="text-sm text-foreground-muted line-clamp-2">
-                                                        {section.content}
-                                                    </div>
+                                            <div key={section.id} className="space-y-4">
+                                                {/* セクション挿入ボタン (上) */}
+                                                <div className="flex justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                                    <Button
+                                                        size="sm" variant="flat" color="primary" radius="full"
+                                                        startContent={<Icon icon="mdi:plus" />}
+                                                        onPress={() => handleAddSection(originalIndex)}
+                                                    >
+                                                        ここにセクションを追加
+                                                    </Button>
+                                                </div>
 
-                                                    {section.imageInstruction && (
-                                                        <div className="bg-primary/5 border-l-4 border-primary pl-4 py-3 rounded-r">
-                                                            <div className="flex items-center gap-2 mb-1">
-                                                                <Icon icon="mdi:image-text" className="text-primary" />
-                                                                <p className="text-sm font-semibold text-primary">画像指示</p>
-                                                            </div>
-                                                            <p className="text-sm">{section.imageInstruction}</p>
+                                                <Card className="card-elevated" radius="lg">
+                                                    <CardHeader className="pb-2 flex justify-between items-start">
+                                                        <Chip size="sm" color="primary" variant="flat">
+                                                            セクション {originalIndex + 1}
+                                                        </Chip>
+                                                        <div className="flex gap-2">
+                                                            <Button
+                                                                size="sm" color="danger" variant="light" isIconOnly
+                                                                onPress={() => handleDeleteSection(section.id)}
+                                                            >
+                                                                <Icon icon="mdi:trash-can-outline" />
+                                                            </Button>
                                                         </div>
-                                                    )}
+                                                    </CardHeader>
+                                                    <CardBody className="space-y-4">
+                                                        <div
+                                                            className="text-foreground-muted whitespace-pre-wrap"
+                                                            style={{ fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
+                                                        >
+                                                            {section.content}
+                                                        </div>
 
-                                                    <Divider />
-
-                                                    {/* アップロードエリア */}
-                                                    <div>
-                                                        <input
-                                                            type="file"
-                                                            accept="image/*"
-                                                            onChange={(e) => {
-                                                                const file = e.target.files?.[0];
-                                                                if (file) handleImageUpload(section.id, file);
-                                                                e.target.value = '';
-                                                            }}
-                                                            className="hidden"
-                                                            id={`file-input-${section.id}`}
-                                                        />
-                                                        <label htmlFor={`file-input-${section.id}`}>
-                                                            <div className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${uploadingSection === section.id
-                                                                ? 'border-primary bg-primary/5'
-                                                                : 'border-default-300 hover:border-primary hover:bg-primary/5'
-                                                                }`}>
-                                                                {uploadingSection === section.id ? (
-                                                                    <div className="space-y-3">
-                                                                        <Spinner size="sm" color="primary" />
-                                                                        <p className="text-sm text-primary">アップロード中...</p>
-                                                                        <Progress
-                                                                            value={uploadProgress}
-                                                                            color="primary"
-                                                                            size="sm"
-                                                                            className="max-w-xs mx-auto"
-                                                                        />
-                                                                    </div>
-                                                                ) : (
-                                                                    <div className="space-y-2">
-                                                                        <Icon icon="mdi:cloud-upload-outline" className="text-4xl text-foreground-muted mx-auto" />
-                                                                        <p className="text-sm font-semibold">クリックして画像をアップロード</p>
-                                                                        <p className="text-xs text-foreground-muted">jpg, png, gif, webp対応</p>
-                                                                    </div>
-                                                                )}
+                                                        {section.imageInstruction && (
+                                                            <div className="bg-primary/5 border-l-4 border-primary pl-4 py-3 rounded-r">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <Icon icon="mdi:image-text" className="text-primary" />
+                                                                    <p className="text-sm font-semibold text-primary">画像指示</p>
+                                                                </div>
+                                                                <p className="text-sm">{section.imageInstruction}</p>
                                                             </div>
-                                                        </label>
-                                                    </div>
+                                                        )}
 
-                                                    {/* このセクションの画像一覧 */}
-                                                    {sectionImages.length > 0 && (
-                                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                                            {sectionImages.map((img, imgIndex) => (
-                                                                <div key={img.id} className="relative group cursor-pointer" onClick={() => openLightbox(sectionImages, imgIndex)}>
-                                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                                    <img
-                                                                        src={img.imageUrl}
-                                                                        alt="uploaded"
-                                                                        className="w-full h-24 md:h-32 object-cover rounded-lg hover:opacity-90 transition-opacity"
-                                                                    />
-                                                                    {/* 拡大アイコン */}
-                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 rounded-lg">
-                                                                        <Icon icon="mdi:magnify-plus" className="text-white text-2xl" />
-                                                                    </div>
-                                                                    {/* 投稿者名 */}
-                                                                    {uploaderNames[img.uploadedBy] && (
-                                                                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1 rounded-b-lg">
-                                                                            <p className="text-white text-xs truncate">{uploaderNames[img.uploadedBy]}</p>
+                                                        {section.referenceImageUrl && (
+                                                            <div className="bg-default-100 p-3 rounded-lg">
+                                                                <p className="text-xs font-semibold text-foreground-muted mb-2">参考画像</p>
+                                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                                <img
+                                                                    src={section.referenceImageUrl}
+                                                                    alt="参考画像"
+                                                                    className="max-h-40 max-w-full rounded border border-default-200 object-contain mx-auto"
+                                                                />
+                                                            </div>
+                                                        )}
+
+                                                        <Divider />
+
+                                                        {/* アップロードエリア */}
+                                                        <div>
+                                                            <input
+                                                                type="file"
+                                                                accept="image/*"
+                                                                onChange={(e) => {
+                                                                    const file = e.target.files?.[0];
+                                                                    if (file) handleImageUpload(section.id, file);
+                                                                    e.target.value = '';
+                                                                }}
+                                                                className="hidden"
+                                                                id={`file-input-${section.id}`}
+                                                            />
+                                                            <label htmlFor={`file-input-${section.id}`}>
+                                                                <div className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${uploadingSection === section.id
+                                                                    ? 'border-primary bg-primary/5'
+                                                                    : 'border-default-300 hover:border-primary hover:bg-primary/5'
+                                                                    }`}>
+                                                                    {uploadingSection === section.id ? (
+                                                                        <div className="space-y-3">
+                                                                            <Spinner size="sm" color="primary" />
+                                                                            <p className="text-sm text-primary">アップロード中...</p>
+                                                                            <Progress
+                                                                                value={uploadProgress}
+                                                                                color="primary"
+                                                                                size="sm"
+                                                                                className="max-w-xs mx-auto"
+                                                                            />
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="space-y-2">
+                                                                            <Icon icon="mdi:cloud-upload-outline" className="text-4xl text-foreground-muted mx-auto" />
+                                                                            <p className="text-sm font-semibold">クリックして画像をアップロード</p>
+                                                                            <p className="text-xs text-foreground-muted">jpg, png, gif, webp対応</p>
                                                                         </div>
                                                                     )}
                                                                 </div>
-                                                            ))}
+                                                            </label>
                                                         </div>
-                                                    )}
-                                                </CardBody>
-                                            </Card>
+
+                                                        {/* このセクションの画像一覧 */}
+                                                        {sectionImages.length > 0 && (
+                                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                                                {sectionImages.map((img, imgIndex) => {
+                                                                    const isSelected = img.isSelected && img.sectionId === section.id;
+                                                                    return (
+                                                                        <div key={img.id} className="relative group">
+                                                                            <div
+                                                                                className={`
+                                                                                    relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all
+                                                                                    ${isSelected
+                                                                                        ? "border-primary ring-4 ring-primary/30 shadow-lg scale-95"
+                                                                                        : "border-transparent hover:border-default-300"
+                                                                                    }
+                                                                                `}
+                                                                                onClick={() => openLightbox(sectionImages, imgIndex)}
+                                                                            >
+                                                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                                                <img
+                                                                                    src={img.imageUrl}
+                                                                                    alt="uploaded"
+                                                                                    className="w-full h-full object-cover"
+                                                                                />
+
+                                                                                {/* 選択インジケーター */}
+                                                                                {isSelected && (
+                                                                                    <div className="absolute top-2 right-2 bg-primary text-white p-1 rounded-full shadow-md z-10">
+                                                                                        <Icon icon="mdi:check-bold" className="text-lg" />
+                                                                                    </div>
+                                                                                )}
+
+                                                                                {/* 拡大アイコン */}
+                                                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30">
+                                                                                    <Icon icon="mdi:magnify-plus" className="text-white text-2xl" />
+                                                                                </div>
+                                                                            </div>
+
+                                                                            {/* 削除ボタン */}
+                                                                            <button
+                                                                                className="absolute -top-2 -left-2 bg-danger text-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:scale-110"
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    handleDeleteImage(img.id);
+                                                                                }}
+                                                                                title="画像を削除"
+                                                                            >
+                                                                                <Icon icon="mdi:trash-can" className="text-sm" />
+                                                                            </button>
+
+                                                                            {/* 投稿者名 */}
+                                                                            <div className="mt-1 px-1">
+                                                                                <span className="text-xs text-foreground-muted truncate block max-w-full">
+                                                                                    {uploaderNames[img.uploadedBy] || "User"}
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </CardBody>
+                                                </Card>
+
+                                                {/* 末尾挿入ボタン (最後のみ) */}
+                                                {originalIndex === sections.length - 1 && (
+                                                    <div className="flex justify-center pt-4">
+                                                        <Button
+                                                            size="sm" variant="flat" color="primary" radius="full"
+                                                            startContent={<Icon icon="mdi:plus" />}
+                                                            onPress={() => handleAddSection(originalIndex + 1)}
+                                                        >
+                                                            末尾にセクションを追加
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </div>
                                         );
                                     })
+
                                 )}
                             </div>
                         </Tab>
@@ -978,17 +1156,18 @@ export default function KitchenDetailClient({
                         </Tab>
                     </Tabs>
                 </CardBody>
-            </Card>
+            </Card >
 
             {/* 画像拡大モーダル */}
-            <Modal
+            < Modal
                 isOpen={lightboxOpen}
                 onClose={closeLightbox}
                 size="full"
                 classNames={{
                     base: "bg-black/95",
                     body: "p-0",
-                }}
+                }
+                }
             >
                 <ModalContent>
                     <ModalBody className="flex items-center justify-center relative">
@@ -1050,7 +1229,7 @@ export default function KitchenDetailClient({
                         )}
                     </ModalBody>
                 </ModalContent>
-            </Modal>
-        </div>
+            </Modal >
+        </div >
     );
 }

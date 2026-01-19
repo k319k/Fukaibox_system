@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { cookingProjects, cookingSections, cookingImages, cookingProposals, type CookingStatus } from "@/lib/db/schema";
-import { eq, desc, asc, and } from "drizzle-orm";
+import { cookingProjects, cookingSections, cookingImages, cookingProposals, users, type CookingStatus } from "@/lib/db/schema";
+import { eq, desc, asc, and, gte } from "drizzle-orm";
 import { getSession } from "./auth";
 import { generateUploadUrl, getPublicUrl } from "@/lib/r2";
 
@@ -222,24 +222,7 @@ export async function updateCookingProjectStatus(projectId: string, status: Cook
 /**
  * セクションを作成
  */
-export async function createCookingSection(
-    projectId: string,
-    orderIndex: number,
-    content: string,
-    imageInstruction?: string
-) {
-    const newSection = await db.insert(cookingSections).values({
-        id: crypto.randomUUID(),
-        projectId,
-        orderIndex,
-        content,
-        imageInstruction: imageInstruction || "",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    }).returning();
 
-    return newSection[0];
-}
 
 /**
  * プロジェクトのセクション一覧を取得
@@ -261,9 +244,10 @@ export async function updateCookingSection(
     sectionId: string,
     content: string,
     imageInstruction?: string,
-    allowImageSubmission?: boolean
+    allowImageSubmission?: boolean,
+    referenceImageUrl?: string
 ) {
-    const updateData: any = {
+    const updateData: Partial<typeof cookingSections.$inferInsert> = {
         content,
         updatedAt: new Date(),
     };
@@ -276,6 +260,10 @@ export async function updateCookingSection(
         updateData.allowImageSubmission = allowImageSubmission;
     }
 
+    if (referenceImageUrl !== undefined) {
+        updateData.referenceImageUrl = referenceImageUrl;
+    }
+
     await db
         .update(cookingSections)
         .set(updateData)
@@ -285,11 +273,7 @@ export async function updateCookingSection(
 /**
  * セクションを削除
  */
-export async function deleteCookingSection(sectionId: string) {
-    await db
-        .delete(cookingSections)
-        .where(eq(cookingSections.id, sectionId));
-}
+
 
 /**
  * セクションの並び順を更新
@@ -319,6 +303,7 @@ export async function reorderCookingSections(
 export async function addCookingImage(
     sectionId: string,
     imageUrl: string,
+    projectId: string,
     uploadedBy?: string
 ) {
     const session = await getSession();
@@ -327,6 +312,7 @@ export async function addCookingImage(
     const newImage = await db.insert(cookingImages).values({
         id: crypto.randomUUID(),
         sectionId,
+        projectId,
         uploadedBy: userId,
         imageUrl,
         createdAt: new Date(),
@@ -591,4 +577,119 @@ export async function getSelectedImages(projectId: string) {
         .orderBy(asc(cookingImages.sectionId));
 
     return images;
+}
+
+/**
+ * 料理画像を削除
+ */
+export async function deleteCookingImage(imageId: string, _projectId: string) {
+    const session = await getSession();
+    if (!session?.user) {
+        throw new Error("Unauthorized");
+    }
+
+    const image = await db.query.cookingImages.findFirst({
+        where: eq(cookingImages.id, imageId),
+    });
+
+    if (!image) {
+        throw new Error("Image not found");
+    }
+
+    // 権限チェック: 自分の画像、または議長/名誉儀員のみ削除可能
+    const user = await db.query.users.findFirst({
+        where: eq(users.id, session.user.id),
+        columns: { role: true }
+    });
+    const isAuthorized = image.uploadedBy === session.user.id ||
+        user?.role === "gicho" ||
+        user?.role === "meiyo_giin";
+
+    if (!isAuthorized) {
+        throw new Error("Forbidden");
+    }
+
+    await db.delete(cookingImages).where(eq(cookingImages.id, imageId));
+
+    // TODO: R2からの削除 (キー管理が必要)
+    return { success: true };
+}
+
+/**
+ * 新しいセクションを指定位置に挿入
+ */
+export async function createCookingSection(projectId: string, targetOrderIndex: number, content: string = "") {
+    const session = await getSession();
+    if (!session?.user) throw new Error("Unauthorized");
+
+    // 既存のセクションを取得し、挿入位置以降のインデックスをシフト
+    const existingSections = await db
+        .select()
+        .from(cookingSections)
+        .where(
+            and(
+                eq(cookingSections.projectId, projectId),
+                gte(cookingSections.orderIndex, targetOrderIndex)
+            )
+        );
+
+    // インデックス更新
+    for (const section of existingSections) {
+        await db
+            .update(cookingSections)
+            .set({ orderIndex: (section.orderIndex || 0) + 1 })
+            .where(eq(cookingSections.id, section.id));
+    }
+
+    // 新規セクション作成
+    const newSection = await db.insert(cookingSections).values({
+        id: crypto.randomUUID(),
+        projectId,
+        orderIndex: targetOrderIndex,
+        content,
+        allowImageSubmission: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    }).returning();
+
+    return newSection[0];
+}
+
+/**
+ * セクションを削除＆インデックス詰め
+ */
+export async function deleteCookingSection(sectionId: string, projectId: string) {
+    const session = await getSession();
+    if (!session?.user) throw new Error("Unauthorized");
+
+    const targetSection = await db.query.cookingSections.findFirst({
+        where: eq(cookingSections.id, sectionId),
+    });
+
+    if (!targetSection) throw new Error("Section not found");
+
+    const deletedIndex = targetSection.orderIndex || 0;
+
+    // 削除
+    await db.delete(cookingSections).where(eq(cookingSections.id, sectionId));
+
+    // インデックス詰め
+    const followingSections = await db
+        .select()
+        .from(cookingSections)
+        .where(
+            and(
+                eq(cookingSections.projectId, projectId),
+                gte(cookingSections.orderIndex, deletedIndex + 1)
+            )
+        );
+
+    for (const section of followingSections) {
+        await db
+            .update(cookingSections)
+            .set({ orderIndex: (section.orderIndex || 1) - 1 })
+            .where(eq(cookingSections.id, section.id));
+    }
+
+    return { success: true };
 }

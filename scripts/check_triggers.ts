@@ -26,17 +26,19 @@ async function main() {
     const { db } = await import("@/lib/db");
     const { sql } = await import("drizzle-orm");
 
-    console.log("Checking accounts table data...");
+    console.log("Checking cooking_sections schema...");
     try {
-        const accounts = await db.all(sql`SELECT user_id, provider_id, access_token FROM accounts LIMIT 5`);
-        // トークンは長いので先頭だけ表示
-        const masked = accounts.map((a: any) => ({
-            ...a,
-            access_token: a.access_token ? a.access_token.substring(0, 10) + "..." : "null"
-        }));
-        console.log("Accounts:", JSON.stringify(masked, null, 2));
+        const tableInfo = await db.all(sql`PRAGMA table_info(cooking_sections);`);
+        console.log("Cooking Sections Columns:", JSON.stringify(tableInfo, null, 2));
+
+        const projectStatuses = await db.all(sql`SELECT status, COUNT(*) as count FROM cooking_projects GROUP BY status;`);
+        console.log("Project Statuses:", JSON.stringify(projectStatuses, null, 2));
+
+        const sampleProject = await db.all(sql`SELECT id, status FROM cooking_projects LIMIT 1;`);
+        console.log("Sample Project:", sampleProject);
+
     } catch (e) {
-        console.error("Error checking accounts:", e);
+        console.error("Error checking schema:", e);
     }
 }
 

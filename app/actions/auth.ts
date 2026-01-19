@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { userRoles } from "@/lib/db/schema";
+import { userRoles, users as userSchema } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import type { RoleType } from "@/lib/db/schema";
 import { z } from "zod";
@@ -143,8 +143,26 @@ export async function getCurrentUserWithRole() {
 
     const role = await getUserRole(session.user.id);
 
+    // DBから最新のユーザー情報を取得（imageを含む）
+    const userFromDb = await db
+        .select({
+            image: userSchema.image,
+        })
+        .from(userSchema)
+        .where(eq(userSchema.id, session.user.id))
+        .limit(1);
+
+    const userImage = userFromDb[0]?.image || null;
+
+    console.log("[getCurrentUserWithRole] User image from DB:", {
+        userId: session.user.id,
+        hasImage: !!userImage,
+        imageUrl: userImage?.substring(0, 50),
+    });
+
     return {
         ...session.user,
+        image: userImage, // DBから取得したimageを使用
         role: role?.role || "guest",
         discordId: role?.discordId,
         discordUsername: role?.discordUsername,
