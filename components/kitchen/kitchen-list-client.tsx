@@ -1,20 +1,12 @@
 "use client";
 
-import { Button, Card, CardBody, CardHeader, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Chip } from "@heroui/react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useDisclosure, Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { createCookingProject, deleteCookingProject } from "@/app/actions/kitchen";
-
-// 型定義
-interface Project {
-    id: string;
-    title: string;
-    description: string | null;
-    status: string;
-    createdBy: string;
-    createdAt: Date;
-}
+import { useState } from "react";
+import ProjectList from "./list/ProjectList";
+import CreateProjectModal from "./list/CreateProjectModal";
+import DeleteProjectModal from "./list/DeleteProjectModal";
+import { Project } from "@/types/kitchen";
 
 interface KitchenListClientProps {
     projects: Project[];
@@ -22,98 +14,20 @@ interface KitchenListClientProps {
 }
 
 export default function KitchenListClient({ projects: initialProjects, userRole }: KitchenListClientProps) {
-    const router = useRouter();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState("");
     const [projects, setProjects] = useState(initialProjects);
     const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
 
     const isGicho = userRole === "gicho";
 
-    const handleCreate = async () => {
-        if (!title.trim()) {
-            setError("タイトルを入力してください");
-            return;
-        }
-
-        setIsLoading(true);
-        setError("");
-
-        try {
-            const project = await createCookingProject(title, description);
-            if (project) {
-                onClose();
-                resetForm();
-                router.push(`/cooking/${project.id}`);
-            } else {
-                setError("プロジェクトの作成に失敗しました");
-            }
-        } catch (err) {
-            console.error("Failed to create project:", err);
-            setError("プロジェクトの作成に失敗しました");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const openDeleteModal = (project: Project) => {
+    const handleDeleteClick = (project: Project) => {
         setDeleteTarget(project);
         onDeleteOpen();
     };
 
-    const handleDeleteConfirm = async () => {
-        if (!deleteTarget) return;
-
-        setIsDeleting(true);
-        try {
-            await deleteCookingProject(deleteTarget.id);
-            setProjects(projects.filter(p => p.id !== deleteTarget.id));
-            onDeleteClose();
-            setDeleteTarget(null);
-        } catch (err) {
-            console.error("Failed to delete project:", err);
-        } finally {
-            setIsDeleting(false);
-        }
-    };
-
-    const resetForm = () => {
-        setTitle("");
-        setDescription("");
-        setError("");
-    };
-
-    const handleClose = () => {
-        resetForm();
-        onClose();
-    };
-
-    const getStatusLabel = (status: string) => {
-        switch (status) {
-            case "cooking": return "調理中";
-            case "image_upload": return "画像UP中";
-            case "image_selection": return "画像採用中";
-            case "download": return "完成";
-            case "archived": return "アーカイブ";
-            default: return status;
-        }
-    };
-
-    type ChipColor = "warning" | "primary" | "secondary" | "success" | "default";
-    const getStatusColor = (status: string): ChipColor => {
-        switch (status) {
-            case "cooking": return "warning";
-            case "image_upload": return "primary";
-            case "image_selection": return "secondary";
-            case "download": return "success";
-            case "archived": return "default";
-            default: return "default";
-        }
+    const handleProjectDeleted = (deletedId: string) => {
+        setProjects(projects.filter(p => p.id !== deletedId));
     };
 
     return (
@@ -137,216 +51,25 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
             </div>
 
             {/* プロジェクト一覧 */}
-            {projects.length === 0 ? (
-                <Card className="card-elevated" radius="lg">
-                    <CardBody className="text-center py-12">
-                        <Icon icon="mdi:pot-steam-outline" className="text-6xl text-foreground-muted mx-auto mb-4" />
-                        <p className="text-foreground-muted">まだプロジェクトがありません</p>
-                        {isGicho && (
-                            <Button
-                                color="primary"
-                                radius="full"
-                                className="mt-4"
-                                onPress={onOpen}
-                            >
-                                最初の料理を作る
-                            </Button>
-                        )}
-                    </CardBody>
-                </Card>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {projects.map((project) => (
-                        <Card
-                            key={project.id}
-                            isPressable
-                            onPress={() => router.push(`/cooking/${project.id}`)}
-                            className="card-elevated hover:scale-[1.02] transition-transform"
-                            radius="lg"
-                        >
-                            <CardHeader className="flex justify-between items-start pb-1">
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-semibold">{project.title}</h3>
-                                    {project.description && (
-                                        <p className="text-sm text-foreground-muted line-clamp-2">
-                                            {project.description}
-                                        </p>
-                                    )}
-                                </div>
-                                <Chip
-                                    size="sm"
-                                    color={getStatusColor(project.status)}
-                                    variant="solid"
-                                >
-                                    {getStatusLabel(project.status)}
-                                </Chip>
-                            </CardHeader>
-                            <CardBody className="pt-0">
-                                <div className="flex justify-between items-center">
-                                    <p className="text-xs text-foreground-muted">
-                                        作成: {new Date(project.createdAt).toLocaleDateString('ja-JP')}
-                                    </p>
-                                    {isGicho && (
-                                        <Button
-                                            isIconOnly
-                                            size="sm"
-                                            variant="flat"
-                                            radius="full"
-                                            color="danger"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                openDeleteModal(project);
-                                            }}
-                                        >
-                                            <Icon icon="mdi:delete" className="text-lg" />
-                                        </Button>
-                                    )}
-                                </div>
-                            </CardBody>
-                        </Card>
-                    ))}
-                </div>
-            )}
+            <ProjectList
+                projects={projects}
+                isGicho={isGicho}
+                onDeleteClick={handleDeleteClick}
+                onCreateClick={onOpen}
+            />
 
-            {/* 新規作成モーダル */}
-            <Modal
+            {/* モーダル */}
+            <CreateProjectModal
                 isOpen={isOpen}
-                onClose={handleClose}
-                size="md"
-                placement="center"
-                backdrop="opaque"
-                radius="lg"
-                classNames={{
-                    backdrop: "bg-black/60 backdrop-blur-sm",
-                    base: "bg-background",
-                }}
-            >
-                <ModalContent>
-                    <ModalHeader className="flex flex-col gap-1 pb-2">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-primary/10 rounded-lg">
-                                <Icon icon="mdi:pot-steam" className="text-2xl text-primary" />
-                            </div>
-                            <div>
-                                <h2 className="text-xl font-bold">新しい料理を作る</h2>
-                                <p className="text-sm text-foreground-muted font-normal">
-                                    台本は作成後に調理タブで入力できます
-                                </p>
-                            </div>
-                        </div>
-                    </ModalHeader>
-                    <ModalBody className="py-4">
-                        {error && (
-                            <div className="bg-danger/10 border border-danger/20 rounded-lg p-3 text-danger text-sm flex items-center gap-2">
-                                <Icon icon="mdi:alert-circle" />
-                                {error}
-                            </div>
-                        )}
+                onClose={onClose}
+            />
 
-                        <div className="flex flex-col gap-5">
-                            {/* タイトル入力 - 標準HTML */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium text-foreground">
-                                    タイトル <span className="text-danger">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="例: 封解公儀の新年挨拶"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    disabled={isLoading}
-                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors disabled:opacity-50"
-                                />
-                            </div>
-                            {/* 説明入力 - 標準HTML */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium text-foreground">
-                                    説明（任意）
-                                </label>
-                                <textarea
-                                    placeholder="このプロジェクトの内容や目的"
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    disabled={isLoading}
-                                    rows={3}
-                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors resize-none disabled:opacity-50"
-                                />
-                            </div>
-                        </div>
-                    </ModalBody>
-                    <ModalFooter className="pt-2">
-                        <Button
-                            variant="light"
-                            radius="full"
-                            onPress={handleClose}
-                            isDisabled={isLoading}
-                        >
-                            キャンセル
-                        </Button>
-                        <Button
-                            color="primary"
-                            radius="full"
-                            onPress={handleCreate}
-                            isLoading={isLoading}
-                            startContent={!isLoading && <Icon icon="mdi:plus" />}
-                        >
-                            作成
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-
-            {/* 削除確認モーダル */}
-            <Modal
+            <DeleteProjectModal
                 isOpen={isDeleteOpen}
                 onClose={onDeleteClose}
-                size="sm"
-                placement="center"
-                backdrop="opaque"
-                radius="lg"
-                classNames={{
-                    backdrop: "bg-black/60 backdrop-blur-sm",
-                    base: "bg-background",
-                }}
-            >
-                <ModalContent>
-                    <ModalHeader className="flex flex-col gap-1">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-danger/10 rounded-lg">
-                                <Icon icon="mdi:delete-alert" className="text-2xl text-danger" />
-                            </div>
-                            <h2 className="text-xl font-bold">削除の確認</h2>
-                        </div>
-                    </ModalHeader>
-                    <ModalBody>
-                        <p className="text-foreground-muted">
-                            「<span className="font-semibold text-foreground">{deleteTarget?.title}</span>」を削除しますか？
-                        </p>
-                        <p className="text-sm text-danger mt-2">
-                            この操作は取り消せません。関連するセクション・画像もすべて削除されます。
-                        </p>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button
-                            variant="light"
-                            radius="full"
-                            onPress={onDeleteClose}
-                            isDisabled={isDeleting}
-                        >
-                            キャンセル
-                        </Button>
-                        <Button
-                            color="danger"
-                            radius="full"
-                            onPress={handleDeleteConfirm}
-                            isLoading={isDeleting}
-                            startContent={!isDeleting && <Icon icon="mdi:delete" />}
-                        >
-                            削除
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
+                project={deleteTarget}
+                onProjectDeleted={handleProjectDeleted}
+            />
         </div>
     );
 }

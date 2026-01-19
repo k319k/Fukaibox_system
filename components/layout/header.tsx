@@ -2,13 +2,13 @@
 
 import { usePathname } from "next/navigation";
 
-// ページタイトルのマッピング
 const pageTitles: Record<string, string> = {
     "/": "ホーム",
-    "/cooking": "台所",
+    "/cooking": "炊事場",
     "/dictionary": "界域百科事典",
     "/tools": "封解Box Tools",
     "/settings": "設定",
+    "/users": "儀員名簿",
 };
 
 export function Header() {
@@ -16,8 +16,8 @@ export function Header() {
     const title = pageTitles[pathname] || "封解Box";
 
     return (
-        <header className="h-14 md:h-16 flex items-center px-6 md:px-8 pl-16 md:pl-8 bg-[var(--md-sys-color-surface)]/98 backdrop-blur-xl border-b border-[var(--md-sys-color-outline-variant)]/15">
-            <h1 className="title-large md:headline-small text-[var(--md-sys-color-on-surface)] font-extrabold tracking-tight">
+        <header className="h-16 flex items-center px-8 pl-16 md:pl-8 bg-background/70 backdrop-blur-xl border-b-1 border-divider/20">
+            <h1 className="text-2xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
                 {title}
             </h1>
         </header>

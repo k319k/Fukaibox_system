@@ -1,79 +1,17 @@
 "use client";
 
-import {
-    Card, CardBody, CardHeader, Button, Tabs, Tab, Chip,
-    Divider, Progress, Spinner, Checkbox, Modal, ModalContent, ModalBody
-} from "@heroui/react";
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { Card, CardBody, Tabs, Tab } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import {
-    updateCookingSection,
-    createCookingProposal,
-    getAllProposalsForProject,
-    applyCookingProposal,
-    updateProposalStatus,
-    getUploadUrl,
-    confirmImageUpload,
-    getCookingImages,
-    updateImageSelection,
-    getProjectScript,
-    getSelectedImages,
-    getCookingSections,
-    setProjectScript,
-    deleteCookingImage,
-    createCookingSection,
-    deleteCookingSection
-} from "@/app/actions/kitchen";
-import { getUserDisplayNames } from "@/app/actions/user";
-import JSZip from "jszip";
-
-// 型定義
-interface Section {
-    id: string;
-    projectId: string;
-    orderIndex: number | null;
-    content: string | null;
-    imageInstruction: string | null;
-    referenceImageUrl: string | null;
-    allowImageSubmission: boolean | null;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-}
-
-interface Project {
-    id: string;
-    title: string;
-    description: string | null;
-    status: string;
-}
-
-interface Proposal {
-    id: string;
-    sectionId: string;
-    proposedBy: string;
-    proposedContent: string;
-    status: "pending" | "approved" | "rejected";
-    createdAt: Date;
-}
-
-interface UploadedImage {
-    id: string;
-    projectId: string;
-    sectionId: string | null;
-    uploadedBy: string;
-    imageUrl: string;
-    isSelected: boolean | null;
-    createdAt: Date;
-}
-
-type UserRole = "gicho" | "meiyo_giin" | "giin" | "guest" | "anonymous";
-
-interface KitchenDetailClientProps {
-    project: Project;
-    initialSections: Section[];
-    userRole?: UserRole;
-}
+import { useRouter } from "next/navigation";
+import { KitchenDetailClientProps } from "@/types/kitchen";
+import { useKitchenDetail } from "@/hooks/kitchen/useKitchenDetail";
+import { deleteCookingProject } from "@/app/actions/kitchen";
+import KitchenHeader from "./detail/KitchenHeader";
+import SectionList from "./detail/SectionList";
+import ImageUploadTab from "./detail/ImageUploadTab";
+import ImageAdoptionTab from "./detail/ImageAdoptionTab";
+import DownloadTab from "./detail/DownloadTab";
+import Lightbox from "./detail/Lightbox";
 
 export default function KitchenDetailClient({
     project,
@@ -81,1017 +19,137 @@ export default function KitchenDetailClient({
     userRole = "guest"
 }: KitchenDetailClientProps) {
     const router = useRouter();
-    const [sections, setSections] = useState<Section[]>(initialSections);
-    const [selectedTab, setSelectedTab] = useState("cooking");
-    const [images, setImages] = useState<UploadedImage[]>([]);
-    const [proposals, setProposals] = useState<Proposal[]>([]);
+    const store = useKitchenDetail(project, initialSections, userRole);
 
-    // 台本入力（セクションがない場合用）
-    const [fullScript, setFullScript] = useState("");
-    const [isCreatingSections, setIsCreatingSections] = useState(false);
-
-    // 編集ステート（インライン）
-    const [editingSection, setEditingSection] = useState<Section | null>(null);
-    const [editContent, setEditContent] = useState("");
-    const [editImageInstruction, setEditImageInstruction] = useState("");
-    const [editReferenceImageUrl, setEditReferenceImageUrl] = useState("");
-    const [editAllowSubmission, setEditAllowSubmission] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
-
-    // 推敲提案ステート（インライン）
-    const [proposalSection, setProposalSection] = useState<Section | null>(null);
-    const [proposalContent, setProposalContent] = useState("");
-
-    // 画像アップロード
-    const [uploadingSection, setUploadingSection] = useState<string | null>(null);
-    const [uploadProgress, setUploadProgress] = useState(0);
-
-    // 画像拡大モーダル
-    const [lightboxOpen, setLightboxOpen] = useState(false);
-    const [lightboxImages, setLightboxImages] = useState<UploadedImage[]>([]);
-    const [lightboxIndex, setLightboxIndex] = useState(0);
-
-    // 投稿者名表示用
-    const [uploaderNames, setUploaderNames] = useState<Record<string, string>>({});
-
-    // 文字サイズ設定 (px)
-    const [editorFontSize, setEditorFontSize] = useState(16);
-
-    const isGicho = userRole === "gicho";
-
-    // ハンドラ: 画像削除
-    const handleDeleteImage = async (imageId: string) => {
-        if (!confirm("この画像を削除してもよろしいですか？")) return;
+    const handleDeleteProject = async () => {
+        if (!confirm("プロジェクトを削除しますか？\nこの操作は取り消せません。")) return;
         try {
-            await deleteCookingImage(imageId, project.id);
-            await loadImages();
+            await deleteCookingProject(project.id);
+            router.push('/kitchen');
         } catch (error) {
-            console.error("Failed to delete image:", error);
-            alert("画像の削除に失敗しました。権限がない可能性があります。");
+            console.error("Failed to delete project:", error);
+            alert("プロジェクトの削除に失敗しました。");
         }
-    };
-
-    // ハンドラ: セクション挿入 (指定インデックスの前に挿入)
-    const handleAddSection = async (targetIndex: number) => {
-        try {
-            await createCookingSection(project.id, targetIndex, "新しいセクション");
-            // リロードして同期
-            window.location.reload();
-        } catch (error) {
-            console.error("Failed to create section:", error);
-            alert("セクションの作成に失敗しました。");
-        }
-    };
-
-    // ハンドラ: セクション削除
-    const handleDeleteSection = async (sectionId: string) => {
-        if (!confirm("このセクションを削除してもよろしいですか？\n紐づく画像や提案がある場合、それらの関連付けも解除されます。")) return;
-        try {
-            await deleteCookingSection(sectionId, project.id);
-            // リロードして同期
-            window.location.reload();
-        } catch (error) {
-            console.error("Failed to delete section:", error);
-            alert("セクションの削除に失敗しました。");
-        }
-    };
-
-    // セクション数プレビュー
-    const sectionPreviewCount = useMemo(() => {
-        if (!fullScript.trim()) return 0;
-        return fullScript
-            .split(/\n\n+|\r\n\r\n+/)
-            .map(s => s.trim())
-            .filter(s => s.length > 0).length;
-    }, [fullScript]);
-
-    // 画像一覧を読み込み
-    const loadImages = useCallback(async () => {
-        const imgs = await getCookingImages(project.id);
-        setImages(imgs);
-
-        // 投稿者名を取得
-        const userIds = [...new Set(imgs.map(img => img.uploadedBy))];
-        if (userIds.length > 0) {
-            const names = await getUserDisplayNames(userIds);
-            setUploaderNames(names);
-        }
-    }, [project.id]);
-
-    const loadProposals = useCallback(async () => {
-        const props = await getAllProposalsForProject(project.id);
-        setProposals(props);
-    }, [project.id]);
-
-    useEffect(() => {
-        loadImages();
-        if (isGicho) {
-            loadProposals();
-        }
-
-        // 画像のリアルタイム更新: 10秒ごとにポーリング
-        const interval = setInterval(() => {
-            loadImages();
-        }, 10000);
-
-        return () => clearInterval(interval);
-    }, [loadImages, loadProposals, isGicho]);
-
-    const reloadSections = async () => {
-        const updated = await getCookingSections(project.id);
-        setSections(updated);
-    };
-
-    // 台本からセクションを作成
-    const handleCreateSections = async () => {
-        if (!fullScript.trim()) return;
-
-        setIsCreatingSections(true);
-        try {
-            await setProjectScript(project.id, fullScript);
-            await reloadSections();
-            setFullScript("");
-        } catch (error) {
-            console.error("Failed to create sections:", error);
-            alert("セクションの作成に失敗しました");
-        } finally {
-            setIsCreatingSections(false);
-        }
-    };
-
-    // セクション編集を開始（インライン）
-    const handleEditSection = (section: Section) => {
-        setEditingSection(section);
-        setEditContent(section.content || "");
-        setEditImageInstruction(section.imageInstruction || "");
-        setEditReferenceImageUrl(section.referenceImageUrl || "");
-        setEditAllowSubmission(section.allowImageSubmission ?? true);
-    };
-
-    // セクション編集を保存
-    const handleSaveEdit = async () => {
-        if (!editingSection) return;
-
-        setIsSaving(true);
-        try {
-            await updateCookingSection(
-                editingSection.id,
-                editContent,
-                editImageInstruction,
-                editAllowSubmission,
-                editReferenceImageUrl
-            );
-            await reloadSections();
-            setEditingSection(null);
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
-    // 推敲提案を開始（インライン）
-    const handleOpenProposal = (section: Section) => {
-        setProposalSection(section);
-        setProposalContent(section.content);
-    };
-
-    // 推敲提案をキャンセル
-    const handleCancelProposal = () => {
-        setProposalSection(null);
-        setProposalContent("");
-    };
-
-    // 推敲提案を送信
-    const handleSubmitProposal = async () => {
-        if (!proposalSection) return;
-
-        await createCookingProposal(proposalSection.id, proposalContent);
-        await loadProposals();
-        setProposalSection(null);
-        setProposalContent("");
-    };
-
-    // 推敲提案を承認
-    const handleApproveProposal = async (proposalId: string) => {
-        await applyCookingProposal(proposalId);
-        await reloadSections();
-        await loadProposals();
-    };
-
-    // 推敲提案を却下
-    const handleRejectProposal = async (proposalId: string) => {
-        await updateProposalStatus(proposalId, "rejected");
-        await loadProposals();
-    };
-
-    // 画像アップロード（セクション指定）
-    const handleImageUpload = async (sectionId: string, file: File) => {
-        setUploadingSection(sectionId);
-        setUploadProgress(10);
-
-        try {
-            const { url, key } = await getUploadUrl(file.name, file.type, project.id);
-            setUploadProgress(30);
-
-            // R2にアップロード
-            const response = await fetch(url, {
-                method: 'PUT',
-                body: file,
-                headers: { 'Content-Type': file.type }
-            });
-
-            if (response.ok) {
-                setUploadProgress(70);
-                await confirmImageUpload(project.id, key, sectionId);
-                setUploadProgress(100);
-                await loadImages();
-            } else {
-                throw new Error("Upload failed");
-            }
-        } catch (error) {
-            console.error("Upload error:", error);
-            alert("画像のアップロードに失敗しました。\n\nCORSエラーの場合はCloudflare R2のCORS設定を確認してください。");
-        } finally {
-            setUploadingSection(null);
-            setUploadProgress(0);
-        }
-    };
-
-    // 画像選択トグル
-    const handleToggleImageSelection = async (imageId: string, currentSectionId: string | null) => {
-        const image = images.find(img => img.id === imageId);
-        if (!image) return;
-
-        const isCurrentlySelected = image.isSelected && image.sectionId === currentSectionId;
-        await updateImageSelection(imageId, currentSectionId, !isCurrentlySelected);
-        await loadImages();
-    };
-
-    // 台本ダウンロード
-    const handleDownloadScript = async () => {
-        const script = await getProjectScript(project.id);
-        const blob = new Blob([script], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${project.title}_台本.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
-    // 画像ZIPダウンロード
-    const handleDownloadImagesZip = async () => {
-        const selectedImages = await getSelectedImages(project.id);
-        if (selectedImages.length === 0) {
-            alert("選択された画像がありません");
-            return;
-        }
-
-        const zip = new JSZip();
-
-        // ZIP生成用に最新の投稿者名を取得
-        const userIds = [...new Set(selectedImages.map(img => img.uploadedBy))];
-        let currentUploaderNames = { ...uploaderNames };
-        if (userIds.length > 0) {
-            try {
-                const names = await getUserDisplayNames(userIds);
-                currentUploaderNames = { ...currentUploaderNames, ...names };
-            } catch (error) {
-                console.error("Failed to fetch uploader names for ZIP:", error);
-            }
-        }
-
-        for (const img of selectedImages) {
-            try {
-                // CORS回避のためプロキシ経由で取得
-                const response = await fetch(`/api/proxy-image?url=${encodeURIComponent(img.imageUrl)}`);
-                if (!response.ok) throw new Error(`Failed to fetch image: ${response.status}`);
-
-                const blob = await response.blob();
-
-                // ファイル名を生成: (セクション名)_(投稿者名)作.拡張子
-                const section = sections.find(s => s.id === img.sectionId);
-                let sectionName = "未分類";
-                if (section?.content) {
-                    // 最初の1行、または先頭15文字を取得
-                    sectionName = section.content.split('\n')[0].substring(0, 15).trim();
-                }
-                const safeSectionName = sectionName.replace(/[\\/:*?"<>|]/g, '');
-
-                const uploaderName = currentUploaderNames[img.uploadedBy] || "不明";
-                const safeUploaderName = uploaderName.replace(/[\\/:*?"<>|]/g, '');
-
-                const originalExt = img.imageUrl.split('.').pop()?.split('?')[0] || "jpg";
-                let filename = `${safeSectionName}_${safeUploaderName}作.${originalExt}`;
-
-                // 重複チェック
-                let counter = 1;
-                while (zip.file(filename)) {
-                    filename = `${safeSectionName}_${safeUploaderName}作_${counter}.${originalExt}`;
-                    counter++;
-                }
-
-                zip.file(filename, blob);
-            } catch (error) {
-                console.error(`Failed to fetch image ${img.id}:`, error);
-            }
-        }
-
-        const zipBlob = await zip.generateAsync({
-            type: 'blob',
-            mimeType: 'application/zip'
-        });
-        const url = URL.createObjectURL(zipBlob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${project.title}_選択画像.zip`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    };
-
-    // 画像拡大モーダルのハンドラー
-    const openLightbox = (imageList: UploadedImage[], startIndex: number) => {
-        setLightboxImages(imageList);
-        setLightboxIndex(startIndex);
-        setLightboxOpen(true);
-    };
-
-    const closeLightbox = () => {
-        setLightboxOpen(false);
-    };
-
-    const goToPrevImage = () => {
-        setLightboxIndex((prev) => (prev > 0 ? prev - 1 : lightboxImages.length - 1));
-    };
-
-    const goToNextImage = () => {
-        setLightboxIndex((prev) => (prev < lightboxImages.length - 1 ? prev + 1 : 0));
     };
 
     return (
-        <div className="max-w-6xl mx-auto space-y-6">
-            {/* ヘッダー */}
-            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                <div>
-                    <Button
-                        variant="light"
-                        size="sm"
-                        radius="lg"
-                        onPress={() => router.push('/cooking')}
-                        startContent={<Icon icon="mdi:arrow-left" />}
-                        className="mb-3"
-                    >
-                        一覧に戻る
-                    </Button>
-                    <h1 className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--md-sys-color-primary)' }}>{project.title}</h1>
-                    {project.description && (
-                        <p className="text-foreground-muted mt-1 text-sm md:text-base">{project.description}</p>
-                    )}
-                </div>
-                <div className="flex items-center gap-3">
-                    <Chip color="primary" variant="flat" startContent={<Icon icon="mdi:format-list-numbered" />}>
-                        {sections.length} セクション
-                    </Chip>
-                    <Chip color="secondary" variant="flat" startContent={<Icon icon="mdi:image-multiple" />}>
-                        {images.length} 画像
-                    </Chip>
-                </div>
-            </div>
+        <div className="container mx-auto py-8 px-4 max-w-6xl">
+            <KitchenHeader
+                project={project}
+                isGicho={store.isGicho}
+                showFontSizeControl={store.selectedTab === "cooking"}
+                editorFontSize={store.editorFontSize}
+                onEditorFontSizeChange={store.setEditorFontSize}
+                onDeleteProject={handleDeleteProject}
+            />
 
-            {/* タブ */}
-            <Card className="card-elevated" radius="lg">
-                <CardBody className="p-0 md:p-2">
+            <Card className="card-elevated min-h-[600px]">
+                <CardBody className="p-0">
                     <Tabs
-                        selectedKey={selectedTab}
-                        onSelectionChange={(key) => setSelectedTab(key as string)}
+                        selectedKey={store.selectedTab}
+                        onSelectionChange={(k) => store.setSelectedTab(k.toString())}
+                        aria-label="Kitchen Tabs"
                         variant="underlined"
                         color="primary"
                         classNames={{
-                            tabList: "gap-0 w-full relative rounded-none p-2 md:p-4 border-b-2 border-divider bg-transparent",
-                            cursor: "w-full bg-primary h-[3px]",
-                            tab: "max-w-fit px-3 md:px-6 h-10 md:h-12",
-                            tabContent: "group-data-[selected=true]:text-primary group-data-[selected=true]:font-bold font-medium text-sm md:text-base text-foreground-muted"
+                            tabList: "w-full border-b border-default-200 p-0",
+                            cursor: "w-full bg-primary",
+                            tab: "max-w-fit px-6 h-12",
+                            tabContent: "group-data-[selected=true]:text-primary"
                         }}
                     >
-                        {/* 1. 調理タブ */}
                         <Tab
                             key="cooking"
                             title={
                                 <div className="flex items-center gap-2">
-                                    <Icon icon="mdi:pot-steam" className="text-lg" />
+                                    <Icon icon="mdi:pot-mix" className="text-lg" />
                                     <span className="hidden md:inline">調理</span>
                                 </div>
                             }
                         >
-                            <div className="p-4 md:p-6 space-y-4">
-                                {/* セクションがない場合: 台本入力エリア */}
-                                {sections.length === 0 && isGicho ? (
-                                    <div className="flex flex-col gap-6">
-                                        {/* ヘッダー */}
-                                        <div className="flex items-center gap-3">
-                                            <Icon icon="mdi:script-text-outline" className="text-2xl text-primary" />
-                                            <div>
-                                                <h3 className="font-bold text-lg">台本を入力</h3>
-                                                <p className="text-sm text-foreground-muted">
-                                                    空行（改行2回）でセクションに分割されます
-                                                </p>
-                                            </div>
-                                            <div className="flex justify-end gap-2 items-center">
-                                                <span className="text-sm text-foreground-muted">文字サイズ: {editorFontSize}px</span>
-                                                <Button isIconOnly size="sm" variant="flat" onPress={() => setEditorFontSize(Math.max(12, editorFontSize - 2))}>
-                                                    <Icon icon="mdi:format-font-size-decrease" />
-                                                </Button>
-                                                <Button isIconOnly size="sm" variant="flat" onPress={() => setEditorFontSize(Math.min(32, editorFontSize + 2))}>
-                                                    <Icon icon="mdi:format-font-size-increase" />
-                                                </Button>
-                                            </div>
-                                        </div>
+                            <div className="p-4 md:p-6 bg-default-50 min-h-[500px]">
+                                <SectionList
+                                    project={project}
+                                    sections={store.sections}
+                                    userRole={userRole}
+                                    editorFontSize={store.editorFontSize}
 
-                                        {/* テキストエリア - 標準HTML */}
-                                        <textarea
-                                            placeholder="ここに台本を入力してください..."
-                                            value={fullScript}
-                                            onChange={(e) => setFullScript(e.target.value)}
-                                            disabled={isCreatingSections}
-                                            rows={12}
-                                            className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background font-mono focus:border-primary focus:outline-none transition-colors resize-y disabled:opacity-50"
-                                            style={{ minHeight: '250px', maxHeight: '500px', fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
-                                        />
+                                    fullScript={store.fullScript}
+                                    onFullScriptChange={store.setFullScript}
+                                    isCreatingSections={store.isCreatingSections}
+                                    onCreateSections={store.handleCreateSections}
 
-                                        {/* セクションプレビューとボタン */}
-                                        {fullScript.trim() && (
-                                            <div className="flex items-center justify-between p-4 bg-primary/10 rounded-xl">
-                                                <div className="flex items-center gap-3">
-                                                    <Icon icon="mdi:format-list-numbered" className="text-2xl text-primary" />
-                                                    <div>
-                                                        <p className="font-bold text-primary text-lg">
-                                                            {sectionPreviewCount} セクション
-                                                        </p>
-                                                        <p className="text-xs text-foreground-muted">
-                                                            に自動分割されます
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <Button
-                                                    color="primary"
-                                                    size="lg"
-                                                    radius="lg"
-                                                    onPress={handleCreateSections}
-                                                    isLoading={isCreatingSections}
-                                                    startContent={!isCreatingSections && <Icon icon="mdi:content-cut" />}
-                                                >
-                                                    セクション分割して保存
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
-                                ) : sections.length === 0 ? (
-                                    <div className="text-center py-12">
-                                        <Icon icon="mdi:file-document-outline" className="text-5xl text-foreground-muted mx-auto mb-4" />
-                                        <p className="text-foreground-muted">セクションがありません</p>
-                                        <p className="text-sm text-foreground-muted mt-1">儀長が台本を入力するまでお待ちください</p>
-                                    </div>
-                                ) : (
-                                    // セクションがある場合: セクション一覧
-                                    sections.map((section, index) => (
-                                        <div key={section.id}>
-                                            {index === 0 && (
-                                                <div className="flex justify-end gap-2 items-center mb-2">
-                                                    <span className="text-sm text-foreground-muted">文字サイズ: {editorFontSize}px</span>
-                                                    <Button isIconOnly size="sm" variant="flat" onPress={() => setEditorFontSize(Math.max(12, editorFontSize - 2))}>
-                                                        <Icon icon="mdi:format-font-size-decrease" />
-                                                    </Button>
-                                                    <Button isIconOnly size="sm" variant="flat" onPress={() => setEditorFontSize(Math.min(32, editorFontSize + 2))}>
-                                                        <Icon icon="mdi:format-font-size-increase" />
-                                                    </Button>
-                                                </div>
-                                            )}
-                                            <Card className="card-elevated" radius="lg">
-                                                <CardHeader className="flex flex-row justify-between items-center gap-2 pb-4">
-                                                    <div className="flex flex-wrap items-center gap-2">
-                                                        <Chip size="sm" color="primary" variant="flat">
-                                                            <Icon icon="mdi:numeric" className="mr-1" />
-                                                            セクション {index + 1}
-                                                        </Chip>
-                                                        {!(section.allowImageSubmission ?? true) && (
-                                                            <Chip size="sm" color="warning" variant="flat">
-                                                                <Icon icon="mdi:image-off" className="mr-1" />
-                                                                画像なし
-                                                            </Chip>
-                                                        )}
-                                                        {editingSection?.id === section.id && (
-                                                            <Chip size="sm" color="secondary" variant="flat">
-                                                                <Icon icon="mdi:pencil" className="mr-1" />
-                                                                編集中
-                                                            </Chip>
-                                                        )}
-                                                    </div>
-                                                    <div className="flex gap-2 shrink-0">
-                                                        {editingSection?.id === section.id ? (
-                                                            <Button
-                                                                size="sm"
-                                                                color="primary"
-                                                                radius="full"
-                                                                isIconOnly
-                                                                onPress={handleSaveEdit}
-                                                                isLoading={isSaving}
-                                                            >
-                                                                <Icon icon="mdi:content-save" />
-                                                            </Button>
-                                                        ) : isGicho ? (
-                                                            <Button
-                                                                size="sm"
-                                                                color="primary"
-                                                                variant="flat"
-                                                                radius="full"
-                                                                isIconOnly
-                                                                onPress={() => handleEditSection(section)}
-                                                            >
-                                                                <Icon icon="mdi:pencil" />
-                                                            </Button>
-                                                        ) : proposalSection?.id === section.id ? (
-                                                            <>
-                                                                <Button
-                                                                    size="sm"
-                                                                    color="default"
-                                                                    variant="flat"
-                                                                    radius="full"
-                                                                    onPress={handleCancelProposal}
-                                                                >
-                                                                    キャンセル
-                                                                </Button>
-                                                                <Button
-                                                                    size="sm"
-                                                                    color="secondary"
-                                                                    radius="full"
-                                                                    startContent={<Icon icon="mdi:send" />}
-                                                                    onPress={handleSubmitProposal}
-                                                                >
-                                                                    送信
-                                                                </Button>
-                                                            </>
-                                                        ) : (
-                                                            <Button
-                                                                size="sm"
-                                                                color="secondary"
-                                                                variant="flat"
-                                                                radius="full"
-                                                                startContent={<Icon icon="mdi:comment-text-outline" />}
-                                                                onPress={() => handleOpenProposal(section)}
-                                                            >
-                                                                推敲提案
-                                                            </Button>
-                                                        )}
-                                                    </div>
-                                                </CardHeader>
-                                                <Divider />
-                                                <CardBody className="pt-4 space-y-4">
-                                                    {/* 編集中の場合: textarea */}
-                                                    {editingSection?.id === section.id ? (
-                                                        <div className="space-y-4">
-                                                            <div className="flex flex-col gap-2">
-                                                                <label className="text-sm font-medium">セクション内容</label>
-                                                                <textarea
-                                                                    value={editContent}
-                                                                    onChange={(e) => setEditContent(e.target.value)}
-                                                                    disabled={isSaving}
-                                                                    rows={6}
-                                                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors resize-y disabled:opacity-50"
-                                                                    style={{ fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
-                                                                />
-                                                            </div>
-                                                            <div className="flex flex-col gap-2">
-                                                                <label className="text-sm font-medium">画像指示（任意）</label>
-                                                                <input
-                                                                    type="text"
-                                                                    value={editImageInstruction}
-                                                                    onChange={(e) => setEditImageInstruction(e.target.value)}
-                                                                    disabled={isSaving}
-                                                                    placeholder="例: 商品のアップ画像"
-                                                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors disabled:opacity-50"
-                                                                />
-                                                            </div>
-                                                            <div className="flex flex-col gap-2">
-                                                                <label className="text-sm font-medium">参考画像URL（任意）</label>
-                                                                <input
-                                                                    type="text"
-                                                                    value={editReferenceImageUrl}
-                                                                    onChange={(e) => setEditReferenceImageUrl(e.target.value)}
-                                                                    disabled={isSaving}
-                                                                    placeholder="例: https://example.com/ref.jpg"
-                                                                    className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors disabled:opacity-50"
-                                                                />
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
-                                                                <Checkbox
-                                                                    isSelected={editAllowSubmission}
-                                                                    onValueChange={setEditAllowSubmission}
-                                                                    isDisabled={isSaving}
-                                                                >
-                                                                    <span className="text-sm">画像投稿を許可</span>
-                                                                </Checkbox>
-                                                            </div>
-                                                        </div>
-                                                    ) : proposalSection?.id === section.id ? (
-                                                        /* 推敲提案入力中の場合 */
-                                                        <div className="space-y-3">
-                                                            <div className="flex items-center gap-2 mb-2">
-                                                                <Icon icon="mdi:lightbulb-outline" className="text-secondary" />
-                                                                <span className="text-sm font-medium text-secondary">推敲提案を入力</span>
-                                                            </div>
-                                                            <textarea
-                                                                value={proposalContent}
-                                                                onChange={(e) => setProposalContent(e.target.value)}
-                                                                rows={6}
-                                                                placeholder="修正案を入力してください..."
-                                                                className="w-full px-4 py-3 border-2 border-secondary/50 rounded-xl bg-secondary/5 focus:border-secondary focus:outline-none transition-colors resize-y"
-                                                            />
-                                                        </div>
-                                                    ) : (
-                                                        /* 通常表示 */
-                                                        <>
-                                                            <div
-                                                                className="whitespace-pre-wrap text-foreground leading-relaxed"
-                                                                style={{ fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
-                                                            >
-                                                                {section.content}
-                                                            </div>
-                                                            {section.imageInstruction && (
-                                                                <div className="bg-primary/5 border-l-4 border-primary pl-4 py-3 rounded-r">
-                                                                    <div className="flex items-center gap-2 mb-1">
-                                                                        <Icon icon="mdi:image-text" className="text-primary" />
-                                                                        <p className="text-sm font-semibold text-primary">画像指示</p>
-                                                                    </div>
-                                                                    <p className="text-sm text-foreground-muted">{section.imageInstruction}</p>
-                                                                </div>
-                                                            )}
-                                                            {section.referenceImageUrl && (
-                                                                <div className="mt-2">
-                                                                    <p className="text-xs font-semibold text-foreground-muted mb-1">参考画像:</p>
-                                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                                    <img
-                                                                        src={section.referenceImageUrl}
-                                                                        alt="参考画像"
-                                                                        className="max-h-48 rounded-lg border border-default-200 object-contain bg-black/5"
-                                                                    />
-                                                                </div>
-                                                            )}
-                                                        </>
-                                                    )}
-                                                </CardBody>
-                                            </Card>
+                                    onAddSection={store.handleAddSection}
+                                    onDeleteSection={store.handleDeleteSection}
 
-                                            {/* このセクションの推敲提案 */}
-                                            {isGicho && proposals.filter(p => p.sectionId === section.id && p.status === "pending").map((proposal) => (
-                                                <Card key={proposal.id} className="mt-3 border-2 border-warning bg-warning/5" radius="lg">
-                                                    <CardHeader className="pb-2">
-                                                        <Chip size="sm" color="warning" variant="flat">
-                                                            <Icon icon="mdi:lightbulb-outline" className="mr-1" />
-                                                            推敲提案
-                                                        </Chip>
-                                                    </CardHeader>
-                                                    <CardBody className="pt-0 space-y-3">
-                                                        <div className="whitespace-pre-wrap text-sm">{proposal.proposedContent}</div>
-                                                        <div className="flex gap-2 justify-end">
-                                                            <Button
-                                                                size="sm"
-                                                                color="success"
-                                                                radius="full"
-                                                                startContent={<Icon icon="mdi:check" />}
-                                                                onPress={() => handleApproveProposal(proposal.id)}
-                                                            >
-                                                                承認
-                                                            </Button>
-                                                            <Button
-                                                                size="sm"
-                                                                color="danger"
-                                                                variant="flat"
-                                                                radius="full"
-                                                                startContent={<Icon icon="mdi:close" />}
-                                                                onPress={() => handleRejectProposal(proposal.id)}
-                                                            >
-                                                                却下
-                                                            </Button>
-                                                        </div>
-                                                    </CardBody>
-                                                </Card>
-                                            ))}
-                                        </div>
-                                    ))
-                                )}
+                                    editingSection={store.editingSection}
+                                    editContent={store.editContent}
+                                    editImageInstruction={store.editImageInstruction}
+                                    editReferenceImageUrl={store.editReferenceImageUrl}
+                                    editAllowSubmission={store.editAllowSubmission}
+                                    isSaving={store.isSectionSaving || store.isProposalSaving}
+
+                                    onEditStart={store.handleEditStart}
+                                    onEditCancel={store.handleEditCancel}
+                                    onEditSave={store.handleEditSave}
+
+                                    onEditContentChange={store.setEditContent}
+                                    onEditImageInstructionChange={store.setEditImageInstruction}
+                                    onEditReferenceImageUrlChange={store.setEditReferenceImageUrl}
+                                    onEditAllowSubmissionChange={store.setEditAllowSubmission}
+
+                                    proposalSection={store.proposalSection}
+                                    proposalContent={store.proposalContent}
+                                    onProposalOpen={store.handleProposalOpen}
+                                    onProposalCancel={store.handleProposalCancel}
+                                    onProposalSubmit={store.handleProposalSubmit}
+                                    onProposalContentChange={store.setProposalContent}
+                                />
                             </div>
                         </Tab>
 
-                        {/* 2. 画像UPタブ */}
                         <Tab
-                            key="image-upload"
+                            key="images"
                             title={
                                 <div className="flex items-center gap-2">
-                                    <Icon icon="mdi:cloud-upload" className="text-lg" />
+                                    <Icon icon="mdi:image-plus" className="text-lg" />
                                     <span className="hidden md:inline">画像UP</span>
                                 </div>
                             }
                         >
-                            <div className="p-4 md:p-6 space-y-6">
-                                {sections.filter(s => s.allowImageSubmission ?? true).length === 0 ? (
-                                    <div className="text-center py-12">
-                                        <Icon icon="mdi:image-off" className="text-5xl text-foreground-muted mx-auto mb-4" />
-                                        <p className="text-foreground-muted">
-                                            {sections.length === 0
-                                                ? "まずは調理タブで台本を入力してください"
-                                                : "画像提出が許可されているセクションがありません"}
-                                        </p>
-                                    </div>
-                                ) : (
-                                    sections.filter(s => s.allowImageSubmission ?? true).map((section) => {
-                                        const sectionImages = images.filter(img => img.sectionId === section.id);
-                                        const originalIndex = sections.indexOf(section);
-
-                                        return (
-                                            <div key={section.id} className="space-y-4">
-                                                {/* セクション挿入ボタン (上) */}
-                                                <div className="flex justify-center opacity-0 hover:opacity-100 transition-opacity">
-                                                    <Button
-                                                        size="sm" variant="flat" color="primary" radius="full"
-                                                        startContent={<Icon icon="mdi:plus" />}
-                                                        onPress={() => handleAddSection(originalIndex)}
-                                                    >
-                                                        ここにセクションを追加
-                                                    </Button>
-                                                </div>
-
-                                                <Card className="card-elevated" radius="lg">
-                                                    <CardHeader className="pb-2 flex justify-between items-start">
-                                                        <Chip size="sm" color="primary" variant="flat">
-                                                            セクション {originalIndex + 1}
-                                                        </Chip>
-                                                        <div className="flex gap-2">
-                                                            <Button
-                                                                size="sm" color="danger" variant="light" isIconOnly
-                                                                onPress={() => handleDeleteSection(section.id)}
-                                                            >
-                                                                <Icon icon="mdi:trash-can-outline" />
-                                                            </Button>
-                                                        </div>
-                                                    </CardHeader>
-                                                    <CardBody className="space-y-4">
-                                                        <div
-                                                            className="text-foreground-muted whitespace-pre-wrap"
-                                                            style={{ fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
-                                                        >
-                                                            {section.content}
-                                                        </div>
-
-                                                        {section.imageInstruction && (
-                                                            <div className="bg-primary/5 border-l-4 border-primary pl-4 py-3 rounded-r">
-                                                                <div className="flex items-center gap-2 mb-1">
-                                                                    <Icon icon="mdi:image-text" className="text-primary" />
-                                                                    <p className="text-sm font-semibold text-primary">画像指示</p>
-                                                                </div>
-                                                                <p className="text-sm">{section.imageInstruction}</p>
-                                                            </div>
-                                                        )}
-
-                                                        {section.referenceImageUrl && (
-                                                            <div className="bg-default-100 p-3 rounded-lg">
-                                                                <p className="text-xs font-semibold text-foreground-muted mb-2">参考画像</p>
-                                                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                                <img
-                                                                    src={section.referenceImageUrl}
-                                                                    alt="参考画像"
-                                                                    className="max-h-40 max-w-full rounded border border-default-200 object-contain mx-auto"
-                                                                />
-                                                            </div>
-                                                        )}
-
-                                                        <Divider />
-
-                                                        {/* アップロードエリア */}
-                                                        <div>
-                                                            <input
-                                                                type="file"
-                                                                accept="image/*"
-                                                                onChange={(e) => {
-                                                                    const file = e.target.files?.[0];
-                                                                    if (file) handleImageUpload(section.id, file);
-                                                                    e.target.value = '';
-                                                                }}
-                                                                className="hidden"
-                                                                id={`file-input-${section.id}`}
-                                                            />
-                                                            <label htmlFor={`file-input-${section.id}`}>
-                                                                <div className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${uploadingSection === section.id
-                                                                    ? 'border-primary bg-primary/5'
-                                                                    : 'border-default-300 hover:border-primary hover:bg-primary/5'
-                                                                    }`}>
-                                                                    {uploadingSection === section.id ? (
-                                                                        <div className="space-y-3">
-                                                                            <Spinner size="sm" color="primary" />
-                                                                            <p className="text-sm text-primary">アップロード中...</p>
-                                                                            <Progress
-                                                                                value={uploadProgress}
-                                                                                color="primary"
-                                                                                size="sm"
-                                                                                className="max-w-xs mx-auto"
-                                                                            />
-                                                                        </div>
-                                                                    ) : (
-                                                                        <div className="space-y-2">
-                                                                            <Icon icon="mdi:cloud-upload-outline" className="text-4xl text-foreground-muted mx-auto" />
-                                                                            <p className="text-sm font-semibold">クリックして画像をアップロード</p>
-                                                                            <p className="text-xs text-foreground-muted">jpg, png, gif, webp対応</p>
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            </label>
-                                                        </div>
-
-                                                        {/* このセクションの画像一覧 */}
-                                                        {sectionImages.length > 0 && (
-                                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                                                {sectionImages.map((img, imgIndex) => {
-                                                                    const isSelected = img.isSelected && img.sectionId === section.id;
-                                                                    return (
-                                                                        <div key={img.id} className="relative group">
-                                                                            <div
-                                                                                className={`
-                                                                                    relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all
-                                                                                    ${isSelected
-                                                                                        ? "border-primary ring-4 ring-primary/30 shadow-lg scale-95"
-                                                                                        : "border-transparent hover:border-default-300"
-                                                                                    }
-                                                                                `}
-                                                                                onClick={() => openLightbox(sectionImages, imgIndex)}
-                                                                            >
-                                                                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                                                <img
-                                                                                    src={img.imageUrl}
-                                                                                    alt="uploaded"
-                                                                                    className="w-full h-full object-cover"
-                                                                                />
-
-                                                                                {/* 選択インジケーター */}
-                                                                                {isSelected && (
-                                                                                    <div className="absolute top-2 right-2 bg-primary text-white p-1 rounded-full shadow-md z-10">
-                                                                                        <Icon icon="mdi:check-bold" className="text-lg" />
-                                                                                    </div>
-                                                                                )}
-
-                                                                                {/* 拡大アイコン */}
-                                                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30">
-                                                                                    <Icon icon="mdi:magnify-plus" className="text-white text-2xl" />
-                                                                                </div>
-                                                                            </div>
-
-                                                                            {/* 削除ボタン */}
-                                                                            <button
-                                                                                className="absolute -top-2 -left-2 bg-danger text-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:scale-110"
-                                                                                onClick={(e) => {
-                                                                                    e.stopPropagation();
-                                                                                    handleDeleteImage(img.id);
-                                                                                }}
-                                                                                title="画像を削除"
-                                                                            >
-                                                                                <Icon icon="mdi:trash-can" className="text-sm" />
-                                                                            </button>
-
-                                                                            {/* 投稿者名 */}
-                                                                            <div className="mt-1 px-1">
-                                                                                <span className="text-xs text-foreground-muted truncate block max-w-full">
-                                                                                    {uploaderNames[img.uploadedBy] || "User"}
-                                                                                </span>
-                                                                            </div>
-                                                                        </div>
-                                                                    );
-                                                                })}
-                                                            </div>
-                                                        )}
-                                                    </CardBody>
-                                                </Card>
-
-                                                {/* 末尾挿入ボタン (最後のみ) */}
-                                                {originalIndex === sections.length - 1 && (
-                                                    <div className="flex justify-center pt-4">
-                                                        <Button
-                                                            size="sm" variant="flat" color="primary" radius="full"
-                                                            startContent={<Icon icon="mdi:plus" />}
-                                                            onPress={() => handleAddSection(originalIndex + 1)}
-                                                        >
-                                                            末尾にセクションを追加
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })
-
-                                )}
-                            </div>
+                            <ImageUploadTab
+                                sections={store.sections}
+                                images={store.images}
+                                editorFontSize={store.editorFontSize}
+                                uploadingSectionId={store.uploadingSectionId}
+                                uploadProgress={store.uploadProgress}
+                                uploaderNames={store.userNames}
+                                onAddSection={store.handleAddSection}
+                                onDeleteSection={store.handleDeleteSection}
+                                onImageUpload={store.handleImageUpload}
+                                onDeleteImage={store.handleDeleteImage}
+                                onOpenLightbox={store.openLightbox}
+                            />
                         </Tab>
 
-                        {/* 3. 画像採用タブ */}
                         <Tab
-                            key="image-selection"
+                            key="selection"
                             title={
                                 <div className="flex items-center gap-2">
-                                    <Icon icon="mdi:check-circle" className="text-lg" />
+                                    <Icon icon="mdi:check-decagram" className="text-lg" />
                                     <span className="hidden md:inline">画像採用</span>
                                 </div>
                             }
                         >
-                            <div className="p-4 md:p-6 space-y-6">
-                                {sections.length === 0 ? (
-                                    <div className="text-center py-12">
-                                        <Icon icon="mdi:image-off" className="text-5xl text-foreground-muted mx-auto mb-4" />
-                                        <p className="text-foreground-muted">まずは調理タブで台本を入力してください</p>
-                                    </div>
-                                ) : (
-                                    sections.map((section, index) => {
-                                        const sectionImages = images.filter(img => img.sectionId === section.id);
-                                        const allowsImages = section.allowImageSubmission ?? true;
-
-                                        return (
-                                            <Card
-                                                key={section.id}
-                                                className={`card-elevated ${!allowsImages ? 'opacity-60' : ''}`}
-                                                radius="lg"
-                                            >
-                                                <CardHeader className="pb-2 flex flex-row items-center gap-2">
-                                                    <Chip size="sm" color="primary" variant="flat">
-                                                        セクション {index + 1}
-                                                    </Chip>
-                                                    {!allowsImages && (
-                                                        <Chip size="sm" color="warning" variant="flat">
-                                                            <Icon icon="mdi:image-off" className="mr-1" />
-                                                            画像なし
-                                                        </Chip>
-                                                    )}
-                                                </CardHeader>
-                                                <CardBody className="space-y-4">
-                                                    <div className="text-sm text-foreground-muted line-clamp-2">
-                                                        {section.content}
-                                                    </div>
-
-                                                    {!allowsImages ? (
-                                                        <p className="text-sm text-foreground-muted text-center py-4 bg-warning/10 rounded-lg">
-                                                            このセクションは画像を募集していません
-                                                        </p>
-                                                    ) : sectionImages.length > 0 ? (
-                                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                                            {sectionImages.map((img, imgIndex) => (
-                                                                <div
-                                                                    key={img.id}
-                                                                    className={`relative card-elevated hover:scale-[1.02] transition-transform rounded-lg overflow-hidden cursor-pointer ${img.isSelected
-                                                                        ? 'ring-4 ring-primary ring-offset-2'
-                                                                        : 'hover:ring-2 hover:ring-default-300'
-                                                                        }`}
-                                                                    onClick={() => handleToggleImageSelection(img.id, section.id)}
-                                                                >
-                                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                                    <img
-                                                                        src={img.imageUrl}
-                                                                        alt="section image"
-                                                                        className="w-full h-24 md:h-32 object-cover"
-                                                                    />
-                                                                    {img.isSelected && (
-                                                                        <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1.5">
-                                                                            <Icon icon="mdi:check" className="text-sm" />
-                                                                        </div>
-                                                                    )}
-                                                                    {/* 拡大ボタン */}
-                                                                    <div
-                                                                        className="absolute top-2 left-2 bg-black/40 hover:bg-black/60 min-w-6 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer"
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            openLightbox(sectionImages, imgIndex);
-                                                                        }}
-                                                                    >
-                                                                        <Icon icon="mdi:magnify-plus" className="text-white text-xs" />
-                                                                    </div>
-                                                                    {/* 投稿者名 */}
-                                                                    {uploaderNames[img.uploadedBy] && (
-                                                                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1">
-                                                                            <p className="text-white text-xs truncate">{uploaderNames[img.uploadedBy]}</p>
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    ) : (
-                                                        <p className="text-sm text-foreground-muted text-center py-4">
-                                                            まだ画像がアップロードされていません
-                                                        </p>
-                                                    )}
-                                                </CardBody>
-                                            </Card>
-                                        );
-                                    })
-                                )}
-                            </div>
+                            <ImageAdoptionTab
+                                sections={store.sections}
+                                images={store.images}
+                                uploaderNames={store.userNames}
+                                onImageSelection={store.handleImageSelection}
+                                onOpenLightbox={store.openLightbox}
+                            />
                         </Tab>
 
-                        {/* 4. ダウンロードタブ */}
                         <Tab
                             key="download"
                             title={
@@ -1101,136 +159,25 @@ export default function KitchenDetailClient({
                                 </div>
                             }
                         >
-                            <div className="p-4 md:p-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Card className="card-elevated" radius="lg">
-                                        <CardBody className="space-y-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="p-3 bg-primary/10 rounded-lg">
-                                                    <Icon icon="mdi:file-document-outline" className="text-2xl text-primary" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-semibold">台本</p>
-                                                    <p className="text-sm text-foreground-muted">テキストファイル形式</p>
-                                                </div>
-                                            </div>
-                                            <Button
-                                                color="primary"
-                                                radius="lg"
-                                                className="w-full"
-                                                startContent={<Icon icon="mdi:download" />}
-                                                onPress={handleDownloadScript}
-                                                isDisabled={sections.length === 0}
-                                            >
-                                                ダウンロード (.txt)
-                                            </Button>
-                                        </CardBody>
-                                    </Card>
-
-                                    <Card className="card-elevated" radius="lg">
-                                        <CardBody className="space-y-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="p-3 bg-secondary/10 rounded-lg">
-                                                    <Icon icon="mdi:folder-zip-outline" className="text-2xl text-secondary" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-semibold">採用画像</p>
-                                                    <p className="text-sm text-foreground-muted">
-                                                        {images.filter(i => i.isSelected).length} 枚選択中
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <Button
-                                                color="secondary"
-                                                radius="lg"
-                                                className="w-full"
-                                                startContent={<Icon icon="mdi:download" />}
-                                                onPress={handleDownloadImagesZip}
-                                                isDisabled={images.filter(i => i.isSelected).length === 0}
-                                            >
-                                                ダウンロード (.zip)
-                                            </Button>
-                                        </CardBody>
-                                    </Card>
-                                </div>
-                            </div>
+                            <DownloadTab
+                                isDownloading={store.downloading}
+                                onDownloadScript={store.handleDownloadScript}
+                                onDownloadImages={store.handleDownloadImages}
+                                onDownloadProject={store.handleDownloadProject}
+                            />
                         </Tab>
                     </Tabs>
                 </CardBody>
-            </Card >
+            </Card>
 
-            {/* 画像拡大モーダル */}
-            < Modal
-                isOpen={lightboxOpen}
-                onClose={closeLightbox}
-                size="full"
-                classNames={{
-                    base: "bg-black/95",
-                    body: "p-0",
-                }
-                }
-            >
-                <ModalContent>
-                    <ModalBody className="flex items-center justify-center relative">
-                        {lightboxImages.length > 0 && (
-                            <>
-                                {/* 前へボタン */}
-                                <Button
-                                    isIconOnly
-                                    variant="flat"
-                                    radius="full"
-                                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/40"
-                                    onPress={goToPrevImage}
-                                >
-                                    <Icon icon="mdi:chevron-left" className="text-2xl text-white" />
-                                </Button>
-
-                                {/* 画像 */}
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src={lightboxImages[lightboxIndex]?.imageUrl}
-                                    alt="拡大画像"
-                                    className="max-h-[90vh] max-w-[90vw] object-contain"
-                                />
-
-                                {/* 次へボタン */}
-                                <Button
-                                    isIconOnly
-                                    variant="flat"
-                                    radius="full"
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/40"
-                                    onPress={goToNextImage}
-                                >
-                                    <Icon icon="mdi:chevron-right" className="text-2xl text-white" />
-                                </Button>
-
-                                {/* 閉じるボタン */}
-                                <Button
-                                    isIconOnly
-                                    variant="flat"
-                                    radius="full"
-                                    className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/40"
-                                    onPress={closeLightbox}
-                                >
-                                    <Icon icon="mdi:close" className="text-xl text-white" />
-                                </Button>
-
-                                {/* 画像情報 */}
-                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 px-4 py-2 rounded-lg">
-                                    <p className="text-white text-sm">
-                                        {lightboxIndex + 1} / {lightboxImages.length}
-                                        {lightboxImages[lightboxIndex]?.uploadedBy && uploaderNames[lightboxImages[lightboxIndex].uploadedBy] && (
-                                            <span className="ml-2 text-white/70">
-                                                by {uploaderNames[lightboxImages[lightboxIndex].uploadedBy]}
-                                            </span>
-                                        )}
-                                    </p>
-                                </div>
-                            </>
-                        )}
-                    </ModalBody>
-                </ModalContent>
-            </Modal >
-        </div >
+            <Lightbox
+                isOpen={store.isLightboxOpen}
+                onClose={() => store.setIsLightboxOpen(false)}
+                images={store.lightboxImages}
+                currentIndex={store.lightboxImageIndex}
+                onIndexChange={store.setLightboxImageIndex}
+                uploaderNames={store.userNames}
+            />
+        </div>
     );
 }

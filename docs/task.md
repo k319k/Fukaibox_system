@@ -62,6 +62,15 @@
   - [x] 選択画像の一括ダウンロード(.zip)
   - [x] プロジェクト全体のダウンロード
 
+### Phase 2-Refactoring: Codebase Optimization
+
+- [ ] 200行を超えるファイルの分割
+  - [x] `kitchen-detail-client.tsx` (>1000 lines) のコンポーネント分割
+  - [x] `actions/kitchen.ts` (>500 lines) のアクション分割 (`actions/kitchen/` ディレクトリに分割)
+  - [x] `kitchen-list-client.tsx` (>300 lines) のコンポーネント分割
+  - [ ] その他ファイルの分割・整理
+- [ ] コード品質の向上
+
 ### Phase 2-D: Advanced Features (未着手)
 
 - [ ] AI評価連携 (GLM-4.6V-Flash)

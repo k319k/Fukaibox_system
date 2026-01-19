@@ -1,0 +1,91 @@
+"use client";
+
+import { Card, CardBody, CardHeader } from "@heroui/react";
+import Link from "next/link";
+import { Play } from "lucide-react";
+import { formatRelativeTime } from "@/lib/youtube";
+import type { YouTubeVideo } from "@/lib/youtube";
+import Image from "next/image";
+import { motion } from "framer-motion";
+
+interface ShortsGridProps {
+    shorts: YouTubeVideo[];
+}
+
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.05, delayChildren: 0.1 }
+    }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+};
+
+export function ShortsGrid({ shorts }: ShortsGridProps) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+        >
+            <Card className="bg-content1 rounded-[28px] border-none shadow-none">
+                <CardHeader className="p-8 pb-0 flex-col items-start">
+                    <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3">
+                        <Play className="w-6 h-6 fill-current text-[var(--md-sys-color-primary)]" />
+                        最新のShorts
+                    </h2>
+                </CardHeader>
+                <CardBody className="p-8">
+                    {shorts.length > 0 ? (
+                        <motion.div
+                            className="grid grid-cols-2 md:grid-cols-4 gap-6"
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="visible"
+                        >
+                            {shorts.map((video) => (
+                                <motion.div key={video.videoId} variants={itemVariants}>
+                                    <Link href={video.videoUrl} target="_blank" className="group cursor-pointer block">
+                                        <motion.div
+                                            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                                            whileTap={{ scale: 0.96 }}
+                                        >
+                                            <div className="aspect-[9/16] rounded-[16px] bg-[var(--md-sys-color-surface-container-highest)] mb-3 overflow-hidden relative shadow-sm group-hover:shadow-lg transition-all duration-300">
+                                                <Image
+                                                    src={video.thumbnailUrl}
+                                                    alt={video.title}
+                                                    fill
+                                                    className="object-cover"
+                                                    unoptimized
+                                                />
+                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px]">
+                                                    <div className="w-12 h-12 bg-background/95 rounded-full flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform text-[var(--md-sys-color-primary)] pl-0.5">
+                                                        <Play className="w-6 h-6 fill-current" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <h3 className="text-base font-normal leading-relaxed group-hover:text-[var(--md-sys-color-primary)] transition-colors line-clamp-2">
+                                                {video.title}
+                                            </h3>
+                                            <span className="text-sm text-[var(--md-sys-color-on-surface-variant)] mt-1 block">
+                                                {formatRelativeTime(video.publishedAt)}
+                                            </span>
+                                        </motion.div>
+                                    </Link>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    ) : (
+                        <div className="text-center py-12 text-[var(--md-sys-color-on-surface-variant)]">
+                            <p className="text-base font-normal leading-relaxed">Shorts動画を取得できませんでした</p>
+                        </div>
+                    )}
+                </CardBody>
+            </Card>
+        </motion.div>
+    );
+}

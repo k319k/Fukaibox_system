@@ -193,6 +193,9 @@ export default function MyComponent() {
    - モーダル、カード、チップ等もすべてHeroUIコンポーネントを使用
    - 標準HTMLが必要になったらユーザーに許可をもらうこと
 
+5. **200行以上のコード禁止**
+   - 200行以上のコードを書く場合は分割して200行以下にすること。
+
 ### ✅ 推奨事項
 
 1. **Server Componentsを優先**
@@ -210,6 +213,9 @@ export default function MyComponent() {
    - Drizzle ORMスキーマから型を自動生成
    - `any`型の使用を避ける
 
+5. **UIを統一**
+   - Design definition documentを厳守し、HeroUIコンポーネントを使用すること。
+
 ## トラブルシューティング
 
 ### ビルドエラー
@@ -221,13 +227,7 @@ npm install
 # キャッシュクリア
 rm -rf .next
 npm run build
-```
 
-### 開発サーバーが起動しない
-
-```bash
-# ポート3000が使用中の場合
-PORT=3001 npm run dev
 ```
 
 ### Vercelデプロイエラー

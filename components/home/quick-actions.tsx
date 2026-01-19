@@ -1,0 +1,82 @@
+"use client";
+
+import { Card, CardBody } from "@heroui/react";
+import Link from "next/link";
+import { ChefHat, Package, Wrench, Settings } from "lucide-react";
+import { motion } from "framer-motion";
+
+const actions = [
+    {
+        label: "料理をする",
+        href: "/cooking",
+        icon: ChefHat,
+        color: "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
+    },
+    {
+        label: "保管庫を見る",
+        href: "/storage",
+        icon: Package,
+        color: "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
+    },
+    {
+        label: "道具を使う",
+        href: "/tools",
+        icon: Wrench,
+        color: "bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]"
+    },
+    {
+        label: "設定",
+        href: "/settings",
+        icon: Settings,
+        color: "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)]"
+    },
+];
+
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.05 }
+    }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+};
+
+export function QuickActions() {
+    return (
+        <motion.div
+            className="grid grid-cols-2 md:grid-cols-4 gap-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+        >
+            {actions.map((action) => (
+                <motion.div key={action.label} variants={itemVariants}>
+                    <Link href={action.href} className="group block">
+                        <motion.div
+                            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                            whileTap={{ scale: 0.96 }}
+                        >
+                            <Card
+                                className={`h-44 border-none shadow-none hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300 ${action.color} rounded-[28px]`}
+                            >
+                                <CardBody className="flex flex-col items-center justify-center gap-5 p-8">
+                                    <action.icon
+                                        strokeWidth={1.5}
+                                        className="w-10 h-10 group-hover:scale-110 transition-transform duration-300"
+                                    />
+                                    <span className="text-lg font-medium tracking-normal">
+                                        {action.label}
+                                    </span>
+                                </CardBody>
+                            </Card>
+                        </motion.div>
+                    </Link>
+                </motion.div>
+            ))}
+        </motion.div>
+    );
+}
