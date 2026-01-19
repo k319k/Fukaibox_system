@@ -9,10 +9,10 @@
   /* ───────────────────────────────────────────────────────────────────────────
      Primary (Carmine Red)
      ─────────────────────────────────────────────────────────────────────────── */
-  --md-sys-color-primary: #B3424A;
-  --md-sys-color-on-primary: #FFFFFF;
-  --md-sys-color-primary-container: #FFDAD9;
-  --md-sys-color-on-primary-container: #40000A;
+  --md-sys-color-primary: #73342b;
+  --md-sys-color-on-primary: #ffdad5;
+  --md-sys-color-primary-container: #ffdad5;
+  --md-sys-color-on-primary-container: #73342b;
 
   /* ───────────────────────────────────────────────────────────────────────────
      Secondary (Deep Red)
@@ -25,32 +25,27 @@
   /* ───────────────────────────────────────────────────────────────────────────
      Tertiary (Brown)
      ─────────────────────────────────────────────────────────────────────────── */
-  --md-sys-color-tertiary: #775930;
-  --md-sys-color-on-tertiary: #FFFFFF;
-  --md-sys-color-tertiary-container: #FFDEBC;
-  --md-sys-color-on-tertiary-container: #291800;
+  --md-sys-color-tertiary: #564419;
+  --md-sys-color-on-tertiary: #fbe7a6;
+  --md-sys-color-tertiary-container: #fbe7a6;
+  --md-sys-color-on-tertiary-container: #564419;
 
   /* ───────────────────────────────────────────────────────────────────────────
      Surface Hierarchy (M3 Elevation Tones)
      「純白」を避けた目に優しいオフホワイトパレット
      ─────────────────────────────────────────────────────────────────────────── */
-  --md-sys-color-surface: #F5F0DC;
-  /* Ivory - メイン背景 */
-  --md-sys-color-surface-dim: #E8E3CF;
-  --md-sys-color-surface-bright: #FBF8EE;
-  --md-sys-color-surface-container-lowest: #FDFBF0;
-  /* Eggshell - カード背景 */
-  --md-sys-color-surface-container-low: #FAF9F6;
-  /* Snow White - 控えめな浮き */
-  --md-sys-color-surface-container: #F5F0DC;
-  /* Ivory - 標準 */
-  --md-sys-color-surface-container-high: #EFEAD8;
-  --md-sys-color-surface-container-highest: #E6E1CE;
-  --md-sys-color-sidebar: #FFFBF2;
-  /* Milky White - サイドバー専用 */
-  --md-sys-color-on-surface: #1D1B16;
-  --md-sys-color-on-surface-variant: #4B4639;
-  --md-sys-color-surface-variant: #E8E1CF;
+  --md-sys-color-surface: #fff8f6;
+  --md-sys-color-surface-dim: #f5ebe8;
+  --md-sys-color-surface-bright: #fffbfa;
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #fef5f2;
+  --md-sys-color-surface-container: #fff8f6;
+  --md-sys-color-surface-container-high: #f9efec;
+  --md-sys-color-surface-container-highest: #f3e5e2;
+  --md-sys-color-sidebar: #fffbf9;
+  --md-sys-color-on-surface: #1d1b19;
+  --md-sys-color-on-surface-variant: #534b47;
+  --md-sys-color-surface-variant: #f5e0db;
 
   /* ───────────────────────────────────────────────────────────────────────────
      Outline & Error
@@ -75,14 +70,14 @@
   /* ───────────────────────────────────────────────────────────────────────────
      ロール別カラー (M3風に調整)
      ─────────────────────────────────────────────────────────────────────────── */
-  --color-gicho: #E8A127;
-  --color-gicho-container: #FFF0C7;
-  --color-meiyo-giin: #8B5CF6;
-  --color-meiyo-giin-container: #EDE9FE;
-  --color-giin: #10B981;
-  --color-giin-container: #D1FAE5;
-  --color-guest: #6B7280;
-  --color-guest-container: #F3F4F6;
+  --color-gicho: #73342b;
+  --color-gicho-container: #ffdad5;
+  --color-meiyo-giin: #564419;
+  --color-meiyo-giin-container: #fbe7a6;
+  --color-giin: #10200a;
+  --color-giin-container: #d7f0cb;
+  --color-guest: #6b7280;
+  --color-guest-container: #f3f4f6;
 
   /* ═══════════════════════════════════════════════════════════════════════════
      M3 Elevation (Shadow Tokens)

@@ -2,6 +2,7 @@
 
 import { Card, CardBody, Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { motion } from "framer-motion";
 import { Project } from "@/types/kitchen";
 import ProjectCard from "./ProjectCard";
 
@@ -12,38 +13,59 @@ interface ProjectListProps {
     onCreateClick: () => void;
 }
 
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+};
+
 export default function ProjectList({ projects, isGicho, onDeleteClick, onCreateClick }: ProjectListProps) {
     if (projects.length === 0) {
         return (
-            <Card className="card-elevated" radius="lg">
-                <CardBody className="text-center py-12">
-                    <Icon icon="mdi:pot-steam-outline" className="text-6xl text-foreground-muted mx-auto mb-4" />
-                    <p className="text-foreground-muted">まだプロジェクトがありません</p>
-                    {isGicho && (
-                        <Button
-                            color="primary"
-                            radius="full"
-                            className="mt-4"
-                            onPress={onCreateClick}
-                        >
-                            最初の料理を作る
-                        </Button>
-                    )}
-                </CardBody>
-            </Card>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+            >
+                <Card className="bg-[var(--md-sys-color-surface-container-lowest)] border-none shadow-none rounded-[28px]">
+                    <CardBody className="text-center py-12">
+                        <Icon icon="mdi:pot-steam-outline" className="text-6xl text-[#73342b] mx-auto mb-4" />
+                        <p className="text-[var(--md-sys-color-on-surface-variant)]">まだプロジェクトがありません</p>
+                        {isGicho && (
+                            <motion.div whileTap={{ scale: 0.95 }} className="mt-4 inline-block">
+                                <Button
+                                    className="rounded-full bg-[#ffdad5] text-[#73342b] font-semibold"
+                                    onPress={onCreateClick}
+                                >
+                                    最初の料理を作る
+                                </Button>
+                            </motion.div>
+                        )}
+                    </CardBody>
+                </Card>
+            </motion.div>
         );
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+        >
             {projects.map((project) => (
-                <ProjectCard
-                    key={project.id}
-                    project={project}
-                    isGicho={isGicho}
-                    onDeleteClick={onDeleteClick}
-                />
+                <motion.div key={project.id} variants={itemVariants}>
+                    <ProjectCard
+                        project={project}
+                        isGicho={isGicho}
+                        onDeleteClick={onDeleteClick}
+                    />
+                </motion.div>
             ))}
-        </div>
+        </motion.div>
     );
 }
