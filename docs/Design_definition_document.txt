@@ -1,4 +1,4 @@
-封解Box × Material Design 3 × HeroUI 究極デザイン聖典 (Ver 14.0 Hardened)
+封解Box × Material Design 3 × HeroUI 究極デザイン聖典 (Ver 15.0 Hardened)
 
 1. デザインの物理法則 (Core Tokens)
 
@@ -30,7 +30,7 @@ B. 角丸階層 (Radius Hierarchy)
 
 Extra Large (28px): rounded-[28px] (Modal, Drawer, Main Card, Dialog)
 
-Large (20px): rounded-[20px] (Secondary Card, Table, Accordion, Image)
+Large (20px): rounded-[20px] (Sidebar, Table, Accordion, Image, Secondary Card)
 
 Medium (16px): rounded-[16px] (Input, Autocomplete, Alert, User, Avatar, Skeleton)
 
@@ -38,7 +38,7 @@ Pill (Full): rounded-full (Button, Chip, Tab, Switch, Search Bar)
 
 C. 色彩マッピング (#904a40 Palette)
 
-アクセシビリティ（視認性）を担保するため、以下のペア以外を禁止する。
+アクセシビリティを担保するため、以下のペア以外を禁止する。
 
 役割
 
@@ -62,7 +62,7 @@ content1
 
 #fceae7
 
-#231918 (on-surface)
+#231918
 
 Warning
 
@@ -80,6 +80,14 @@ danger
 
 #93000a
 
+Success
+
+success
+
+#d7f0cb
+
+#10200a
+
 Background
 
 background
@@ -88,9 +96,29 @@ background
 
 #231918
 
-2. システム・カスタマイズ (System Config)
+2. レイアウト & 画面構成 (Layout & Sidebar)
 
-Theme & Layout
+A. 背景色 (Background)
+
+Main Canvas: 必ず #fff8f6 (bg-background) を使用。純白 (#FFFFFF) は禁止。
+
+目的: 画面全体の反射を抑え、赤い Primary カラーを美しく引き立たせる。
+
+B. サイドバー (Sidebar)
+
+背景: #fceae7 (bg-content1)。メインキャンバス（background）より一段濃い色で「情報の基盤」であることを示す。
+
+形状: rounded-r-[28px] または、浮遊型の場合は rounded-[28px]。
+
+アイテムステート:
+
+Active: bg-primary-50 (#ffdad5) + text-primary-900 (#73342b)
+
+Hover: bg-content2/50
+
+余白: サイドバー内のパディングは p-6 (24px)。
+
+C. テーマ & ダークモード
 
 Dark Mode: 背景は #1a1110 固定。surface は #271d1c を使用。
 
@@ -106,13 +134,17 @@ Button:
 
 radius="full" font-bold active:scale-95 transition-all
 
-重要: アイコン整列: className="flex items-center justify-center gap-2" を強制。アイコンが左上に寄るのを防ぐため、必ず h-12 (48px) の中心にアイコンを配置せよ。
+重要: アイコン整列: className="flex items-center justify-center gap-2 px-6 h-12" を強制。
 
-アイコンは lucide-react を使い、size={20} / strokeWidth={1.5} 固定。
+アイコンが左上に寄るのを防ぐため、必ず items-center justify-center で物理的中心に据えること。
+
+アイコンは size={20} / strokeWidth={1.5} 固定。
 
 ButtonGroup: radius="full" で結合。
 
 Kbd: className="bg-content2/50 border-none font-mono text-primary"
+
+Dropdown: radius="md" (12px)、アイテムは rounded-full。
 
 3.2 フォーム・入力系 (Forms)
 
@@ -120,27 +152,27 @@ Input / Textarea / Number Input:
 
 variant="flat" radius="lg" (16px)
 
-classNames={{ inputWrapper: "bg-content2/40 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner" }}
+classNames={{ inputWrapper: "bg-content2/40 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all" }}
 
 Autocomplete / Select: popoverProps={{ className: "rounded-[20px] shadow-2xl" }}
 
 Checkbox / Radio Group: color="primary" label: "ml-2 font-medium"
 
-Switch: radius="full" classNames={{ wrapper: "group-data-[selected=true]:bg-primary" }}
+Switch: radius="full" classNames={{ wrapper: "group-data-[selected=true]:bg-primary shadow-none" }}
 
-Date Picker / Time Input: radius="lg" calendarProps={{ className: "rounded-[28px] bg-background p-4" }}
+Date Picker / Time Input / Range Calendar: radius="lg" calendarProps={{ className: "rounded-[28px] bg-background p-4" }}
 
 Input OTP: radius="md" input: "border-2 border-transparent focus:border-primary"
 
-Slider: color="primary" classNames={{ track: "bg-content2", thumb: "bg-primary shadow-lg" }}
+Slider: color="primary" classNames={{ track: "bg-content2", thumb: "bg-primary shadow-lg border-2 border-background" }}
 
 3.3 データ表示 (Data Display)
 
-Accordion: variant="light" item: "bg-content1 rounded-[20px] px-6 mb-2"
+Accordion: variant="light" item: "bg-content1 rounded-[20px] px-6 mb-2 border-none"
 
 Avatar / User: radius="lg" (16px) / name: "font-bold text-on-surface"
 
-Badge / Chip: radius="full" variant="flat" className="bg-primary-100 text-primary-900"
+Badge / Chip: radius="full" variant="flat" className="bg-primary-50 text-primary-900 px-3"
 
 Card:
 
@@ -148,13 +180,15 @@ Card:
 
 サブ: rounded-[20px] bg-content2 p-6
 
-Table: radius="lg" (20px) th: "bg-content2 text-primary font-bold py-4"
+Table: radius="lg" (20px) th: "bg-content2/50 text-primary font-bold py-4"
 
-Listbox: item: "rounded-full px-6 py-2 my-1"
+Listbox: item: "rounded-full px-6 py-2 my-1 data-[hover=true]:bg-primary-50"
 
-Image: radius="lg" (20px) shadow-none
+Image: radius="lg" (20px) shadow-none hover:scale-[1.02] transition-transform
 
 Divider: className="bg-divider/30 my-6"
+
+Code / Snippet: className="bg-content2 rounded-lg text-primary"
 
 3.4 フィードバック & ナビゲーション (Feedback & Nav)
 
@@ -162,44 +196,46 @@ Alert: variant="flat" radius="lg" className="p-4 gap-4 border-none shadow-sm"
 
 Modal / Drawer: radius="lg" (28px) base: "bg-background/90 backdrop-blur-xl"
 
-Tabs: variant="solid" radius="full" classNames={{ tabList: "bg-content2/50 p-1", cursor: "bg-primary shadow-lg" }}
+Tabs: variant="solid" radius="full" classNames={{ tabList: "bg-content2/50 p-1", cursor: "bg-primary shadow-lg shadow-primary/20" }}
 
-Navbar: className="h-16 px-8 bg-background/80 backdrop-blur-md"
+Navbar: className="h-16 px-8 bg-background/80 backdrop-blur-md fixed top-0 w-full"
 
-Pagination: radius="full" cursor: "bg-primary"
+Pagination: radius="full" cursor: "bg-primary text-white shadow-md"
 
-Progress / Circular Progress: color="primary" track: "bg-content2"
+Progress / Circular Progress: color="primary" classNames={{ track: "bg-content2", indicator: "bg-primary" }}
 
-Popover / Tooltip: radius="md" (12px) className="bg-content2 shadow-xl"
+Popover / Tooltip: radius="md" (12px) className="bg-content2 shadow-xl border-none text-on-surface"
 
-Toast: radius="full" className="bg-on-surface text-background font-bold px-8"
+Toast: radius="full" className="bg-on-surface text-background font-bold px-8 py-4 shadow-2xl"
 
-4. 読み込み中画面の設計 (Loading Architecture)
+Breadcrumbs: separator: "text-default-300", 最終アイテムは font-bold text-primary。
 
-ユーザーに「止まっている」と感じさせないための必須規定。
+4. 読み込み中 & 待機設計 (Loading Architecture)
 
 A. Skeleton の義務化
 
-データ取得が 200ms 以上かかる全ての箇所に Skeleton を使用せよ。
+原則: データの取得が 200ms 以上かかる全ての領域に Skeleton を使用せよ。
 
-Shape: 本物の要素と全く同じ角丸を継承せよ (rounded-[28px] 等)。
+形状: 置換対象の要素（Card 28px, Input 16px等）と 全く同じ角丸 を強制適用せよ。
 
-Color: before:bg-primary-50 を指定し、温かみのある M3 パルスの明滅を実現せよ。
+Color: before:bg-primary-50 を指定し、赤みのある M3 パルスを再現せよ。
 
 B. Spinner の補助
 
-ボタン内の読み込み等には Spinner を使用。
+ボタン内や、小さな情報の更新には Spinner を使用。
 
-color="primary" / label="読み込み中..." を基本とする。
+color="primary" / size="sm" を基本とする。
 
 5. 品質保証チェックリスト (Final Guardrails)
 
+❌ サイドバーと背景の同色禁止: 背景は background、サイドバーは content1 で階層を分けること。
+
 ❌ アイコンの「左上寄り」禁止: 全てのボタン内アイコンは flex items-center justify-center で中央に据えられているか？
 
-❌ 純白 (#FFFFFF) 禁止: 背景は必ず #fff8f6 (background) を使用しているか？
+❌ 純白 (#FFFFFF) 禁止: 背景は必ず #fff8f6 を使用しているか？
 
 ❌ 原色赤 (#FF0000) 禁止: エラーは必ず #ba1a1a または定義された On-Error カラーを使用しているか？
 
-✅ 余白の呼吸: 8の倍数以外の px 指定（m-5等）を排除しているか？
+✅ 余白の呼吸: 全ての gap, p, m が 8dp グリッド（または 4px/12px スケール）に適合しているか？
 
 ✅ マイクロインタラクション: 全ての Button に whileTap={{ scale: 0.95 }} を付与しているか？

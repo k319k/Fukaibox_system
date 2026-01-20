@@ -78,7 +78,7 @@ export default function LoginPage() {
                                 <Button
                                     color="primary"
                                     size="lg"
-                                    className="w-full font-semibold rounded-full h-12 md:h-14 gap-3 text-white"
+                                    className="w-full font-semibold rounded-full h-12 md:h-14 gap-3 flex items-center justify-center text-[#ffdad5]"
                                     onPress={handleDiscordLogin}
                                     isLoading={isLoading}
                                 >
@@ -142,7 +142,7 @@ export default function LoginPage() {
                                 <Button
                                     color="primary"
                                     size="lg"
-                                    className="w-full font-semibold rounded-full h-12 md:h-14 gap-3 text-white"
+                                    className="w-full font-semibold rounded-full h-12 md:h-14 gap-3 flex items-center justify-center text-[#ffdad5]"
                                     onPress={handleGuestLogin}
                                     isLoading={isLoading}
                                 >

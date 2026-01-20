@@ -177,20 +177,20 @@ export default function ImageUploadTab({
 
                                                         {/* 選択インジケーター */}
                                                         {isSelected && (
-                                                            <div className="absolute top-2 right-2 bg-primary text-white p-1 rounded-full shadow-md z-10">
+                                                            <div className="absolute top-2 right-2 bg-[#73342b] text-[#ffdad5] p-1 rounded-full shadow-md z-10">
                                                                 <Icon icon="mdi:check-bold" className="text-lg" />
                                                             </div>
                                                         )}
 
                                                         {/* 拡大アイコン */}
                                                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30">
-                                                            <Icon icon="mdi:magnify-plus" className="text-white text-2xl" />
+                                                            <Icon icon="mdi:magnify-plus" className="text-[#ffdad5] text-2xl" />
                                                         </div>
                                                     </div>
 
                                                     {/* 削除ボタン */}
                                                     <button
-                                                        className="absolute -top-2 -left-2 bg-danger text-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:scale-110"
+                                                        className="absolute -top-2 -left-2 bg-[#ffdad6] text-[#93000a] p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:scale-110"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             onDeleteImage(img.id);

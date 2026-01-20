@@ -62,7 +62,7 @@ export default function SectionHeader({
                         <motion.div whileTap={{ scale: 0.95 }}>
                             <Button
                                 size="sm" className="rounded-full bg-[#73342b] text-[#ffdad5]"
-                                startContent={isSaving ? <Spinner size="sm" color="white" /> : <Icon icon="mdi:content-save" />}
+                                startContent={isSaving ? <Spinner size="sm" color="current" /> : <Icon icon="mdi:content-save" />}
                                 onPress={onEditSave} isDisabled={isSaving}
                             >保存</Button>
                         </motion.div>
@@ -77,7 +77,7 @@ export default function SectionHeader({
                         <motion.div whileTap={{ scale: 0.95 }}>
                             <Button
                                 size="sm" className="rounded-full bg-[#564419] text-[#fbe7a6]"
-                                startContent={isSaving ? <Spinner size="sm" color="white" /> : <Icon icon="mdi:send" />}
+                                startContent={isSaving ? <Spinner size="sm" color="current" /> : <Icon icon="mdi:send" />}
                                 onPress={onProposalSubmit} isDisabled={isSaving}
                             >提案する</Button>
                         </motion.div>

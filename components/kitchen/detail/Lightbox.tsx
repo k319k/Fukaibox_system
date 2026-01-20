@@ -53,7 +53,7 @@ export default function Lightbox({
                         className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-white/20 hover:bg-white/40"
                         onPress={goToPrevImage}
                     >
-                        <Icon icon="mdi:chevron-left" className="text-2xl text-white" />
+                        <Icon icon="mdi:chevron-left" className="text-2xl text-[#f5f5f5]" />
                     </Button>
 
                     {/* 画像 */}
@@ -72,7 +72,7 @@ export default function Lightbox({
                         className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-white/20 hover:bg-white/40"
                         onPress={goToNextImage}
                     >
-                        <Icon icon="mdi:chevron-right" className="text-2xl text-white" />
+                        <Icon icon="mdi:chevron-right" className="text-2xl text-[#f5f5f5]" />
                     </Button>
 
                     {/* 閉じるボタン */}
@@ -83,15 +83,15 @@ export default function Lightbox({
                         className="absolute top-4 right-4 z-50 bg-white/20 hover:bg-white/40"
                         onPress={onClose}
                     >
-                        <Icon icon="mdi:close" className="text-xl text-white" />
+                        <Icon icon="mdi:close" className="text-xl text-[#f5f5f5]" />
                     </Button>
 
                     {/* 画像情報 */}
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 px-4 py-2 rounded-lg z-50">
-                        <p className="text-white text-sm">
+                        <p className="text-[#f5f5f5] text-sm">
                             {currentIndex + 1} / {images.length}
                             {currentImage?.uploadedBy && uploaderNames[currentImage.uploadedBy] && (
-                                <span className="ml-2 text-white/70">
+                                <span className="ml-2 text-[#f5f5f5]/70">
                                     by {uploaderNames[currentImage.uploadedBy]}
                                 </span>
                             )}

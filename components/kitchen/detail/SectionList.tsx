@@ -78,7 +78,7 @@ export default function SectionList(props: SectionListProps) {
                                 color="primary"
                                 onPress={onCreateSections}
                                 isDisabled={!fullScript.trim() || isCreatingSections}
-                                startContent={isCreatingSections ? <Spinner size="sm" color="white" /> : <Icon icon="mdi:magic-staff" />}
+                                startContent={isCreatingSections ? <Spinner size="sm" color="current" /> : <Icon icon="mdi:magic-staff" />}
                             >
                                 {isCreatingSections ? "セクション分割中..." : "セクションに分割して登録"}
                             </Button>

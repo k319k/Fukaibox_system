@@ -68,7 +68,7 @@ export default function DownloadTab({
                             color="primary"
                             size="lg"
                             className="font-bold shadow-md"
-                            startContent={isDownloading ? <Spinner color="white" size="sm" /> : <Icon icon="mdi:folder-zip-outline" className="text-xl" />}
+                            startContent={isDownloading ? <Spinner color="current" size="sm" /> : <Icon icon="mdi:folder-zip-outline" className="text-xl" />}
                             onPress={onDownloadProject}
                             isDisabled={isDownloading}
                         >

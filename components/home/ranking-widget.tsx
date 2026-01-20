@@ -19,8 +19,8 @@ const itemVariants = {
 
 function getRankStyle(rank: number): { bg: string; text: string } {
     if (rank === 1) return { bg: "bg-[#ffdad5]", text: "text-[#73342b]" };
-    if (rank === 2) return { bg: "bg-[#C0C0C0]", text: "text-white" };
-    if (rank === 3) return { bg: "bg-[#CD7F32]", text: "text-white" };
+    if (rank === 2) return { bg: "bg-[#E8E8E8]", text: "text-[#4a4a4a]" };
+    if (rank === 3) return { bg: "bg-[#EACDAF]", text: "text-[#6b4423]" };
     return { bg: "bg-[var(--md-sys-color-surface-container-highest)]", text: "text-[var(--md-sys-color-on-surface-variant)]" };
 }
 

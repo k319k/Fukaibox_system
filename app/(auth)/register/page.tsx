@@ -60,10 +60,10 @@ export default function RegisterPage() {
                 <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-secondary/10 to-transparent rounded-full blur-3xl" />
             </div>
 
-            <Card className="w-full max-w-md glass">
+            <Card className="w-full max-w-md bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
                 <CardHeader className="flex flex-col items-center pb-0 pt-8">
-                    <div className="w-20 h-20 gradient-primary rounded-2xl flex items-center justify-center mb-4 shadow-lg">
-                        <span className="text-3xl font-bold text-white">封</span>
+                    <div className="w-20 h-20 bg-[#73342b] rounded-[20px] flex items-center justify-center mb-4 shadow-lg">
+                        <span className="text-3xl font-bold text-[#ffdad5]">封</span>
                     </div>
                     <h1 className="text-2xl font-bold text-foreground">新規登録</h1>
                     <p className="text-foreground-muted text-sm mt-1">
@@ -120,9 +120,8 @@ export default function RegisterPage() {
 
                     <Button
                         color="primary"
-                        variant="shadow"
                         size="lg"
-                        className="w-full mt-2"
+                        className="w-full mt-2 rounded-full flex items-center justify-center text-[#ffdad5]"
                         onPress={handleRegister}
                         isLoading={isLoading}
                     >

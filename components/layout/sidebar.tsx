@@ -71,7 +71,7 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
 
             <aside className={cn(
                 "fixed left-0 top-0 h-screen h-dvh w-72 md:w-64 flex flex-col z-50",
-                "bg-[var(--md-sys-color-sidebar)] border-r border-[var(--md-sys-color-outline-variant)]/15",
+                "bg-[#fceae7] rounded-r-[28px]",
                 "transition-transform duration-300 ease-out",
                 isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
             )}>
