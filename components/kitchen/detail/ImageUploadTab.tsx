@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardBody, CardHeader, Button, Chip, Divider, Progress, Spinner } from "@heroui/react";
+import { Button, Chip, Divider, Progress, Spinner } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { Section, UploadedImage } from "@/types/kitchen";
 import ScriptViewerModal from "./ScriptViewerModal";
@@ -89,8 +89,9 @@ export default function ImageUploadTab({
                                 </Button>
                             </div>
 
-                            <Card className="card-elevated flex flex-col" radius="lg">
-                                <CardHeader className="p-4 flex flex-wrap justify-between items-center gap-2 border-b border-default-100">
+                            <div className="bg-background rounded-lg shadow-md border border-default-100">
+                                {/* ヘッダー部分 */}
+                                <div className="p-4 flex flex-wrap justify-between items-center gap-2 border-b border-default-200 bg-default-50/50">
                                     <div className="flex flex-wrap items-center gap-2">
                                         <Chip size="sm" color="primary" variant="flat">
                                             <Icon icon="mdi:numeric" className="mr-1" />
@@ -111,8 +112,9 @@ export default function ImageUploadTab({
                                     >
                                         <Icon icon="mdi:trash-can-outline" />
                                     </Button>
-                                </CardHeader>
-                                <CardBody className="space-y-4 pt-2">
+                                </div>
+                                {/* ボディ部分 */}
+                                <div className="p-4 space-y-4">
                                     <div
                                         className="text-foreground-muted whitespace-pre-wrap"
                                         style={{ fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
@@ -244,8 +246,8 @@ export default function ImageUploadTab({
                                             })}
                                         </div>
                                     )}
-                                </CardBody>
-                            </Card>
+                                </div>
+                            </div>
 
                             {/* 末尾挿入ボタン (最後のみ) */}
                             {originalIndex === sections.length - 1 && (
