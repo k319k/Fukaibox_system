@@ -90,7 +90,7 @@ export default function ImageUploadTab({
                             </div>
 
                             <Card className="card-elevated" radius="lg">
-                                <CardHeader className="pb-2 flex-col items-start gap-2">
+                                <CardHeader className="p-4 flex-col items-start gap-2">
                                     <div className="flex flex-wrap justify-between items-center w-full gap-2">
                                         <div className="flex flex-wrap items-center gap-2">
                                             <Chip size="sm" color="primary" variant="flat">
@@ -116,7 +116,7 @@ export default function ImageUploadTab({
                                         </div>
                                     </div>
                                 </CardHeader>
-                                <CardBody className="space-y-4">
+                                <CardBody className="space-y-4 pt-2">
                                     <div
                                         className="text-foreground-muted whitespace-pre-wrap"
                                         style={{ fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
