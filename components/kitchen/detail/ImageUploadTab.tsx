@@ -90,28 +90,30 @@ export default function ImageUploadTab({
                             </div>
 
                             <Card className="card-elevated" radius="lg">
-                                <CardHeader className="pb-2 flex justify-between items-start">
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        <Chip size="sm" color="primary" variant="flat">
-                                            <Icon icon="mdi:numeric" className="mr-1" />
-                                            セクション {originalIndex + 1}
-                                        </Chip>
-                                        <Chip size="sm" color="secondary" variant="flat">
-                                            <Icon icon="mdi:image-multiple" className="mr-1" />
-                                            {sectionImages.length}枚
-                                        </Chip>
-                                        <Chip size="sm" color="success" variant="flat">
-                                            <Icon icon="mdi:account-group" className="mr-1" />
-                                            {new Set(sectionImages.map(img => img.uploadedBy)).size}人参加
-                                        </Chip>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Button
-                                            size="sm" color="danger" variant="light" isIconOnly
-                                            onPress={() => onDeleteSection(section.id)}
-                                        >
-                                            <Icon icon="mdi:trash-can-outline" />
-                                        </Button>
+                                <CardHeader className="pb-2 flex-col items-start gap-2">
+                                    <div className="flex flex-wrap justify-between items-center w-full gap-2">
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <Chip size="sm" color="primary" variant="flat">
+                                                <Icon icon="mdi:numeric" className="mr-1" />
+                                                セクション {originalIndex + 1}
+                                            </Chip>
+                                            <Chip size="sm" color="secondary" variant="flat">
+                                                <Icon icon="mdi:image-multiple" className="mr-1" />
+                                                {sectionImages.length}枚
+                                            </Chip>
+                                            <Chip size="sm" color="success" variant="flat">
+                                                <Icon icon="mdi:account-group" className="mr-1" />
+                                                {new Set(sectionImages.map(img => img.uploadedBy)).size}人参加
+                                            </Chip>
+                                        </div>
+                                        <div className="flex gap-2 shrink-0">
+                                            <Button
+                                                size="sm" color="danger" variant="light" isIconOnly
+                                                onPress={() => onDeleteSection(section.id)}
+                                            >
+                                                <Icon icon="mdi:trash-can-outline" />
+                                            </Button>
+                                        </div>
                                     </div>
                                 </CardHeader>
                                 <CardBody className="space-y-4">
