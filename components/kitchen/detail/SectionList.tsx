@@ -4,6 +4,7 @@ import { Button, Card, CardBody, CardHeader, Spinner } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { Section, Project, UserRole } from "@/types/kitchen";
 import SectionCard from "./SectionCard";
+import CharacterCountDisplay from "./section/CharacterCountDisplay";
 
 interface SectionListProps {
     project: Project;
@@ -73,6 +74,7 @@ export default function SectionList(props: SectionListProps) {
                             className="w-full h-64 p-4 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-default-50 text-foreground"
                             placeholder={"ここに台本を貼り付けてください。\n\n空行を入れると、そこで新しいセクションとして分割されます。\n\n(例)\nシーン1のセリフ...\n\nシーン2のセリフ..."}
                         />
+                        <CharacterCountDisplay text={fullScript} />
                         <div className="flex justify-end">
                             <Button
                                 color="primary"

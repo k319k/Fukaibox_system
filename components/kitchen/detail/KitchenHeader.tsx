@@ -38,9 +38,21 @@ export default function KitchenHeader({
                 </Button>
                 <h1 className="text-2xl font-bold flex items-center gap-2">
                     {project.title}
-                    <Chip size="sm" color={project.status === "completed" ? "success" : "primary"} variant="flat">
-                        {project.status === "completed" ? "完了" : "進行中"}
-                    </Chip>
+                    {(() => {
+                        const statusConfig: Record<string, { label: string; color: "primary" | "secondary" | "success" | "warning"; icon: string }> = {
+                            "draft": { label: "調理中", color: "primary", icon: "mdi:pot-mix" },
+                            "cooking": { label: "調理中", color: "primary", icon: "mdi:pot-mix" },
+                            "image_collection": { label: "画像収集中", color: "warning", icon: "mdi:image-plus" },
+                            "image_selection": { label: "画像採用中", color: "secondary", icon: "mdi:check-decagram" },
+                            "completed": { label: "完成", color: "success", icon: "mdi:check-circle" },
+                        };
+                        const config = statusConfig[project.status] || statusConfig["draft"];
+                        return (
+                            <Chip size="sm" color={config.color} variant="flat" startContent={<Icon icon={config.icon} className="text-sm" />}>
+                                {config.label}
+                            </Chip>
+                        );
+                    })()}
                 </h1>
                 {project.description && (
                     <p className="text-foreground-muted mt-2 text-sm">{project.description}</p>

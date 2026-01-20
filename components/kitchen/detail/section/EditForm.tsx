@@ -1,6 +1,7 @@
 "use client";
 
 import { Checkbox, Input } from "@heroui/react";
+import CharacterCountDisplay from "./CharacterCountDisplay";
 
 interface EditFormProps {
     content: string;
@@ -35,6 +36,7 @@ export default function EditForm({
                 placeholder="台本を入力..."
                 autoFocus
             />
+            <CharacterCountDisplay text={content} />
 
             <div className="space-y-2">
                 <Input

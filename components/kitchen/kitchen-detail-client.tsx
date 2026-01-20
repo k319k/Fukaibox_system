@@ -85,6 +85,7 @@ export default function KitchenDetailClient({
                         <Tab key="images" title={<div className="flex items-center gap-2"><Icon icon="mdi:image-plus" className="text-lg" /><span className="hidden md:inline">画像UP</span></div>}>
                             <ImageUploadTab sections={store.sections} images={store.images} editorFontSize={store.editorFontSize}
                                 uploadingSectionId={store.uploadingSectionId} uploadProgress={store.uploadProgress} uploaderNames={store.userNames}
+                                projectTitle={project.title}
                                 onAddSection={store.handleAddSection} onDeleteSection={store.handleDeleteSection}
                                 onImageUpload={store.handleImageUpload} onDeleteImage={store.handleDeleteImage} onOpenLightbox={store.openLightbox}
                             />
