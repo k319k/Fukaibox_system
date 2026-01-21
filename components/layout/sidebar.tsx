@@ -1,26 +1,23 @@
 "use client";
 
 import { Button, Tooltip } from "@heroui/react";
-import { useState, useEffect, createContext, useContext } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { SidebarNav, SidebarBottomNav, navigation } from "./sidebar-nav";
 import { SidebarUser } from "./sidebar-user";
+import { useSidebar } from "./sidebar-provider";
+
+// Re-export for backwards compatibility
+export { useSidebar } from "./sidebar-provider";
 
 interface SidebarProps {
     userRole?: string;
     userName?: string;
     userImage?: string | null;
 }
-
-// Context for collapsed state
-interface SidebarContextType {
-    isCollapsed: boolean;
-}
-const SidebarContext = createContext<SidebarContextType>({ isCollapsed: false });
-export const useSidebar = () => useContext(SidebarContext);
 
 function SidebarLogo({ isCollapsed, onClose, onToggleCollapse }: {
     isCollapsed: boolean;
@@ -88,20 +85,7 @@ function SidebarLogo({ isCollapsed, onClose, onToggleCollapse }: {
 export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProps) {
     const pathname = usePathname();
     const [isMobileOpen, setIsMobileOpen] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false);
-
-    // Load collapsed state from localStorage on mount
-    useEffect(() => {
-        const saved = localStorage.getItem("sidebar-collapsed");
-        if (saved !== null) {
-            setIsCollapsed(saved === "true");
-        }
-    }, []);
-
-    // Save collapsed state to localStorage
-    useEffect(() => {
-        localStorage.setItem("sidebar-collapsed", String(isCollapsed));
-    }, [isCollapsed]);
+    const { isCollapsed, setIsCollapsed } = useSidebar();
 
     // Close mobile sidebar on route change
     useEffect(() => {
@@ -117,7 +101,7 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
     const toggleCollapse = () => setIsCollapsed(!isCollapsed);
 
     return (
-        <SidebarContext.Provider value={{ isCollapsed }}>
+        <>
             {/* Mobile hamburger button */}
             <motion.div whileTap={{ scale: 0.95 }} className="md:hidden">
                 <Button
@@ -165,6 +149,6 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
                 <SidebarBottomNav />
                 <SidebarUser userName={userName} userImage={userImage} userRole={userRole} />
             </aside>
-        </SidebarContext.Provider>
+        </>
     );
 }

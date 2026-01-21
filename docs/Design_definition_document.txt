@@ -1,20 +1,20 @@
-封解Box × Material Design 3 × HeroUI 究極デザイン聖典 (Ver 15.0 Hardened)
+封解Box × Material Design 3 × HeroUI 究極デザイン聖典 (Ver 16.0 Ultimate Guard)
 
-1. デザインの物理法則 (Core Tokens)
+1. デザインの物理法則 (Physical Constants)
 
 AIエージェントは以下の数値を「不変の定数」とし、計算外の数値を一切生成してはならない。
 
 A. 8dp グリッド・スペーシング (Spacing System)
 
-デザインの呼吸（余白）はすべて以下の px スケールにスナップさせる。
+デザインの呼吸（余白）はすべて以下の px スケールに固定する。
 
-2px (XXXS): 極小の調整、重なりの微調整用。
+2px (XXXS): ボーダー調整、極小の重なり用。
 
 4px (XXS): チップ内アイコン、ボタン内アイコン間隔 (gap-1)。
 
 8px (XS): コンポーネント内の要素間隔 (gap-2)。
 
-12px (Small): 小さなカード、リストアイテムのパディング (p-3)。
+12px (Small): サブカード、リストアイテムのパディング (p-3)。
 
 16px (Medium): 標準的なパディング、入力欄、カードの行間 (p-4, gap-4)。
 
@@ -28,7 +28,9 @@ A. 8dp グリッド・スペーシング (Spacing System)
 
 B. 角丸階層 (Radius Hierarchy)
 
-Extra Large (28px): rounded-[28px] (Modal, Drawer, Main Card, Dialog)
+画像解析に基づき、情報の「包容力」を最大化する。
+
+Extra Large (28px): rounded-[28px] (Main Card, Modal, Drawer, Main Container)
 
 Large (20px): rounded-[20px] (Sidebar, Table, Accordion, Image, Secondary Card)
 
@@ -38,7 +40,7 @@ Pill (Full): rounded-full (Button, Chip, Tab, Switch, Search Bar)
 
 C. 色彩マッピング (#904a40 Palette)
 
-アクセシビリティを担保するため、以下のペア以外を禁止する。
+背景色（Container）と文字色（On-Container）のペアは以下を絶対遵守せよ。
 
 役割
 
@@ -48,6 +50,8 @@ C. 色彩マッピング (#904a40 Palette)
 
 文字 (On-Container)
 
+用途
+
 Primary
 
 primary
@@ -56,13 +60,7 @@ primary
 
 #73342b
 
-Surface
-
-content1
-
-#fceae7
-
-#231918
+強調、アクティブ状態
 
 Warning
 
@@ -72,6 +70,8 @@ warning
 
 #564419
 
+警告、推敲提案、要確認
+
 Danger
 
 danger
@@ -79,6 +79,8 @@ danger
 #ffdad6
 
 #93000a
+
+エラー、削除、破壊的操作
 
 Success
 
@@ -88,6 +90,18 @@ success
 
 #10200a
 
+完了、保存成功
+
+Surface
+
+content1
+
+#fceae7
+
+#231918
+
+標準カード、サイドバー
+
 Background
 
 background
@@ -96,37 +110,23 @@ background
 
 #231918
 
-2. レイアウト & 画面構成 (Layout & Sidebar)
+画面全体の背景
 
-A. 背景色 (Background)
+2. レイアウト・アーキテクチャ (Sidebar & Background)
 
-Main Canvas: 必ず #fff8f6 (bg-background) を使用。純白 (#FFFFFF) は禁止。
+A. 背景とサイドバーの階層 (Separation)
 
-目的: 画面全体の反射を抑え、赤い Primary カラーを美しく引き立たせる。
+Main Canvas: 必ず #fff8f6 (bg-background)。
 
-B. サイドバー (Sidebar)
+Sidebar: 背景は #fceae7 (bg-content1)。
 
-背景: #fceae7 (bg-content1)。メインキャンバス（background）より一段濃い色で「情報の基盤」であることを示す。
+物理的構造: サイドバーはメインキャンバスから浮き上がって見える必要がある。
 
-形状: rounded-r-[28px] または、浮遊型の場合は rounded-[28px]。
+shadow-lg shadow-primary/5 を付与し、border-r-1 border-divider/10 で境界を定義。
 
-アイテムステート:
+アイテムの Active ステートは必ず bg-primary-50 (#ffdad5) を使用。
 
-Active: bg-primary-50 (#ffdad5) + text-primary-900 (#73342b)
-
-Hover: bg-content2/50
-
-余白: サイドバー内のパディングは p-6 (24px)。
-
-C. テーマ & ダークモード
-
-Dark Mode: 背景は #1a1110 固定。surface は #271d1c を使用。
-
-Glassmorphism: 浮遊する Navbar/Popover は bg-opacity-70 backdrop-blur-md を適用。
-
-Override Styles: 全ての shadow は原則 none。ホバー時のみ shadow-xl shadow-primary/5 を解禁。
-
-3. コンポーネント別・ガチガチ完全定義 (Component Encyclopedia)
+3. コンポーネント完全網羅定義 (The Complete Encyclopedia)
 
 3.1 アクション & ボタン (Actions)
 
@@ -134,13 +134,13 @@ Button:
 
 radius="full" font-bold active:scale-95 transition-all
 
-重要: アイコン整列: className="flex items-center justify-center gap-2 px-6 h-12" を強制。
+【最重要】アイコン整列: className="flex items-center justify-center gap-2 px-6 h-12"
 
-アイコンが左上に寄るのを防ぐため、必ず items-center justify-center で物理的中心に据えること。
+左上寄り防止: アイコンは必ず items-center justify-center 内に配置し、ボタンの高さの中心とアイコンの中心を一致させること。
 
-アイコンは size={20} / strokeWidth={1.5} 固定。
+isIconOnly の場合は、w-12 h-12 flex items-center justify-center を強制。
 
-ButtonGroup: radius="full" で結合。
+ButtonGroup: radius="full" className="shadow-sm"
 
 Kbd: className="bg-content2/50 border-none font-mono text-primary"
 
@@ -152,23 +152,23 @@ Input / Textarea / Number Input:
 
 variant="flat" radius="lg" (16px)
 
-classNames={{ inputWrapper: "bg-content2/40 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all" }}
+classNames={{ inputWrapper: "bg-content2/40 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner" }}
 
 Autocomplete / Select: popoverProps={{ className: "rounded-[20px] shadow-2xl" }}
 
-Checkbox / Radio Group: color="primary" label: "ml-2 font-medium"
+Input OTP: radius="md" input: "border-2 border-transparent focus:border-primary h-14"
+
+Checkbox / Checkbox Group / Radio Group: color="primary" label: "ml-2 font-medium"
 
 Switch: radius="full" classNames={{ wrapper: "group-data-[selected=true]:bg-primary shadow-none" }}
 
-Date Picker / Time Input / Range Calendar: radius="lg" calendarProps={{ className: "rounded-[28px] bg-background p-4" }}
-
-Input OTP: radius="md" input: "border-2 border-transparent focus:border-primary"
+Date Input / Picker / Range Calendar: radius="lg" calendarProps={{ className: "rounded-[28px] bg-background p-4 shadow-xl" }}
 
 Slider: color="primary" classNames={{ track: "bg-content2", thumb: "bg-primary shadow-lg border-2 border-background" }}
 
 3.3 データ表示 (Data Display)
 
-Accordion: variant="light" item: "bg-content1 rounded-[20px] px-6 mb-2 border-none"
+Accordion: variant="light" item: "bg-content1 rounded-[20px] px-6 mb-2"
 
 Avatar / User: radius="lg" (16px) / name: "font-bold text-on-surface"
 
@@ -182,59 +182,61 @@ Card:
 
 Table: radius="lg" (20px) th: "bg-content2/50 text-primary font-bold py-4"
 
-Listbox: item: "rounded-full px-6 py-2 my-1 data-[hover=true]:bg-primary-50"
+Listbox: item: "rounded-full px-6 py-2 my-1"
 
-Image: radius="lg" (20px) shadow-none hover:scale-[1.02] transition-transform
+Image: radius="lg" (20px) shadow-none
 
 Divider: className="bg-divider/30 my-6"
 
 Code / Snippet: className="bg-content2 rounded-lg text-primary"
 
+Scroll Shadow: className="max-h-[300px]"
+
 3.4 フィードバック & ナビゲーション (Feedback & Nav)
 
-Alert: variant="flat" radius="lg" className="p-4 gap-4 border-none shadow-sm"
+Alert: variant="flat" radius="lg" className="p-4 gap-4 border-none shadow-sm" (文字色はセクション1.Cに従う)
 
 Modal / Drawer: radius="lg" (28px) base: "bg-background/90 backdrop-blur-xl"
 
-Tabs: variant="solid" radius="full" classNames={{ tabList: "bg-content2/50 p-1", cursor: "bg-primary shadow-lg shadow-primary/20" }}
+Tabs: variant="solid" radius="full" classNames={{ tabList: "bg-content2/50 p-1", cursor: "bg-primary shadow-lg" }}
 
 Navbar: className="h-16 px-8 bg-background/80 backdrop-blur-md fixed top-0 w-full"
 
-Pagination: radius="full" cursor: "bg-primary text-white shadow-md"
+Pagination: radius="full" cursor: "bg-primary text-white"
 
 Progress / Circular Progress: color="primary" classNames={{ track: "bg-content2", indicator: "bg-primary" }}
 
-Popover / Tooltip: radius="md" (12px) className="bg-content2 shadow-xl border-none text-on-surface"
+Popover / Tooltip: radius="md" (12px) className="bg-content2 shadow-xl border-none"
 
-Toast: radius="full" className="bg-on-surface text-background font-bold px-8 py-4 shadow-2xl"
+Toast: radius="full" className="bg-on-surface text-background font-bold px-8 shadow-2xl"
 
-Breadcrumbs: separator: "text-default-300", 最終アイテムは font-bold text-primary。
+Breadcrumbs: separator: "text-default-300", 最終要素は font-bold text-primary。
 
 4. 読み込み中 & 待機設計 (Loading Architecture)
 
-A. Skeleton の義務化
+A. Skeleton の義務化 (多用ルール)
 
-原則: データの取得が 200ms 以上かかる全ての領域に Skeleton を使用せよ。
+「封解Box」では、データ取得が 200ms を超える可能性のある全ての領域（カード、リスト、入力欄）に Skeleton を使用しなければならない。
 
-形状: 置換対象の要素（Card 28px, Input 16px等）と 全く同じ角丸 を強制適用せよ。
+物理的整合性: 置換対象のコンポーネントと 全く同じ角丸・高さ・幅 を強制せよ。
 
-Color: before:bg-primary-50 を指定し、赤みのある M3 パルスを再現せよ。
+Color: before:bg-primary-50 を適用し、温かみのある M3 パルスを再現。
 
 B. Spinner の補助
 
-ボタン内や、小さな情報の更新には Spinner を使用。
+用途: ボタン内の処理中、小さな情報の更新。
 
-color="primary" / size="sm" を基本とする。
+Props: color="primary" size="sm" を基本とする。
 
 5. 品質保証チェックリスト (Final Guardrails)
 
-❌ サイドバーと背景の同色禁止: 背景は background、サイドバーは content1 で階層を分けること。
-
 ❌ アイコンの「左上寄り」禁止: 全てのボタン内アイコンは flex items-center justify-center で中央に据えられているか？
 
-❌ 純白 (#FFFFFF) 禁止: 背景は必ず #fff8f6 を使用しているか？
+❌ サイドバーと背景の同色禁止: 背景は background、サイドバーは content1 で明確に分離されているか？
 
-❌ 原色赤 (#FF0000) 禁止: エラーは必ず #ba1a1a または定義された On-Error カラーを使用しているか？
+❌ 純白 (#FFFFFF) 禁止: 全ての背景に #fff8f6 を徹底しているか？
+
+❌ 警告・エラーの文字色不備: 定義された On-Container カラーを使用し、アクセシビリティを確保しているか？
 
 ✅ 余白の呼吸: 全ての gap, p, m が 8dp グリッド（または 4px/12px スケール）に適合しているか？
 
