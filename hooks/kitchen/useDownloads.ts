@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 import JSZip from "jszip";
-import { getProjectScript, getSelectedImages } from "@/app/actions/kitchen";
+import { getProjectScript, getProjectScriptBodyOnly, getSelectedImages } from "@/app/actions/kitchen";
 
 export function useDownloads(projectId: string, projectTitle: string) {
     const [downloading, setDownloading] = useState(false);
 
+    /**
+     * 詳細版台本（セクション見出し・画像指示込み）をダウンロード
+     */
     const handleDownloadScript = async () => {
         setDownloading(true);
         try {
@@ -20,13 +23,42 @@ export function useDownloads(projectId: string, projectTitle: string) {
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `${projectTitle}_台本.txt`;
+            a.download = `${projectTitle}_台本_詳細版.txt`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         } catch (error) {
             console.error("Download script error:", error);
+            alert("台本のダウンロードに失敗しました");
+        } finally {
+            setDownloading(false);
+        }
+    };
+
+    /**
+     * 本文のみ版台本（セクション見出し・画像指示なし）をダウンロード
+     */
+    const handleDownloadScriptBodyOnly = async () => {
+        setDownloading(true);
+        try {
+            const script = await getProjectScriptBodyOnly(projectId);
+            if (!script) {
+                alert("台本データが見つかりません");
+                return;
+            }
+
+            const blob = new Blob([script], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${projectTitle}_台本_本文のみ.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Download script body only error:", error);
             alert("台本のダウンロードに失敗しました");
         } finally {
             setDownloading(false);
@@ -122,5 +154,5 @@ export function useDownloads(projectId: string, projectTitle: string) {
         }
     };
 
-    return { downloading, handleDownloadScript, handleDownloadImages, handleDownloadProject };
+    return { downloading, handleDownloadScript, handleDownloadScriptBodyOnly, handleDownloadImages, handleDownloadProject };
 }

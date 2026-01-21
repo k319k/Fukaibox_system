@@ -220,7 +220,7 @@ export async function updateCookingProjectStatus(projectId: string, status: Cook
 }
 
 /**
- * プロジェクトの台本テキストを生成
+ * プロジェクトの台本テキストを生成（詳細版：セクション見出し・画像指示込み）
  */
 export async function getProjectScript(projectId: string) {
     const project = await getCookingProject(projectId);
@@ -247,3 +247,19 @@ export async function getProjectScript(projectId: string) {
 
     return script;
 }
+
+/**
+ * プロジェクトの台本テキストを生成（本文のみ：セクション見出し・画像指示なし）
+ */
+export async function getProjectScriptBodyOnly(projectId: string) {
+    const sections = await getCookingSections(projectId);
+
+    // 全セクションの本文を空行で結合
+    const bodyOnly = sections
+        .map((s) => s.content || "")
+        .filter((c) => c.trim())
+        .join("\n\n");
+
+    return bodyOnly;
+}
+

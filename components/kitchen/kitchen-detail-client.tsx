@@ -97,7 +97,10 @@ export default function KitchenDetailClient({
                         </Tab>
                         <Tab key="download" title={<div className="flex items-center gap-2"><Icon icon="mdi:download" className="text-lg" /><span className="hidden md:inline">DL</span></div>}>
                             <DownloadTab isDownloading={store.downloading}
-                                onDownloadScript={store.handleDownloadScript} onDownloadImages={store.handleDownloadImages} onDownloadProject={store.handleDownloadProject}
+                                onDownloadScript={store.handleDownloadScript}
+                                onDownloadScriptBodyOnly={store.handleDownloadScriptBodyOnly}
+                                onDownloadImages={store.handleDownloadImages}
+                                onDownloadProject={store.handleDownloadProject}
                             />
                         </Tab>
                     </Tabs>

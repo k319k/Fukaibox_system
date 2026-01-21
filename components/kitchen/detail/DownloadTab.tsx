@@ -6,6 +6,7 @@ import { Icon } from "@iconify/react";
 interface DownloadTabProps {
     isDownloading: boolean;
     onDownloadScript: () => void;
+    onDownloadScriptBodyOnly: () => void;
     onDownloadImages: () => void;
     onDownloadProject: () => void;
 }
@@ -13,6 +14,7 @@ interface DownloadTabProps {
 export default function DownloadTab({
     isDownloading,
     onDownloadScript,
+    onDownloadScriptBodyOnly,
     onDownloadImages,
     onDownloadProject
 }: DownloadTabProps) {
@@ -29,17 +31,39 @@ export default function DownloadTab({
                     </p>
 
                     <div className="space-y-4">
-                        <Button
-                            fullWidth
-                            color="secondary"
-                            variant="flat"
-                            size="lg"
-                            startContent={<Icon icon="mdi:script-text-outline" className="text-xl" />}
-                            onPress={onDownloadScript}
-                            isDisabled={isDownloading}
-                        >
-                            台本データ（.txt）のみダウンロード
-                        </Button>
+                        {/* 台本ダウンロードセクション */}
+                        <div className="space-y-2">
+                            <p className="text-xs font-semibold text-foreground-muted uppercase tracking-wide">
+                                台本データ
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <Button
+                                    fullWidth
+                                    color="secondary"
+                                    variant="flat"
+                                    size="lg"
+                                    startContent={<Icon icon="mdi:script-text" className="text-xl" />}
+                                    onPress={onDownloadScriptBodyOnly}
+                                    isDisabled={isDownloading}
+                                >
+                                    本文のみ(.txt)
+                                </Button>
+                                <Button
+                                    fullWidth
+                                    color="secondary"
+                                    variant="bordered"
+                                    size="lg"
+                                    startContent={<Icon icon="mdi:script-text-outline" className="text-xl" />}
+                                    onPress={onDownloadScript}
+                                    isDisabled={isDownloading}
+                                >
+                                    詳細版(.txt)
+                                </Button>
+                            </div>
+                            <p className="text-xs text-foreground-muted">
+                                本文のみ：セリフのみ / 詳細版：セクション区切り・画像指示込み
+                            </p>
+                        </div>
 
                         <Button
                             fullWidth
@@ -89,3 +113,4 @@ export default function DownloadTab({
         </div>
     );
 }
+

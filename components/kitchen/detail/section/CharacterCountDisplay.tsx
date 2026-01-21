@@ -8,15 +8,19 @@ interface CharacterCountDisplayProps {
     text: string;
     /** 1秒あたりの文字数（デフォルト: 250文字/30秒 ≈ 8.33文字/秒） */
     charsPerSecond?: number;
+    /** セクション分割数をプレビュー表示するか（デフォルト: false） */
+    showSectionPreview?: boolean;
 }
 
 /**
- * 文字数と予測完成尺を表示するコンポーネント
+ * 文字数、予測完成尺、セクション分割数を表示するコンポーネント
  * 計算式: 250文字 = 30秒目安
+ * 分割ロジック: 空行（\n\n または \r\n\r\n）で分割
  */
 export default function CharacterCountDisplay({
     text,
-    charsPerSecond = 250 / 30
+    charsPerSecond = 250 / 30,
+    showSectionPreview = false
 }: CharacterCountDisplayProps) {
     const stats = useMemo(() => {
         const charCount = text.length;
@@ -31,7 +35,14 @@ export default function CharacterCountDisplay({
             durationText = `約${seconds}秒`;
         }
 
-        return { charCount, durationText };
+        // セクション分割数のプレビュー（projects.tsと同じロジック）
+        const sectionCount = text.trim()
+            ? text.split(/\n\n+|\r\n\r\n+/)
+                .map(s => s.trim())
+                .filter(s => s.length > 0).length
+            : 0;
+
+        return { charCount, durationText, sectionCount };
     }, [text, charsPerSecond]);
 
     if (!text || text.trim().length === 0) {
@@ -56,9 +67,20 @@ export default function CharacterCountDisplay({
             >
                 予測尺: {stats.durationText}
             </Chip>
+            {showSectionPreview && stats.sectionCount > 0 && (
+                <Chip
+                    size="sm"
+                    variant="flat"
+                    color="success"
+                    startContent={<Icon icon="mdi:format-list-numbered" className="text-sm" />}
+                >
+                    {stats.sectionCount}セクションに分割
+                </Chip>
+            )}
             <span className="text-xs text-foreground-muted">
                 (250文字≒30秒)
             </span>
         </div>
     );
 }
+
