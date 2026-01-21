@@ -5,6 +5,7 @@ import { QuickActions } from "./quick-actions";
 import { LiveStreamWidget } from "./live-stream-widget";
 import { ShortsGrid } from "./shorts-grid";
 import { RankingWidget } from "./ranking-widget";
+import { HonoraryMemberWidget } from "./honorary-member-widget";
 
 interface HomeContentProps {
     latestStream: YouTubeVideo | null;
@@ -28,6 +29,7 @@ export function HomeContent({ latestStream, shorts }: HomeContentProps) {
                 {/* Sidebar Widgets */}
                 <div className="space-y-10">
                     <RankingWidget />
+                    <HonoraryMemberWidget />
                 </div>
             </div>
         </div>

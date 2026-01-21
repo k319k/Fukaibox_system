@@ -161,7 +161,7 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
                     onClose={() => setIsMobileOpen(false)}
                     onToggleCollapse={toggleCollapse}
                 />
-                <SidebarNav items={navigation} />
+                <SidebarNav items={navigation} userRole={userRole} />
                 <SidebarBottomNav />
                 <SidebarUser userName={userName} userImage={userImage} userRole={userRole} />
             </aside>

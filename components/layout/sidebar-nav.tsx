@@ -1,9 +1,9 @@
 "use client";
 
-import { Button, Tooltip } from "@heroui/react";
+import { Button, Tooltip, Divider } from "@heroui/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ChefHat, Book, Wrench, Settings, Users } from "lucide-react";
+import { Home, ChefHat, Book, Wrench, Settings, Users, Code, Shield } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSidebar } from "./sidebar";
 
@@ -19,8 +19,14 @@ const bottomNavigation = [
     { name: "設定", href: "/settings", icon: Settings },
 ];
 
+const gichoNavigation = [
+    { name: "DevStudio", href: "/dev-studio", icon: Code },
+    { name: "AdminPanel", href: "/admin", icon: Shield },
+];
+
 interface SidebarNavProps {
     items: typeof navigation;
+    userRole?: string;
 }
 
 function NavItem({ item }: { item: typeof navigation[0] }) {
@@ -78,13 +84,37 @@ function NavItem({ item }: { item: typeof navigation[0] }) {
     return button;
 }
 
-export function SidebarNav({ items }: SidebarNavProps) {
+export function SidebarNav({ items, userRole }: SidebarNavProps) {
     const { isCollapsed } = useSidebar();
+    const isGicho = userRole === "gicho";
+
     return (
         <nav className={`flex-1 py-6 space-y-1 ${isCollapsed ? "px-2" : "px-4"}`}>
             {items.map((item) => (
                 <NavItem key={item.name} item={item} />
             ))}
+
+            {/* 儀長専用ナビゲーション */}
+            {isGicho && (
+                <>
+                    <Divider className="my-4 bg-[var(--md-sys-color-outline-variant)]/30" />
+                    <AnimatePresence>
+                        {!isCollapsed && (
+                            <motion.p
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="text-xs font-medium text-[var(--md-sys-color-on-surface-variant)] px-6 py-2"
+                            >
+                                儀長専用
+                            </motion.p>
+                        )}
+                    </AnimatePresence>
+                    {gichoNavigation.map((item) => (
+                        <NavItem key={item.name} item={item} />
+                    ))}
+                </>
+            )}
         </nav>
     );
 }
