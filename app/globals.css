@@ -3,73 +3,53 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    Material Design 3 カラーパレット (Ivory & Carmine)
    封解Box テーマ
+   Reference: https://m3.material.io/styles/color/the-color-system/tokens
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ───────────────────────────────────────────────────────────────────────────
-     Primary (Carmine Red)
-     ─────────────────────────────────────────────────────────────────────────── */
+  /* Primary (Carmine Red) */
   --md-sys-color-primary: #73342b;
   --md-sys-color-on-primary: #ffdad5;
   --md-sys-color-primary-container: #ffdad5;
   --md-sys-color-on-primary-container: #73342b;
 
-  /* ───────────────────────────────────────────────────────────────────────────
-     Secondary (Deep Red)
-     ─────────────────────────────────────────────────────────────────────────── */
+  /* Secondary (Deep Red) */
   --md-sys-color-secondary: #9E2B1F;
   --md-sys-color-on-secondary: #FFFFFF;
   --md-sys-color-secondary-container: #FFDAD4;
   --md-sys-color-on-secondary-container: #400001;
 
-  /* ───────────────────────────────────────────────────────────────────────────
-     Tertiary (Brown)
-     ─────────────────────────────────────────────────────────────────────────── */
+  /* Tertiary (Brown) */
   --md-sys-color-tertiary: #564419;
   --md-sys-color-on-tertiary: #fbe7a6;
   --md-sys-color-tertiary-container: #fbe7a6;
   --md-sys-color-on-tertiary-container: #564419;
 
-  /* ───────────────────────────────────────────────────────────────────────────
-     Surface Hierarchy (M3 Elevation Tones)
-     「純白」を避けた目に優しいオフホワイトパレット
-     ─────────────────────────────────────────────────────────────────────────── */
+  /* Surface Hierarchy (M3) */
   --md-sys-color-surface: #fff8f6;
-  --md-sys-color-surface-dim: #f5ebe8;
-  --md-sys-color-surface-bright: #fffbfa;
+  /* Background */
+  --md-sys-color-surface-dim: #ded8d6;
+  --md-sys-color-surface-bright: #fff8f6;
+
+  /* Containers (for Cards) */
   --md-sys-color-surface-container-lowest: #ffffff;
+  /* Base Card */
   --md-sys-color-surface-container-low: #fef5f2;
-  --md-sys-color-surface-container: #fff8f6;
-  --md-sys-color-surface-container-high: #f9efec;
-  --md-sys-color-surface-container-highest: #f3e5e2;
-  --md-sys-color-sidebar: #fceae7;
-  --md-sys-color-on-surface: #1d1b19;
-  --md-sys-color-on-surface-variant: #534b47;
-  --md-sys-color-surface-variant: #f5e0db;
+  --md-sys-color-surface-container: #fceae5;
+  --md-sys-color-surface-container-high: #f7e0da;
+  --md-sys-color-surface-container-highest: #f3d6ce;
 
-  /* ───────────────────────────────────────────────────────────────────────────
-     Outline & Error
-     ─────────────────────────────────────────────────────────────────────────── */
-  --md-sys-color-outline: #7C7768;
-  --md-sys-color-outline-variant: #CCC6B5;
-  --md-sys-color-error: #BA1A1A;
-  --md-sys-color-on-error: #FFFFFF;
-  --md-sys-color-error-container: #FFDAD6;
+  --md-sys-color-on-surface: #201a19;
+  --md-sys-color-on-surface-variant: #53433f;
+  --md-sys-color-outline: #85736f;
+  --md-sys-color-outline-variant: #d8c2bc;
 
-  /* ───────────────────────────────────────────────────────────────────────────
-     封解Box 互換カラー (Legacy Support)
-     ─────────────────────────────────────────────────────────────────────────── */
-  --color-primary: var(--md-sys-color-primary);
-  --color-secondary: var(--md-sys-color-secondary);
+  /* Legacy / Tailwind mappings */
   --background: var(--md-sys-color-surface);
   --foreground: var(--md-sys-color-on-surface);
-  --foreground-muted: var(--md-sys-color-on-surface-variant);
-  --background-card: var(--md-sys-color-surface-container);
-  --background-elevated: var(--md-sys-color-surface-container-lowest);
+  --color-primary: var(--md-sys-color-primary);
 
-  /* ───────────────────────────────────────────────────────────────────────────
-     ロール別カラー (M3風に調整)
-     ─────────────────────────────────────────────────────────────────────────── */
+  /* Role Colors */
   --color-gicho: #73342b;
   --color-gicho-container: #ffdad5;
   --color-meiyo-giin: #564419;
@@ -79,435 +59,101 @@
   --color-guest: #6b7280;
   --color-guest-container: #f3f4f6;
 
-  /* ═══════════════════════════════════════════════════════════════════════════
-     M3 Elevation (Shadow Tokens)
-     5段階のシャドウで視覚的階層を表現 - on-surfaceベースの影で調和
-     ═════════════════════════════════════════════════════════════════════════════ */
-  --md-sys-elevation-0: none;
-  --md-sys-elevation-1: 0px 4px 8px -2px rgba(29, 27, 22, 0.08), 0px 2px 4px -2px rgba(29, 27, 22, 0.04);
-  --md-sys-elevation-2: 0px 8px 16px -4px rgba(29, 27, 22, 0.08), 0px 4px 8px -2px rgba(29, 27, 22, 0.04);
-  --md-sys-elevation-3: 0px 12px 24px -6px rgba(29, 27, 22, 0.10), 0px 6px 12px -2px rgba(29, 27, 22, 0.05);
-  --md-sys-elevation-4: 0px 16px 32px -8px rgba(29, 27, 22, 0.12), 0px 8px 16px -2px rgba(29, 27, 22, 0.06);
-  --md-sys-elevation-5: 0px 24px 48px -12px rgba(29, 27, 22, 0.14), 0px 12px 24px -4px rgba(29, 27, 22, 0.07);
+  /* Shapes */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
 
-  /* Shape (Corner Radius) */
-  --md-sys-shape-corner-none: 0px;
-  --md-sys-shape-corner-xs: 4px;
-  --md-sys-shape-corner-sm: 8px;
-  --md-sys-shape-corner-md: 12px;
-  --md-sys-shape-corner-lg: 16px;
-  --md-sys-shape-corner-xl: 32px;
-  --md-sys-shape-corner-full: 9999px;
-
-  /* Typography Scale - 見出し強調 */
-  --md-sys-typescale-display-large: 800 57px/64px 'Inter', sans-serif;
-  --md-sys-typescale-display-medium: 800 45px/52px 'Inter', sans-serif;
-  --md-sys-typescale-display-small: 800 36px/44px 'Inter', sans-serif;
-
-  --md-sys-typescale-headline-large: 800 32px/40px 'Inter', sans-serif;
-  --md-sys-typescale-headline-medium: 700 28px/36px 'Inter', sans-serif;
-  --md-sys-typescale-headline-small: 700 24px/32px 'Inter', sans-serif;
-
-  --md-sys-typescale-title-large: 700 22px/28px 'Inter', sans-serif;
-  --md-sys-typescale-title-medium: 600 16px/24px 'Inter', sans-serif;
-  --md-sys-typescale-title-small: 600 14px/20px 'Inter', sans-serif;
-
-  --md-sys-typescale-body-large: 400 16px/24px 'Inter', sans-serif;
-  --md-sys-typescale-body-medium: 400 14px/20px 'Inter', sans-serif;
-  --md-sys-typescale-body-small: 400 12px/16px 'Inter', sans-serif;
-
-  --md-sys-typescale-label-large: 600 14px/20px 'Inter', sans-serif;
-  --md-sys-typescale-label-medium: 600 12px/16px 'Inter', sans-serif;
-  --md-sys-typescale-label-small: 600 11px/16px 'Inter', sans-serif;
-
-  /* ═══════════════════════════════════════════════════════════════════════════
-     Spacing System (4px Grid)
-     ═══════════════════════════════════════════════════════════════════════════ */
-  --space-0: 0px;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
+  /* Typography */
+  --font-sans: 'Inter', 'Noto Sans JP', sans-serif;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   Tailwind Theme Integration
-   ═══════════════════════════════════════════════════════════════════════════ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-noto-sans-jp), system-ui, sans-serif;
+  --font-sans: var(--font-sans);
+
+  /* Extend spacing */
+  --spacing-18: 4.5rem;
+  --spacing-112: 28rem;
+  --spacing-128: 32rem;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   Base Styles
-   ═══════════════════════════════════════════════════════════════════════════ */
 body {
   background: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
   font-family: var(--font-sans);
   min-height: 100vh;
-  line-height: 1.6;
+  line-height: normal;
+  /* Ant Design handles line-height */
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   Utility Classes - Spacing & Padding (8px Grid)
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* Gap/Spacing utilities */
+/* Utilities */
 .spacing-2 {
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 
-/* 8px */
-.spacing-3 {
-  gap: var(--space-3);
-}
-
-/* 12px */
 .spacing-4 {
-  gap: var(--space-4);
+  gap: 1rem;
 }
 
-/* 16px */
 .spacing-6 {
-  gap: var(--space-6);
+  gap: 1.5rem;
 }
 
-/* 24px */
-.spacing-8 {
-  gap: var(--space-8);
+/* M3 Navigation Drawer Item (Active State) */
+.nav-item-active {
+  background-color: var(--md-sys-color-secondary-container) !important;
+  color: var(--md-sys-color-on-secondary-container) !important;
+  border-radius: 9999px !important;
+  /* Pill shape */
+  font-weight: 600 !important;
 }
 
-/* 32px */
-
-/* Padding utilities */
-.p-base {
-  padding: var(--space-6);
+.nav-item-inactive {
+  color: var(--md-sys-color-on-surface-variant);
+  border-radius: 9999px;
 }
 
-/* 24px - 基本カードpadding */
-.p-compact {
-  padding: var(--space-4);
+.nav-item-inactive:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  /* State Layer */
+  color: var(--md-sys-color-on-surface);
 }
 
-/* 16px - コンパクト要素 */
-.p-spacious {
-  padding: var(--space-8);
+/* M3 Card Styles Helper (if needed outside Ant Card) */
+.m3-card-filled {
+  background: var(--md-sys-color-surface-container-lowest);
+  border-radius: var(--radius-lg);
+  border: none;
 }
 
-/* 32px - 余裕のある要素 */
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   M3 Surface & Elevation Classes
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* Surface階層 - コンテナ背景 */
-.surface {
+.m3-card-outlined {
   background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--radius-lg);
 }
 
-.surface-dim {
-  background: var(--md-sys-color-surface-dim);
-}
-
-.surface-bright {
-  background: var(--md-sys-color-surface-bright);
-}
-
-.surface-container-lowest {
-  background: var(--md-sys-color-surface-container-lowest);
-}
-
-.surface-container-low {
-  background: var(--md-sys-color-surface-container-low);
-}
-
-.surface-container {
-  background: var(--md-sys-color-surface-container);
-}
-
-.surface-container-high {
-  background: var(--md-sys-color-surface-container-high);
-}
-
-.surface-container-highest {
-  background: var(--md-sys-color-surface-container-highest);
-}
-
-/* Elevated Surface - 背景色 + シャドウ */
-.elevated-1 {
-  background: var(--md-sys-color-surface-container-low);
-  box-shadow: var(--md-sys-elevation-1);
-}
-
-.elevated-2 {
-  background: var(--md-sys-color-surface-container);
-  box-shadow: var(--md-sys-elevation-2);
-}
-
-.elevated-3 {
-  background: var(--md-sys-color-surface-container-high);
-  box-shadow: var(--md-sys-elevation-3);
-}
-
-.elevated-4 {
-  background: var(--md-sys-color-surface-container-high);
-  box-shadow: var(--md-sys-elevation-4);
-}
-
-.elevated-5 {
-  background: var(--md-sys-color-surface-container-highest);
-  box-shadow: var(--md-sys-elevation-5);
-}
-
-/* M3 カードスタイル (HeroUIオーバーライド) */
-.card-gradient {
-  background: var(--md-sys-color-surface-container-low) !important;
-  border: 1px solid var(--md-sys-color-outline-variant) !important;
-  border-radius: var(--md-sys-shape-corner-lg) !important;
-  box-shadow: var(--md-sys-elevation-1) !important;
-}
-
-.card-gradient:hover {
-  box-shadow: var(--md-sys-elevation-2) !important;
-}
-
-/* M3 Elevated Card */
-.card-elevated {
-  background: var(--md-sys-color-surface-container-lowest) !important;
-  border-radius: var(--md-sys-shape-corner-lg) !important;
-  box-shadow: var(--md-sys-elevation-2) !important;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.card-elevated:hover {
-  box-shadow: var(--md-sys-elevation-3) !important;
-  transform: translateY(-2px);
-}
-
-/* M3 Filled Card */
-.card-filled {
-  background: var(--md-sys-color-surface-container-highest) !important;
-  border-radius: var(--md-sys-shape-corner-lg) !important;
-}
-
-/* M3 Outlined Card */
-.card-outlined {
-  background: var(--md-sys-color-surface) !important;
-  border: 1px solid var(--md-sys-color-outline) !important;
-  border-radius: var(--md-sys-shape-corner-lg) !important;
-}
-
-/* Glass Effect (改善版) */
-.glass {
-  background: var(--md-sys-color-surface-container-lowest);
-  box-shadow: var(--md-sys-elevation-2);
-  border-right: 1px solid var(--md-sys-color-outline-variant);
-}
-
-/* Primary Gradient (M3 Compatible) */
-.gradient-primary {
-  background: linear-gradient(135deg, var(--md-sys-color-primary) 0%, var(--md-sys-color-secondary) 100%);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   M3 Shape Classes
-   ═══════════════════════════════════════════════════════════════════════════ */
-.shape-none {
-  border-radius: var(--md-sys-shape-corner-none);
-}
-
-.shape-xs {
-  border-radius: var(--md-sys-shape-corner-extra-small);
-}
-
-.shape-sm {
-  border-radius: var(--md-sys-shape-corner-small);
-}
-
-.shape-md {
-  border-radius: var(--md-sys-shape-corner-medium);
-}
-
-.shape-lg {
-  border-radius: var(--md-sys-shape-corner-large);
-}
-
-.shape-xl {
-  border-radius: var(--md-sys-shape-corner-extra-large);
-}
-
-.shape-full {
-  border-radius: var(--md-sys-shape-corner-full);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   M3 Typography Classes
-   ═══════════════════════════════════════════════════════════════════════════ */
-.display-large {
-  font: var(--md-sys-typescale-display-large);
-  color: var(--md-sys-color-on-surface);
-}
-
-.display-medium {
-  font: var(--md-sys-typescale-display-medium);
-  color: var(--md-sys-color-on-surface);
-}
-
-.display-small {
-  font: var(--md-sys-typescale-display-small);
-  color: var(--md-sys-color-on-surface);
-}
-
-.headline-large {
-  font: var(--md-sys-typescale-headline-large);
-  color: var(--md-sys-color-on-surface);
-}
-
-.headline-medium {
-  font: var(--md-sys-typescale-headline-medium);
-  color: var(--md-sys-color-on-surface);
-}
-
-.headline-small {
-  font: var(--md-sys-typescale-headline-small);
-  color: var(--md-sys-color-on-surface);
-}
-
-.title-large {
-  font: var(--md-sys-typescale-title-large);
-  color: var(--md-sys-color-on-surface);
-}
-
-.title-medium {
-  font: var(--md-sys-typescale-title-medium);
-  color: var(--md-sys-color-on-surface);
-}
-
-.title-small {
-  font: var(--md-sys-typescale-title-small);
-  color: var(--md-sys-color-on-surface);
-}
-
-.body-large {
-  font: var(--md-sys-typescale-body-large);
-  color: var(--md-sys-color-on-surface);
-}
-
-.body-medium {
-  font: var(--md-sys-typescale-body-medium);
-  color: var(--md-sys-color-on-surface-variant);
-}
-
-.body-small {
-  font: var(--md-sys-typescale-body-small);
-  color: var(--md-sys-color-on-surface-variant);
-}
-
-.label-large {
-  font: var(--md-sys-typescale-label-large);
-  color: var(--md-sys-color-on-surface);
-}
-
-.label-medium {
-  font: var(--md-sys-typescale-label-medium);
-  color: var(--md-sys-color-on-surface-variant);
-}
-
-.label-small {
-  font: var(--md-sys-typescale-label-small);
-  color: var(--md-sys-color-on-surface-variant);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   Interaction States
-   ═══════════════════════════════════════════════════════════════════════════ */
-.hover-glow {
-  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
-}
-
-.hover-glow:hover {
-  box-shadow: var(--md-sys-elevation-3);
-  transform: translateY(-2px);
-}
-
-/* State Layer (M3 Interaction) */
-.state-layer {
-  position: relative;
-}
-
-.state-layer::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-}
-
-.state-layer:hover::before {
-  background: var(--md-sys-color-on-surface);
-  opacity: 0.08;
-}
-
-.state-layer:active::before {
-  background: var(--md-sys-color-on-surface);
-  opacity: 0.12;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   ロールバッジ (M3 Tonal Style)
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* Custom Roll Badges */
 .badge-gicho {
   background: var(--color-gicho-container);
   color: var(--color-gicho);
-  border-radius: var(--md-sys-shape-corner-small);
-  font-weight: 500;
 }
 
 .badge-meiyo-giin {
   background: var(--color-meiyo-giin-container);
   color: var(--color-meiyo-giin);
-  border-radius: var(--md-sys-shape-corner-small);
-  font-weight: 500;
 }
 
 .badge-giin {
   background: var(--color-giin-container);
   color: var(--color-giin);
-  border-radius: var(--md-sys-shape-corner-small);
-  font-weight: 500;
 }
 
 .badge-guest {
   background: var(--color-guest-container);
   color: var(--color-guest);
-  border-radius: var(--md-sys-shape-corner-small);
-  font-weight: 500;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   Dashed Border Style
-   ═══════════════════════════════════════════════════════════════════════════ */
-.dashed-border {
-  border: 2px dashed var(--md-sys-color-outline-variant);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   HeroUI Avatar Fix
-   Avatarコンポーネントの画像がopacity-0で非表示になる問題を修正
-   data-loaded属性はimg要素自体に付与される
-   ═══════════════════════════════════════════════════════════════════════════ */
-img[data-loaded="true"],
-img.opacity-0[data-loaded="true"] {
-  opacity: 1 !important;
-  visibility: visible !important;
 }

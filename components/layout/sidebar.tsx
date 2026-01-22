@@ -132,7 +132,7 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
             {/* Sidebar */}
             <aside className={cn(
                 "fixed left-0 top-0 h-screen h-dvh flex flex-col z-50",
-                "bg-[#fceae7] rounded-r-[28px]",
+                "bg-[var(--md-sys-color-surface-container)] rounded-r-[28px]",
                 "transition-all duration-300 ease-out",
                 // Mobile: slide in/out
                 isMobileOpen ? "translate-x-0" : "-translate-x-full",

@@ -54,7 +54,7 @@ export default function SectionCard({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2, delay: index * 0.05 }}
         >
-            <Card className={`${cardBg} border-none shadow-none hover:shadow-lg transition-all duration-300 rounded-[20px]`} styles={{ body: { padding: 0 } }}>
+            <Card className={`${cardBg} border-none shadow-none hover-glow transition-all duration-200 rounded-[var(--radius-lg)]`} styles={{ body: { padding: 0 } }}>
                 <SectionHeader
                     index={index} section={section} projectStatus={projectStatus} userRole={userRole}
                     isEditing={isEditing} isProposing={isProposing} isSaving={isSaving}
