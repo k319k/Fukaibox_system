@@ -1,0 +1,417 @@
+"use client";
+
+import { Card, CardBody, CardHeader, Button, Chip, Avatar, Textarea, Divider } from "@heroui/react";
+import { ArrowLeft, ThumbsUp, ThumbsDown, ExternalLink, Code, Edit, Trash2, Send } from "lucide-react";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import type { ToolApp } from "@/app/actions/tools";
+import type { ToolRating } from "@/app/actions/tools-ratings";
+import { rateApp, deleteRating } from "@/app/actions/tools-ratings";
+import { deleteApp } from "@/app/actions/tools";
+
+interface ToolDetailClientProps {
+    app: ToolApp;
+    ratings: ToolRating[];
+    currentUserId?: string;
+    currentUserRole?: string;
+}
+
+const typeLabels: Record<string, string> = {
+    embed: "埋め込み",
+    link: "リンク",
+    react: "React",
+    html: "HTML",
+};
+
+const typeBadgeClasses: Record<string, string> = {
+    embed: "bg-[#d7f0cb] text-[#10200a]",
+    link: "bg-[#fbe7a6] text-[#564419]",
+    react: "bg-[#ffdad5] text-[#73342b]",
+    html: "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]",
+};
+
+export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole }: ToolDetailClientProps) {
+    const router = useRouter();
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isRating, setIsRating] = useState(false);
+    const [comment, setComment] = useState("");
+
+    const isOwner = currentUserId === app.createdBy;
+    const userRating = ratings.find((r) => r.userId === currentUserId);
+    const likes = ratings.filter((r) => r.rating === 1).length;
+    const dislikes = ratings.filter((r) => r.rating === -1).length;
+
+    const handleRate = async (rating: 1 | -1) => {
+        if (!currentUserId) {
+            router.push("/login");
+            return;
+        }
+
+        setIsRating(true);
+        const result = await rateApp({
+            appId: app.id,
+            rating,
+            comment: comment.trim() || undefined,
+        });
+
+        if (result.success) {
+            router.refresh();
+        }
+        setIsRating(false);
+    };
+
+    const handleDeleteRating = async () => {
+        setIsRating(true);
+        await deleteRating(app.id);
+        router.refresh();
+        setIsRating(false);
+    };
+
+    const handleDelete = async () => {
+        if (!confirm("このツールを削除しますか？")) return;
+
+        setIsDeleting(true);
+        const result = await deleteApp(app.id);
+        if (result.success) {
+            router.push("/tools");
+        } else {
+            alert(result.error);
+            setIsDeleting(false);
+        }
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="max-w-4xl mx-auto space-y-8"
+        >
+            {/* Header */}
+            <div className="flex items-start justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-4">
+                    <Link href="/tools">
+                        <motion.div whileTap={{ scale: 0.95 }}>
+                            <Button isIconOnly variant="light" radius="full" className="flex items-center justify-center">
+                                <ArrowLeft className="w-5 h-5" />
+                            </Button>
+                        </motion.div>
+                    </Link>
+                    <div>
+                        <div className="flex items-center gap-3 mb-1">
+                            <h1 className="text-3xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
+                                {app.name}
+                            </h1>
+                            <Chip size="sm" variant="flat" className={`rounded-full px-3 ${typeBadgeClasses[app.type]}`}>
+                                {typeLabels[app.type]}
+                            </Chip>
+                        </div>
+                        {app.description && (
+                            <p className="text-[var(--md-sys-color-on-surface-variant)]">{app.description}</p>
+                        )}
+                    </div>
+                </div>
+
+                {isOwner && (
+                    <div className="flex gap-2">
+                        <motion.div whileTap={{ scale: 0.95 }}>
+                            <Button
+                                variant="flat"
+                                radius="full"
+                                className="h-10 px-4 flex items-center justify-center gap-2"
+                                startContent={<Edit className="w-4 h-4" />}
+                                isDisabled
+                            >
+                                編集
+                            </Button>
+                        </motion.div>
+                        <motion.div whileTap={{ scale: 0.95 }}>
+                            <Button
+                                color="danger"
+                                variant="flat"
+                                radius="full"
+                                className="h-10 px-4 flex items-center justify-center gap-2"
+                                startContent={<Trash2 className="w-4 h-4" />}
+                                isLoading={isDeleting}
+                                onPress={handleDelete}
+                            >
+                                削除
+                            </Button>
+                        </motion.div>
+                    </div>
+                )}
+            </div>
+
+            {/* App Content */}
+            <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none overflow-hidden">
+                {app.type === "embed" && app.embedUrl && (
+                    <div className="w-full aspect-video">
+                        <iframe
+                            src={app.embedUrl}
+                            className="w-full h-full border-none"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        />
+                    </div>
+                )}
+
+                {app.type === "link" && app.embedUrl && (
+                    <CardBody className="p-8 text-center">
+                        <p className="text-[var(--md-sys-color-on-surface-variant)] mb-6">
+                            このツールは外部サイトへのリンクです
+                        </p>
+                        <motion.div whileTap={{ scale: 0.95 }} className="inline-block">
+                            <Button
+                                as="a"
+                                href={app.embedUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                color="primary"
+                                variant="flat"
+                                radius="full"
+                                className="h-14 px-8 font-bold bg-[#ffdad5] text-[#73342b] flex items-center justify-center gap-2"
+                                endContent={<ExternalLink className="w-5 h-5" />}
+                            >
+                                外部サイトを開く
+                            </Button>
+                        </motion.div>
+                    </CardBody>
+                )}
+
+                {(app.type === "react" || app.type === "html") && (
+                    <CardBody className="p-8 text-center">
+                        <div className="w-16 h-16 bg-[var(--md-sys-color-surface-container-high)] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Code className="w-8 h-8 text-[var(--md-sys-color-on-surface-variant)]" />
+                        </div>
+                        <p className="text-[var(--md-sys-color-on-surface-variant)]">
+                            コード実行機能は今後実装予定です
+                        </p>
+                    </CardBody>
+                )}
+            </Card>
+
+            {/* Rating Section */}
+            <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
+                <CardHeader className="p-8 pb-4 flex-row items-center justify-between">
+                    <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
+                        評価
+                    </h2>
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <ThumbsUp className="w-4 h-4 text-[#10200a]" />
+                            <span className="font-mono">{likes}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <ThumbsDown className="w-4 h-4 text-[#93000a]" />
+                            <span className="font-mono">{dislikes}</span>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardBody className="px-8 pb-8 space-y-6">
+                    {/* Rate Form */}
+                    {currentUserId && !isOwner && (
+                        <div className="space-y-4">
+                            {userRating ? (
+                                <div className="p-4 rounded-[20px] bg-[var(--md-sys-color-surface-container-high)]">
+                                    <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] mb-2">
+                                        あなたの評価
+                                    </p>
+                                    <div className="flex items-center justify-between">
+                                        <Chip
+                                            size="sm"
+                                            variant="flat"
+                                            className={`rounded-full px-3 ${userRating.rating === 1
+                                                    ? "bg-[#d7f0cb] text-[#10200a]"
+                                                    : "bg-[#ffdad6] text-[#93000a]"
+                                                }`}
+                                        >
+                                            {userRating.rating === 1 ? "高評価" : "低評価"}
+                                        </Chip>
+                                        <Button
+                                            size="sm"
+                                            variant="light"
+                                            radius="full"
+                                            onPress={handleDeleteRating}
+                                            isLoading={isRating}
+                                        >
+                                            取り消す
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <Textarea
+                                        placeholder="コメントを追加（任意）"
+                                        variant="flat"
+                                        radius="lg"
+                                        value={comment}
+                                        onValueChange={setComment}
+                                        classNames={{
+                                            inputWrapper: "bg-[var(--md-sys-color-surface-container-high)]",
+                                        }}
+                                        minRows={2}
+                                    />
+                                    <div className="flex gap-3">
+                                        <motion.div whileTap={{ scale: 0.95 }} className="flex-1">
+                                            <Button
+                                                variant="flat"
+                                                radius="full"
+                                                className="w-full h-12 font-bold bg-[#d7f0cb] text-[#10200a] flex items-center justify-center gap-2"
+                                                startContent={<ThumbsUp className="w-4 h-4" />}
+                                                isLoading={isRating}
+                                                onPress={() => handleRate(1)}
+                                            >
+                                                高評価
+                                            </Button>
+                                        </motion.div>
+                                        <motion.div whileTap={{ scale: 0.95 }} className="flex-1">
+                                            <Button
+                                                variant="flat"
+                                                radius="full"
+                                                className="w-full h-12 font-bold bg-[#ffdad6] text-[#93000a] flex items-center justify-center gap-2"
+                                                startContent={<ThumbsDown className="w-4 h-4" />}
+                                                isLoading={isRating}
+                                                onPress={() => handleRate(-1)}
+                                            >
+                                                低評価
+                                            </Button>
+                                        </motion.div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    )}
+
+                    {!currentUserId && (
+                        <div className="text-center py-4">
+                            <p className="text-[var(--md-sys-color-on-surface-variant)] mb-4">
+                                評価するにはログインが必要です
+                            </p>
+                            <Link href="/login">
+                                <motion.div whileTap={{ scale: 0.95 }} className="inline-block">
+                                    <Button
+                                        variant="flat"
+                                        radius="full"
+                                        className="h-10 px-6 font-medium bg-[#ffdad5] text-[#73342b]"
+                                    >
+                                        ログイン
+                                    </Button>
+                                </motion.div>
+                            </Link>
+                        </div>
+                    )}
+
+                    {/* Comments List */}
+                    {ratings.filter((r) => r.comment).length > 0 && (
+                        <>
+                            <Divider className="bg-[var(--md-sys-color-outline-variant)]/30" />
+                            <div className="space-y-4">
+                                <h3 className="font-medium text-[var(--md-sys-color-on-surface)]">
+                                    コメント
+                                </h3>
+                                {ratings
+                                    .filter((r) => r.comment)
+                                    .map((r) => (
+                                        <div
+                                            key={r.id}
+                                            className="flex gap-4 p-4 rounded-[20px] bg-[var(--md-sys-color-surface-container-high)]"
+                                        >
+                                            <Avatar
+                                                size="sm"
+                                                name={r.userName?.[0] || "?"}
+                                                src={r.userImage || undefined}
+                                                classNames={{ base: "shrink-0 rounded-[12px]" }}
+                                            />
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="font-medium text-[var(--md-sys-color-on-surface)]">
+                                                        {r.userName || "不明"}
+                                                    </span>
+                                                    <Chip
+                                                        size="sm"
+                                                        variant="flat"
+                                                        className={`rounded-full px-2 text-xs ${r.rating === 1
+                                                                ? "bg-[#d7f0cb] text-[#10200a]"
+                                                                : "bg-[#ffdad6] text-[#93000a]"
+                                                            }`}
+                                                    >
+                                                        {r.rating === 1 ? "👍" : "👎"}
+                                                    </Chip>
+                                                </div>
+                                                <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
+                                                    {r.comment}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+                            </div>
+                        </>
+                    )}
+                </CardBody>
+            </Card>
+
+            {/* Info Section */}
+            <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
+                <CardBody className="p-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div>
+                            <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mb-1">
+                                作成者
+                            </p>
+                            <div className="flex items-center gap-2">
+                                <Avatar
+                                    size="sm"
+                                    name={app.creatorName?.[0] || "?"}
+                                    src={app.creatorImage || undefined}
+                                    classNames={{ base: "rounded-[8px]" }}
+                                />
+                                <span className="font-medium text-[var(--md-sys-color-on-surface)]">
+                                    {app.creatorName || "不明"}
+                                </span>
+                            </div>
+                        </div>
+                        {app.category && (
+                            <div>
+                                <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mb-1">
+                                    カテゴリ
+                                </p>
+                                <Chip
+                                    size="sm"
+                                    variant="flat"
+                                    className="rounded-full px-3 bg-[var(--md-sys-color-surface-container-high)]"
+                                >
+                                    {app.category}
+                                </Chip>
+                            </div>
+                        )}
+                        <div>
+                            <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mb-1">
+                                作成日
+                            </p>
+                            <p className="font-medium text-[var(--md-sys-color-on-surface)]">
+                                {app.createdAt.toLocaleDateString("ja-JP")}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mb-1">
+                                公開設定
+                            </p>
+                            <Chip
+                                size="sm"
+                                variant="flat"
+                                className={`rounded-full px-3 ${app.isPublic
+                                        ? "bg-[#d7f0cb] text-[#10200a]"
+                                        : "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]"
+                                    }`}
+                            >
+                                {app.isPublic ? "公開" : "非公開"}
+                            </Chip>
+                        </div>
+                    </div>
+                </CardBody>
+            </Card>
+        </motion.div>
+    );
+}
