@@ -47,7 +47,10 @@ export const auth = betterAuth({
     trustedOrigins: [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        env.BETTER_AUTH_URL, // 本番URL
+        env.BETTER_AUTH_URL!, // 本番URL
+        // Vercel Preview/Production URLs
+        ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+        ...(process.env.NEXT_PUBLIC_VERCEL_URL ? [`https://${process.env.NEXT_PUBLIC_VERCEL_URL}`] : []),
     ],
     hooks: {
         after: createAuthMiddleware(async (ctx) => {
