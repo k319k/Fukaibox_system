@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, CardHeader, Avatar, Skeleton } from "@heroui/react";
+import { Card, Avatar, Skeleton } from "antd";
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -50,8 +50,11 @@ export function HonoraryMemberWidget() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.3 }}
         >
-            <Card className="bg-[var(--md-sys-color-surface-container-low)] rounded-[28px] border-none shadow-none">
-                <CardHeader className="p-8 pb-4 flex-col items-start">
+            <Card
+                className="bg-[var(--md-sys-color-surface-container-low)] rounded-[28px] border-none shadow-none"
+                styles={{ body: { padding: "0 32px 32px 32px" } }}
+            >
+                <div className="p-8 pb-4">
                     <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3 text-[var(--md-sys-color-on-surface)]">
                         <Star className="w-5 h-5 text-[#fbe7a6] fill-[#fbe7a6]" />
                         名誉儀員
@@ -59,12 +62,12 @@ export function HonoraryMemberWidget() {
                     <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] mt-1">
                         封解公儀に貢献した方々
                     </p>
-                </CardHeader>
-                <CardBody className="px-8 pb-8">
+                </div>
+                <div>
                     {loading ? (
                         <div className="flex flex-wrap gap-4">
                             {[1, 2, 3].map((i) => (
-                                <Skeleton key={i} className="w-20 h-20 rounded-[20px]" />
+                                <Skeleton.Avatar key={i} active size={80} shape="square" style={{ borderRadius: 20 }} />
                             ))}
                         </div>
                     ) : members.length > 0 ? (
@@ -86,13 +89,12 @@ export function HonoraryMemberWidget() {
                                     >
                                         <div className="relative">
                                             <Avatar
-                                                size="lg"
-                                                name={displayName[0]}
+                                                size={56}
                                                 src={member.image || undefined}
-                                                classNames={{
-                                                    base: "ring-2 ring-[#fbe7a6] rounded-[16px] group-hover:ring-4 transition-all",
-                                                }}
-                                            />
+                                                className="ring-2 ring-[#fbe7a6] rounded-[16px] group-hover:ring-4 transition-all"
+                                            >
+                                                {displayName[0]}
+                                            </Avatar>
                                             <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#fbe7a6] rounded-full flex items-center justify-center shadow-sm">
                                                 <Star className="w-3 h-3 text-[#564419] fill-[#564419]" />
                                             </div>
@@ -109,7 +111,7 @@ export function HonoraryMemberWidget() {
                             <p className="text-base font-normal">名誉儀員はまだいません</p>
                         </div>
                     )}
-                </CardBody>
+                </div>
             </Card>
         </motion.div>
     );

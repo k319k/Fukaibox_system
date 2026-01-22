@@ -1,6 +1,6 @@
 "use client";
 
-import { Chip } from "@heroui/react";
+import { Tag } from "antd";
 import { Icon } from "@iconify/react";
 import { useMemo } from "react";
 
@@ -51,36 +51,29 @@ export default function CharacterCountDisplay({
 
     return (
         <div className="flex flex-wrap items-center gap-3">
-            <Chip
-                size="sm"
-                variant="flat"
-                color="primary"
-                startContent={<Icon icon="mdi:text" className="text-sm" />}
+            <Tag
+                className="rounded-full bg-[#ffdad5] text-[#73342b] border-none flex items-center gap-1"
             >
+                <Icon icon="mdi:text" className="text-sm" />
                 {stats.charCount.toLocaleString()}文字
-            </Chip>
-            <Chip
-                size="sm"
-                variant="flat"
-                color="secondary"
-                startContent={<Icon icon="mdi:timer-outline" className="text-sm" />}
+            </Tag>
+            <Tag
+                className="rounded-full bg-[#9E2B1F]/20 text-[#9E2B1F] border-none flex items-center gap-1"
             >
+                <Icon icon="mdi:timer-outline" className="text-sm" />
                 予測尺: {stats.durationText}
-            </Chip>
+            </Tag>
             {showSectionPreview && stats.sectionCount > 0 && (
-                <Chip
-                    size="sm"
-                    variant="flat"
-                    color="success"
-                    startContent={<Icon icon="mdi:format-list-numbered" className="text-sm" />}
+                <Tag
+                    className="rounded-full bg-[#d7f0cb] text-[#10200a] border-none flex items-center gap-1"
                 >
+                    <Icon icon="mdi:format-list-numbered" className="text-sm" />
                     {stats.sectionCount}セクションに分割
-                </Chip>
+                </Tag>
             )}
-            <span className="text-xs text-foreground-muted">
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)]">
                 (250文字≒30秒)
             </span>
         </div>
     );
 }
-

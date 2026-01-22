@@ -1,6 +1,7 @@
 "use client";
 
-import { CardHeader, Button, Chip, Spinner } from "@heroui/react";
+import { Button, Tag, Spin } from "antd";
+import { SaveOutlined, SendOutlined, EditOutlined, DeleteOutlined, CommentOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import { Section, UserRole } from "@/types/kitchen";
@@ -33,26 +34,26 @@ export default function SectionHeader({
     const isProjectCompleted = projectStatus === "completed";
 
     return (
-        <CardHeader className="flex flex-row justify-between items-center gap-2 pb-3 p-6">
+        <div className="flex flex-row justify-between items-center gap-2 pb-3 p-6">
             <div className="flex flex-wrap items-center gap-2">
-                <Chip size="sm" className="rounded-full bg-[#ffdad5] text-[#73342b]">
-                    <Icon icon="mdi:numeric" className="mr-1" />
+                <Tag className="rounded-full bg-[#ffdad5] text-[#73342b] border-none flex items-center gap-1">
+                    <Icon icon="mdi:numeric" />
                     セクション {index + 1}
-                </Chip>
+                </Tag>
                 {!(section.allowImageSubmission ?? true) && (
-                    <Chip size="sm" className="rounded-full bg-[#fbe7a6] text-[#564419]">
-                        <Icon icon="mdi:image-off" className="mr-1" />画像なし
-                    </Chip>
+                    <Tag className="rounded-full bg-[#fbe7a6] text-[#564419] border-none flex items-center gap-1">
+                        <Icon icon="mdi:image-off" />画像なし
+                    </Tag>
                 )}
                 {isEditing && (
-                    <Chip size="sm" className="rounded-full bg-[#ffdad5] text-[#73342b]">
-                        <Icon icon="mdi:pencil" className="mr-1" />編集中
-                    </Chip>
+                    <Tag className="rounded-full bg-[#ffdad5] text-[#73342b] border-none flex items-center gap-1">
+                        <Icon icon="mdi:pencil" />編集中
+                    </Tag>
                 )}
                 {isProposing && (
-                    <Chip size="sm" className="rounded-full bg-[#fbe7a6] text-[#564419]">
-                        <Icon icon="mdi:comment-edit" className="mr-1" />推敲中
-                    </Chip>
+                    <Tag className="rounded-full bg-[#fbe7a6] text-[#564419] border-none flex items-center gap-1">
+                        <Icon icon="mdi:comment-edit" />推敲中
+                    </Tag>
                 )}
             </div>
 
@@ -61,13 +62,16 @@ export default function SectionHeader({
                     <>
                         <motion.div whileTap={{ scale: 0.95 }}>
                             <Button
-                                size="sm" className="rounded-full bg-[#73342b] text-[#ffdad5]"
-                                startContent={isSaving ? <Spinner size="sm" color="current" /> : <Icon icon="mdi:content-save" />}
-                                onPress={onEditSave} isDisabled={isSaving}
+                                size="small"
+                                shape="round"
+                                className="bg-[#73342b] text-[#ffdad5] border-none"
+                                icon={isSaving ? <LoadingOutlined /> : <SaveOutlined />}
+                                onClick={onEditSave}
+                                disabled={isSaving}
                             >保存</Button>
                         </motion.div>
                         <motion.div whileTap={{ scale: 0.95 }}>
-                            <Button size="sm" className="rounded-full" variant="light" onPress={onEditCancel} isDisabled={isSaving}>
+                            <Button size="small" shape="round" type="text" onClick={onEditCancel} disabled={isSaving}>
                                 キャンセル
                             </Button>
                         </motion.div>
@@ -76,13 +80,16 @@ export default function SectionHeader({
                     <>
                         <motion.div whileTap={{ scale: 0.95 }}>
                             <Button
-                                size="sm" className="rounded-full bg-[#564419] text-[#fbe7a6]"
-                                startContent={isSaving ? <Spinner size="sm" color="current" /> : <Icon icon="mdi:send" />}
-                                onPress={onProposalSubmit} isDisabled={isSaving}
+                                size="small"
+                                shape="round"
+                                className="bg-[#564419] text-[#fbe7a6] border-none"
+                                icon={isSaving ? <LoadingOutlined /> : <SendOutlined />}
+                                onClick={onProposalSubmit}
+                                disabled={isSaving}
                             >提案する</Button>
                         </motion.div>
                         <motion.div whileTap={{ scale: 0.95 }}>
-                            <Button size="sm" className="rounded-full" variant="light" onPress={onProposalCancel} isDisabled={isSaving}>
+                            <Button size="small" shape="round" type="text" onClick={onProposalCancel} disabled={isSaving}>
                                 キャンセル
                             </Button>
                         </motion.div>
@@ -92,30 +99,42 @@ export default function SectionHeader({
                         {!isProjectCompleted && (
                             <motion.div whileTap={{ scale: 0.9 }}>
                                 <Button
-                                    size="sm" isIconOnly className="rounded-full bg-[#ffdad5] text-[#73342b]"
-                                    onPress={onEditStart} title="編集"
-                                ><Icon icon="mdi:pencil" /></Button>
+                                    size="small"
+                                    shape="circle"
+                                    className="bg-[#ffdad5] text-[#73342b] border-none"
+                                    icon={<EditOutlined />}
+                                    onClick={onEditStart}
+                                    title="編集"
+                                />
                             </motion.div>
                         )}
                         {!isProjectCompleted && (
                             <motion.div whileTap={{ scale: 0.9 }}>
                                 <Button
-                                    size="sm" isIconOnly className="rounded-full bg-[#ffdad6] text-[#93000a]"
-                                    onPress={onDelete} title="削除"
-                                ><Icon icon="mdi:trash-can-outline" /></Button>
+                                    size="small"
+                                    shape="circle"
+                                    className="bg-[#ffdad6] text-[#93000a] border-none"
+                                    icon={<DeleteOutlined />}
+                                    onClick={onDelete}
+                                    title="削除"
+                                />
                             </motion.div>
                         )}
                         {isGicho && !isProjectCompleted && (
                             <motion.div whileTap={{ scale: 0.9 }}>
                                 <Button
-                                    size="sm" isIconOnly className="rounded-full bg-[#fbe7a6] text-[#564419]"
-                                    onPress={onProposalOpen} title="推敲提案"
-                                ><Icon icon="mdi:comment-edit-outline" /></Button>
+                                    size="small"
+                                    shape="circle"
+                                    className="bg-[#fbe7a6] text-[#564419] border-none"
+                                    icon={<CommentOutlined />}
+                                    onClick={onProposalOpen}
+                                    title="推敲提案"
+                                />
                             </motion.div>
                         )}
                     </>
                 )}
             </div>
-        </CardHeader>
+        </div>
     );
 }

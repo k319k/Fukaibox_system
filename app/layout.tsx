@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
-import { Providers } from "@/components/providers/hero-provider";
+import { Providers } from "@/components/providers/antd-provider";
 import "./globals.css";
 
 const notoSansJP = Noto_Sans_JP({

@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, Divider } from "@heroui/react";
+import { Card, Divider } from "antd";
 import { motion } from "framer-motion";
 import { Section, UserRole } from "@/types/kitchen";
 import SectionHeader from "./section/SectionHeader";
@@ -54,7 +54,7 @@ export default function SectionCard({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2, delay: index * 0.05 }}
         >
-            <Card className={`${cardBg} border-none shadow-none hover:shadow-lg transition-all duration-300 rounded-[20px]`}>
+            <Card className={`${cardBg} border-none shadow-none hover:shadow-lg transition-all duration-300 rounded-[20px]`} styles={{ body: { padding: 0 } }}>
                 <SectionHeader
                     index={index} section={section} projectStatus={projectStatus} userRole={userRole}
                     isEditing={isEditing} isProposing={isProposing} isSaving={isSaving}
@@ -62,8 +62,8 @@ export default function SectionCard({
                     onDelete={() => onDelete(section.id)}
                     onProposalOpen={() => onProposalOpen(section)} onProposalCancel={onProposalCancel} onProposalSubmit={onProposalSubmit}
                 />
-                <Divider className="bg-[var(--md-sys-color-outline-variant)]/30" />
-                <CardBody className="pt-4 p-6">
+                <Divider className="my-0 bg-[var(--md-sys-color-outline-variant)]/30" />
+                <div className="pt-4 p-6">
                     {isEditing ? (
                         <EditForm
                             content={editContent} imageInstruction={editImageInstruction}
@@ -76,7 +76,7 @@ export default function SectionCard({
                     ) : (
                         <NormalView section={section} fontSize={fontSize} />
                     )}
-                </CardBody>
+                </div>
             </Card>
         </motion.div>
     );

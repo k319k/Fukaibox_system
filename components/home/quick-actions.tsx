@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody } from "@heroui/react";
+import { Card } from "antd";
 import Link from "next/link";
 import { ChefHat, Package, Wrench, Settings } from "lucide-react";
 import { motion } from "framer-motion";
@@ -64,16 +64,17 @@ export function QuickActions() {
                             whileHover={{ y: -4, transition: { duration: 0.2 } }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <Card className={`h-44 border-none shadow-none hover:shadow-lg transition-all duration-300 ${action.bgColor} ${action.textColor} rounded-[28px]`}>
-                                <CardBody className="flex flex-col items-center justify-center gap-5 p-8">
-                                    <action.icon
-                                        strokeWidth={1.5}
-                                        className="w-10 h-10 group-hover:scale-110 transition-transform duration-300"
-                                    />
-                                    <span className="text-lg font-medium tracking-normal">
-                                        {action.label}
-                                    </span>
-                                </CardBody>
+                            <Card
+                                className={`h-44 border-none shadow-none hover:shadow-lg transition-all duration-300 ${action.bgColor} ${action.textColor} rounded-[28px]`}
+                                styles={{ body: { height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 20, padding: 32 } }}
+                            >
+                                <action.icon
+                                    strokeWidth={1.5}
+                                    className="w-10 h-10 group-hover:scale-110 transition-transform duration-300"
+                                />
+                                <span className="text-lg font-medium tracking-normal">
+                                    {action.label}
+                                </span>
                             </Card>
                         </motion.div>
                     </Link>

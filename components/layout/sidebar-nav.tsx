@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Tooltip, Divider } from "@heroui/react";
+import { Button, Tooltip, Divider } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, ChefHat, Book, Wrench, Settings, Users, Code, Shield } from "lucide-react";
@@ -38,8 +38,7 @@ function NavItem({ item }: { item: typeof navigation[0] }) {
         <Link href={item.href} className="group relative block">
             <motion.div whileTap={{ scale: 0.95 }}>
                 <Button
-                    variant="light"
-                    isIconOnly={isCollapsed}
+                    type="text"
                     className={`
                         w-full h-14 rounded-full relative overflow-hidden
                         flex items-center justify-center
@@ -75,7 +74,7 @@ function NavItem({ item }: { item: typeof navigation[0] }) {
     // Show tooltip when collapsed
     if (isCollapsed) {
         return (
-            <Tooltip content={item.name} placement="right">
+            <Tooltip title={item.name} placement="right">
                 {button}
             </Tooltip>
         );
@@ -97,7 +96,7 @@ export function SidebarNav({ items, userRole }: SidebarNavProps) {
             {/* 儀長専用ナビゲーション */}
             {isGicho && (
                 <>
-                    <Divider className="my-4 bg-divider/20 border-none h-[1px]" />
+                    <Divider className="my-4 bg-divider/20 border-none" />
                     <AnimatePresence>
                         {!isCollapsed && (
                             <motion.p

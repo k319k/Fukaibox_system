@@ -1,7 +1,8 @@
 "use client";
 
+import { Modal, Button } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 import { Icon } from "@iconify/react";
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/react";
 import { useState } from "react";
 import { deleteCookingProject } from "@/app/actions/kitchen";
 import { Project } from "@/types/kitchen";
@@ -26,8 +27,6 @@ export default function DeleteProjectModal({ isOpen, onClose, project, onProject
             onClose();
         } catch (err) {
             console.error("Failed to delete project:", err);
-            // エラー表示は親コンポーネントで行うほうが良いかもしれませんが、
-            // ここではシンプルにコンソール出力のみとしています
         } finally {
             setIsDeleting(false);
         }
@@ -35,54 +34,40 @@ export default function DeleteProjectModal({ isOpen, onClose, project, onProject
 
     return (
         <Modal
-            isOpen={isOpen}
-            onClose={onClose}
-            size="sm"
-            placement="center"
-            backdrop="opaque"
-            radius="lg"
-            classNames={{
-                backdrop: "bg-black/60 backdrop-blur-sm",
-                base: "bg-background",
-            }}
-        >
-            <ModalContent>
-                <ModalHeader className="flex flex-col gap-1">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-danger/10 rounded-lg">
-                            <Icon icon="mdi:delete-alert" className="text-2xl text-danger" />
-                        </div>
-                        <h2 className="text-xl font-bold">削除の確認</h2>
+            open={isOpen}
+            onCancel={onClose}
+            title={
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-[#ffdad6] rounded-lg">
+                        <Icon icon="mdi:delete-alert" className="text-2xl text-[#93000a]" />
                     </div>
-                </ModalHeader>
-                <ModalBody>
-                    <p className="text-foreground-muted">
-                        「<span className="font-semibold text-foreground">{project?.title}</span>」を削除しますか？
-                    </p>
-                    <p className="text-sm text-danger mt-2">
-                        この操作は取り消せません。関連するセクション・画像もすべて削除されます。
-                    </p>
-                </ModalBody>
-                <ModalFooter>
-                    <Button
-                        variant="light"
-                        radius="full"
-                        onPress={onClose}
-                        isDisabled={isDeleting}
-                    >
-                        キャンセル
-                    </Button>
-                    <Button
-                        color="danger"
-                        radius="full"
-                        onPress={handleDeleteConfirm}
-                        isLoading={isDeleting}
-                        startContent={!isDeleting && <Icon icon="mdi:delete" />}
-                    >
-                        削除
-                    </Button>
-                </ModalFooter>
-            </ModalContent>
+                    <h2 className="text-xl font-bold">削除の確認</h2>
+                </div>
+            }
+            footer={[
+                <Button key="cancel" shape="round" onClick={onClose} disabled={isDeleting}>
+                    キャンセル
+                </Button>,
+                <Button
+                    key="delete"
+                    danger
+                    type="primary"
+                    shape="round"
+                    onClick={handleDeleteConfirm}
+                    loading={isDeleting}
+                    icon={!isDeleting && <DeleteOutlined />}
+                >
+                    削除
+                </Button>,
+            ]}
+            styles={{ mask: { backgroundColor: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" } }}
+        >
+            <p className="text-[var(--md-sys-color-on-surface-variant)]">
+                「<span className="font-semibold text-[var(--md-sys-color-on-surface)]">{project?.title}</span>」を削除しますか？
+            </p>
+            <p className="text-sm text-red-500 mt-2">
+                この操作は取り消せません。関連するセクション・画像もすべて削除されます。
+            </p>
         </Modal>
     );
 }

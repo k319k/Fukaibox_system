@@ -1,7 +1,8 @@
 "use client";
 
+import { Modal, Button, Input, Alert } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { Icon } from "@iconify/react";
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createCookingProject } from "@/app/actions/kitchen";
@@ -57,88 +58,77 @@ export default function CreateProjectModal({ isOpen, onClose }: CreateProjectMod
 
     return (
         <Modal
-            isOpen={isOpen}
-            onClose={handleClose}
-            size="md"
-            placement="center"
-            backdrop="opaque"
-            radius="lg"
-            classNames={{
-                backdrop: "bg-black/60 backdrop-blur-sm",
-                base: "bg-background",
-            }}
+            open={isOpen}
+            onCancel={handleClose}
+            title={
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-[#ffdad5] rounded-lg">
+                        <Icon icon="mdi:pot-steam" className="text-2xl text-[#73342b]" />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-bold">新しい料理を作る</h2>
+                        <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] font-normal">
+                            台本は作成後に調理タブで入力できます
+                        </p>
+                    </div>
+                </div>
+            }
+            footer={[
+                <Button key="cancel" shape="round" onClick={handleClose} disabled={isLoading}>
+                    キャンセル
+                </Button>,
+                <Button
+                    key="create"
+                    type="primary"
+                    shape="round"
+                    onClick={handleCreate}
+                    loading={isLoading}
+                    icon={!isLoading && <PlusOutlined />}
+                    className="bg-[#73342b]"
+                >
+                    作成
+                </Button>,
+            ]}
+            className="rounded-[28px]"
+            styles={{ mask: { backgroundColor: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" } }}
         >
-            <ModalContent>
-                <ModalHeader className="flex flex-col gap-1 pb-2">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-lg">
-                            <Icon icon="mdi:pot-steam" className="text-2xl text-primary" />
-                        </div>
-                        <div>
-                            <h2 className="text-xl font-bold">新しい料理を作る</h2>
-                            <p className="text-sm text-foreground-muted font-normal">
-                                台本は作成後に調理タブで入力できます
-                            </p>
-                        </div>
-                    </div>
-                </ModalHeader>
-                <ModalBody className="py-4">
-                    {error && (
-                        <div className="bg-danger/10 border border-danger/20 rounded-lg p-3 text-danger text-sm flex items-center gap-2">
-                            <Icon icon="mdi:alert-circle" />
-                            {error}
-                        </div>
-                    )}
+            {error && (
+                <Alert
+                    message={error}
+                    type="error"
+                    showIcon
+                    className="mb-4"
+                />
+            )}
 
-                    <div className="flex flex-col gap-5">
-                        <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium text-foreground">
-                                タイトル <span className="text-danger">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="例: 封解公儀の新年挨拶"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                disabled={isLoading}
-                                className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors disabled:opacity-50"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium text-foreground">
-                                説明（任意）
-                            </label>
-                            <textarea
-                                placeholder="このプロジェクトの内容や目的"
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                disabled={isLoading}
-                                rows={3}
-                                className="w-full px-4 py-3 border-2 border-default-200 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors resize-none disabled:opacity-50"
-                            />
-                        </div>
-                    </div>
-                </ModalBody>
-                <ModalFooter className="pt-2">
-                    <Button
-                        variant="light"
-                        radius="full"
-                        onPress={handleClose}
-                        isDisabled={isLoading}
-                    >
-                        キャンセル
-                    </Button>
-                    <Button
-                        color="primary"
-                        radius="full"
-                        onPress={handleCreate}
-                        isLoading={isLoading}
-                        startContent={!isLoading && <Icon icon="mdi:plus" />}
-                    >
-                        作成
-                    </Button>
-                </ModalFooter>
-            </ModalContent>
+            <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-2">
+                    <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)]">
+                        タイトル <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                        placeholder="例: 封解公儀の新年挨拶"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        disabled={isLoading}
+                        size="large"
+                        className="rounded-xl"
+                    />
+                </div>
+                <div className="flex flex-col gap-2">
+                    <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)]">
+                        説明（任意）
+                    </label>
+                    <Input.TextArea
+                        placeholder="このプロジェクトの内容や目的"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        disabled={isLoading}
+                        rows={3}
+                        className="rounded-xl"
+                    />
+                </div>
+            </div>
         </Modal>
     );
 }

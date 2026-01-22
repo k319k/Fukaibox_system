@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, CardHeader } from "@heroui/react";
+import { Card } from "antd";
 import Link from "next/link";
 import { Play } from "lucide-react";
 import { formatRelativeTime } from "@/lib/youtube";
@@ -32,14 +32,17 @@ export function ShortsGrid({ shorts }: ShortsGridProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
         >
-            <Card className="bg-[var(--md-sys-color-surface-container-low)] rounded-[28px] border-none shadow-none">
-                <CardHeader className="p-8 pb-0 flex-col items-start">
+            <Card
+                className="bg-[var(--md-sys-color-surface-container-low)] rounded-[28px] border-none shadow-none"
+                styles={{ body: { padding: 0 } }}
+            >
+                <div className="p-8 pb-0">
                     <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3 text-[var(--md-sys-color-on-surface)]">
                         <Play className="w-6 h-6 fill-current text-[#73342b]" />
                         最新のShorts
                     </h2>
-                </CardHeader>
-                <CardBody className="p-8">
+                </div>
+                <div className="p-8">
                     {shorts.length > 0 ? (
                         <motion.div
                             className="grid grid-cols-2 md:grid-cols-4 gap-6"
@@ -84,7 +87,7 @@ export function ShortsGrid({ shorts }: ShortsGridProps) {
                             <p className="text-base font-normal leading-relaxed">Shorts動画を取得できませんでした</p>
                         </div>
                     )}
-                </CardBody>
+                </div>
             </Card>
         </motion.div>
     );

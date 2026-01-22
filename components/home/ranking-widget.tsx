@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, CardHeader, Progress, Avatar, Skeleton } from "@heroui/react";
+import { Card, Progress, Avatar, Skeleton } from "antd";
 import { Trophy, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -58,22 +58,25 @@ export function RankingWidget() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.2 }}
         >
-            <Card className="bg-[var(--md-sys-color-surface-container-low)] rounded-[28px] border-none shadow-none">
-                <CardHeader className="p-8 pb-4 flex-col items-start">
+            <Card
+                className="bg-[var(--md-sys-color-surface-container-low)] rounded-[28px] border-none shadow-none"
+                styles={{ body: { padding: "0 32px 32px 32px" } }}
+            >
+                <div className="p-8 pb-4">
                     <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3 text-[var(--md-sys-color-on-surface)]">
                         <Trophy className="w-5 h-5 text-[#564419]" />
                         貢献度ランキング
                     </h2>
-                </CardHeader>
-                <CardBody className="px-8 pb-8">
+                </div>
+                <div>
                     {loading ? (
                         <div className="space-y-4">
                             {[1, 2, 3, 4, 5].map((i) => (
                                 <div key={i} className="flex items-center gap-5 p-4">
-                                    <Skeleton className="w-10 h-10 rounded-[12px]" />
+                                    <Skeleton.Avatar active size={40} shape="square" style={{ borderRadius: 12 }} />
                                     <div className="flex-1 space-y-2">
-                                        <Skeleton className="h-4 w-24 rounded-full" />
-                                        <Skeleton className="h-2 w-full rounded-full" />
+                                        <Skeleton.Input active size="small" style={{ width: 96 }} />
+                                        <Skeleton.Input active size="small" style={{ width: "100%", height: 8 }} />
                                     </div>
                                 </div>
                             ))}
@@ -100,13 +103,12 @@ export function RankingWidget() {
                                             {getRankIcon(user.rank) || user.rank}
                                         </div>
                                         <Avatar
-                                            size="sm"
-                                            name={displayName[0]}
+                                            size="small"
                                             src={user.image || undefined}
-                                            classNames={{
-                                                base: "shrink-0 ring-2 ring-[var(--md-sys-color-outline-variant)]/30 rounded-[12px]",
-                                            }}
-                                        />
+                                            className="shrink-0 ring-2 ring-[var(--md-sys-color-outline-variant)]/30 rounded-[12px]"
+                                        >
+                                            {displayName[0]}
+                                        </Avatar>
                                         <div className="flex-1 space-y-2">
                                             <div className="flex items-center justify-between">
                                                 <p className="text-lg font-medium tracking-normal group-hover:text-[#73342b] transition-colors text-[var(--md-sys-color-on-surface)]">
@@ -117,12 +119,11 @@ export function RankingWidget() {
                                                 </span>
                                             </div>
                                             <Progress
-                                                size="sm"
-                                                value={(user.points / maxPoints) * 100}
-                                                classNames={{
-                                                    track: "bg-[var(--md-sys-color-surface-container-highest)]",
-                                                    indicator: "bg-[#73342b]"
-                                                }}
+                                                percent={(user.points / maxPoints) * 100}
+                                                showInfo={false}
+                                                size="small"
+                                                strokeColor="#73342b"
+                                                trailColor="var(--md-sys-color-surface-container-highest)"
                                             />
                                         </div>
                                     </motion.div>
@@ -134,7 +135,7 @@ export function RankingWidget() {
                             <p className="text-base font-normal">ランキングデータがありません</p>
                         </div>
                     )}
-                </CardBody>
+                </div>
             </Card>
         </motion.div>
     );

@@ -1,14 +1,7 @@
 "use client";
 
-import {
-    Modal,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    Button,
-    Divider
-} from "@heroui/react";
+import { Modal, Button, Divider } from "antd";
+import { CopyOutlined } from "@ant-design/icons";
 import { Icon } from "@iconify/react";
 import { Section } from "@/types/kitchen";
 import CharacterCountDisplay from "./section/CharacterCountDisplay";
@@ -20,16 +13,9 @@ interface ScriptViewerModalProps {
     projectTitle: string;
 }
 
-/**
- * 本文のみ（画像指示なし）の原稿を表示するモーダル
- */
 export default function ScriptViewerModal({
-    isOpen,
-    onClose,
-    sections,
-    projectTitle
+    isOpen, onClose, sections, projectTitle
 }: ScriptViewerModalProps) {
-    // 全セクションの本文を結合
     const fullScript = sections
         .map((s) => s.content || "")
         .filter((c) => c.trim())
@@ -47,50 +33,40 @@ export default function ScriptViewerModal({
 
     return (
         <Modal
-            isOpen={isOpen}
-            onClose={onClose}
-            size="3xl"
-            scrollBehavior="inside"
-            classNames={{
-                base: "rounded-[28px]",
-                header: "border-b border-[var(--md-sys-color-outline-variant)]/30",
-                footer: "border-t border-[var(--md-sys-color-outline-variant)]/30"
-            }}
-        >
-            <ModalContent>
-                <ModalHeader className="flex flex-col gap-1">
+            open={isOpen}
+            onCancel={onClose}
+            title={
+                <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                        <Icon icon="mdi:script-text-outline" className="text-xl text-primary" />
+                        <Icon icon="mdi:script-text-outline" className="text-xl text-[#73342b]" />
                         <span>{projectTitle} - 原稿</span>
                     </div>
-                    <p className="text-xs text-foreground-muted font-normal">
+                    <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] font-normal">
                         本文のみ（画像指示・セクション分けなし）
                     </p>
-                </ModalHeader>
-                <ModalBody className="py-6">
-                    <CharacterCountDisplay text={fullScript} />
-                    <Divider className="my-4" />
-                    <div
-                        className="whitespace-pre-wrap text-foreground leading-relaxed bg-default-50 p-4 rounded-lg"
-                        style={{ fontSize: "14px" }}
-                    >
-                        {fullScript || "原稿がありません"}
-                    </div>
-                </ModalBody>
-                <ModalFooter>
-                    <Button
-                        color="default"
-                        variant="flat"
-                        onPress={handleCopy}
-                        startContent={<Icon icon="mdi:content-copy" />}
-                    >
-                        コピー
-                    </Button>
-                    <Button color="primary" onPress={onClose}>
-                        閉じる
-                    </Button>
-                </ModalFooter>
-            </ModalContent>
+                </div>
+            }
+            footer={[
+                <Button key="copy" icon={<CopyOutlined />} onClick={handleCopy}>
+                    コピー
+                </Button>,
+                <Button key="close" type="primary" onClick={onClose} className="bg-[#73342b]">
+                    閉じる
+                </Button>,
+            ]}
+            width={800}
+            className="rounded-[28px]"
+        >
+            <div className="py-6">
+                <CharacterCountDisplay text={fullScript} />
+                <Divider className="my-4" />
+                <div
+                    className="whitespace-pre-wrap text-[var(--md-sys-color-on-surface)] leading-relaxed bg-[var(--md-sys-color-surface-container)] p-4 rounded-lg"
+                    style={{ fontSize: "14px" }}
+                >
+                    {fullScript || "原稿がありません"}
+                </div>
+            </div>
         </Modal>
     );
 }

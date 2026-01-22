@@ -29,19 +29,26 @@
 
 ### UIライブラリ
 
-- **コンポーネント**: HeroUI 2.8.7
-- **スタイリング**: Tailwind CSS 4
-- **アニメーション**: Framer Motion 12.25.0
+- **コンポーネント**: Ant Design v6
+- **スタイリング**: Tailwind CSS
+- **アニメーション**: Motion
 
 ### データベース
 
-- **メインDB**: Turso (libSQL) - ユーザー、料理、百科事典、Toolsコード
-- **ORM**: Drizzle ORM 0.45.1
-- **認証**: better-auth 1.4.10
+- **メインDB**: Turso (libSQL) - ユーザー、料理、百科事典データ
+- **Tools用DB**: Supabase - 各Toolsアプリケーションの実行時データ
+- **ORM**: Drizzle ORM
+- **認証**: BetterAuth
+
+### 状態管理・データフェッチ
+
+- **状態管理**: Zustand - グローバル状態管理
+- **データフェッチ**: TanStack Query - サーバー状態管理
+- **フォーム**: React Hook Form - フォーム状態管理
 
 ### 外部サービス
 
-- **AI**: OpenRouter (GLM-4.6V-Flash, Qwen3)
+- **AI**: Vercel AI SDK + OpenRouter (GLM-4.6V-Flash, Qwen3)
 - **認証**: Discord OAuth
 - **ストレージ**: Cloudflare R2
 
@@ -118,10 +125,13 @@ Vercelダッシュボードで以下の環境変数を設定：
 
 1. **TypeScript優先**: すべての新しいコードはTypeScriptで書く
 2. **Zod使用**: すべての新しいコードはZodで型定義する
-3. **HeroUIコンポーネント使用**: UIにはHeroUIコンポーネントを優先的に使用
+3. **Ant Designコンポーネント使用**: UIにはAnt Design v6コンポーネントを優先的に使用
 4. **App Router準拠**: ファイルベースルーティング、Server Components優先
 5. **Tailwind CSS**: スタイリングはTailwind CSS classesを使用
-6. **ローカル開発サーバー禁止**: ローカル開発サーバーは禁止。Vercelのみ。
+6. **Zustand**: グローバル状態管理にはZustandを使用
+7. **TanStack Query**: サーバーデータフェッチにはTanStack Queryを使用
+8. **React Hook Form**: フォーム処理にはReact Hook Formを使用
+9. **ローカル開発サーバー禁止**: ローカル開発サーバーは禁止。Vercelのみ。
 
 ### データベース操作
 
@@ -145,17 +155,15 @@ if (!session) {
 }
 ```
 
-### HeroUI使用例
+### Ant Design使用例
 
 ```tsx
-import { Button, Card, CardBody } from "@heroui/react";
+import { Button, Card } from "antd";
 
 export default function MyComponent() {
   return (
     <Card>
-      <CardBody>
-        <Button color="primary">Click me</Button>
-      </CardBody>
+      <Button type="primary">Click me</Button>
     </Card>
   );
 }
@@ -164,6 +172,9 @@ export default function MyComponent() {
 ## 重要な注意事項
 
 ### コードを更新する際、毎回以下の手順を実行すること
+
+0. システムプロンプトの確認
+   - システムプロンプトを確認して、エラーを吐かないようにしてください。
 
 1. コードを更新する
    - 何回も何回もできるまで終わるまで完璧になるまで複数回以上PDCA回してください。途中で勝手にスタックしたり止まったらしないでください。
@@ -189,8 +200,8 @@ export default function MyComponent() {
 
 4. **標準HTMLの原則使用禁止**
    - `<input>`, `<textarea>`, `<button>` などの標準HTMLは使用禁止
-   - 代わりにHeroUIの `Input`, `Textarea`, `Button` 等を使用すること
-   - モーダル、カード、チップ等もすべてHeroUIコンポーネントを使用
+   - 代わりにAnt Designの `Input`, `Input.TextArea`, `Button` 等を使用すること
+   - モーダル、カード、チップ等もすべてAnt Designコンポーネントを使用
    - 標準HTMLが必要になったらユーザーに許可をもらうこと
 
 5. **200行以上のコード禁止**
@@ -214,7 +225,12 @@ export default function MyComponent() {
    - `any`型の使用を避ける
 
 5. **UIを統一**
-   - Design definition documentを厳守し、HeroUIコンポーネントを使用すること。
+   - Design definition documentを厳守し、Ant Designコンポーネントを使用すること。
+
+6. **状態管理の適切な使い分け**
+   - グローバル状態: Zustand
+   - サーバーデータ: TanStack Query
+   - フォーム: React Hook Form
 
 ## トラブルシューティング
 
@@ -239,9 +255,15 @@ npm run build
 ## 参考リソース
 
 - [Next.js 16 ドキュメント](https://nextjs.org/docs)
-- [HeroUI ドキュメント](https://heroui.com)
+- [Ant Design v6 ドキュメント](https://ant.design/)
+- [Tailwind CSS ドキュメント](https://tailwindcss.com/docs)
 - [Drizzle ORM ドキュメント](https://orm.drizzle.team)
-- [better-auth ドキュメント](https://www.better-auth.com)
+- [BetterAuth ドキュメント](https://www.better-auth.com)
+- [Zustand ドキュメント](https://zustand-demo.pmnd.rs/)
+- [TanStack Query ドキュメント](https://tanstack.com/query/latest)
+- [React Hook Form ドキュメント](https://react-hook-form.com/)
+- [Vercel AI SDK ドキュメント](https://sdk.vercel.ai/docs)
+- [Motion ドキュメント](https://motion.dev/)
 - [Vercel ドキュメント](https://vercel.com/docs)
 
 ## 履歴

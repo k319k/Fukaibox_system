@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, CardBody, CardHeader, Input } from "@heroui/react";
+import { Button, Card, Input, Alert } from "antd";
 import { useState } from "react";
 import { registerGuest } from "@/app/actions/auth";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,6 @@ export default function RegisterPage() {
     const handleRegister = async () => {
         setError("");
 
-        // バリデーション
         if (!name || !email || !password) {
             setError("全ての項目を入力してください");
             return;
@@ -40,7 +39,6 @@ export default function RegisterPage() {
             const result = await registerGuest(email, password, name);
 
             if (result.success) {
-                // 登録成功、ログインページへリダイレクト
                 router.push("/login?registered=true");
             } else {
                 setError(result.error || "登録に失敗しました");
@@ -54,94 +52,94 @@ export default function RegisterPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
-            {/* 背景装飾 */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl" />
-                <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-secondary/10 to-transparent rounded-full blur-3xl" />
+                <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-[#ffdad5]/30 to-transparent rounded-full blur-3xl" />
+                <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-[#fbe7a6]/20 to-transparent rounded-full blur-3xl" />
             </div>
 
             <Card className="w-full max-w-md bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
-                <CardHeader className="flex flex-col items-center pb-0 pt-8">
+                <div className="flex flex-col items-center pb-4 pt-8">
                     <div className="w-20 h-20 bg-[#73342b] rounded-[20px] flex items-center justify-center mb-4 shadow-lg">
                         <span className="text-3xl font-bold text-[#ffdad5]">封</span>
                     </div>
-                    <h1 className="text-2xl font-bold text-foreground">新規登録</h1>
-                    <p className="text-foreground-muted text-sm mt-1">
+                    <h1 className="text-2xl font-bold text-[var(--md-sys-color-on-surface)]">新規登録</h1>
+                    <p className="text-[var(--md-sys-color-on-surface-variant)] text-sm mt-1">
                         封解Boxへようこそ
                     </p>
-                </CardHeader>
+                </div>
 
-                <CardBody className="gap-4 px-6 pb-8">
+                <div className="space-y-4 px-6 pb-8">
                     {error && (
-                        <div className="bg-danger/10 rounded-[16px] p-3 text-danger text-sm border-none">
-                            {error}
-                        </div>
+                        <Alert message={error} type="error" showIcon className="rounded-[16px]" />
                     )}
 
-                    <Input
-                        label="名前"
-                        variant="flat"
-                        value={name}
-                        onValueChange={setName}
-                        isDisabled={isLoading}
-                        isRequired
-                        classNames={{ inputWrapper: "bg-content2/50 rounded-[16px] border-none shadow-none !opacity-100" }}
-                    />
+                    <div>
+                        <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">名前 <span className="text-red-500">*</span></label>
+                        <Input
+                            size="large"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            disabled={isLoading}
+                            className="rounded-[16px]"
+                        />
+                    </div>
 
-                    <Input
-                        label="メールアドレス"
-                        type="email"
-                        variant="flat"
-                        value={email}
-                        onValueChange={setEmail}
-                        isDisabled={isLoading}
-                        isRequired
-                        classNames={{ inputWrapper: "bg-content2/50 rounded-[16px] border-none shadow-none !opacity-100" }}
-                    />
+                    <div>
+                        <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">メールアドレス <span className="text-red-500">*</span></label>
+                        <Input
+                            type="email"
+                            size="large"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            disabled={isLoading}
+                            className="rounded-[16px]"
+                        />
+                    </div>
 
-                    <Input
-                        label="パスワード"
-                        type="password"
-                        variant="flat"
-                        value={password}
-                        onValueChange={setPassword}
-                        isDisabled={isLoading}
-                        isRequired
-                        description="8文字以上"
-                        classNames={{ inputWrapper: "bg-content2/50 rounded-[16px] border-none shadow-none !opacity-100" }}
-                    />
+                    <div>
+                        <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">パスワード <span className="text-red-500">*</span></label>
+                        <Input.Password
+                            size="large"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            disabled={isLoading}
+                            className="rounded-[16px]"
+                        />
+                        <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mt-1">8文字以上</p>
+                    </div>
 
-                    <Input
-                        label="パスワード（確認）"
-                        type="password"
-                        variant="flat"
-                        value={confirmPassword}
-                        onValueChange={setConfirmPassword}
-                        isDisabled={isLoading}
-                        isRequired
-                        classNames={{ inputWrapper: "bg-content2/50 rounded-[16px] border-none shadow-none !opacity-100" }}
-                    />
+                    <div>
+                        <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">パスワード（確認） <span className="text-red-500">*</span></label>
+                        <Input.Password
+                            size="large"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            disabled={isLoading}
+                            className="rounded-[16px]"
+                        />
+                    </div>
 
                     <Button
-                        color="primary"
-                        size="lg"
-                        className="w-full mt-2 rounded-full flex items-center justify-center text-[#ffdad5] border-none"
-                        onPress={handleRegister}
-                        isLoading={isLoading}
+                        type="primary"
+                        size="large"
+                        block
+                        className="mt-2 rounded-full bg-[#73342b] border-none"
+                        onClick={handleRegister}
+                        loading={isLoading}
                     >
                         登録
                     </Button>
 
                     <div className="text-center mt-2">
-                        <Link href="/login" className="text-sm text-primary hover:underline">
+                        <Link href="/login" className="text-sm text-[#73342b] hover:underline">
                             既にアカウントをお持ちの方はこちら
                         </Link>
                     </div>
 
-                    <p className="text-xs text-foreground-muted text-center mt-4">
+                    <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] text-center mt-4">
                         登録することで、利用規約とプライバシーポリシーに同意したものとみなされます。
                     </p>
-                </CardBody>
+                </div>
             </Card>
         </div>
     );

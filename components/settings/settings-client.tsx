@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, CardHeader, Avatar, Button, Divider, Chip, Switch } from "@heroui/react";
+import { Card, Avatar, Button, Divider, Tag, Switch } from "antd";
 import { Settings, User, Link2, Bell, LogOut, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { signOut } from "@/lib/auth-client";
@@ -26,75 +26,45 @@ const roleLabels: Record<string, string> = {
     guest: "ゲスト",
 };
 
-const roleBadgeClasses: Record<string, string> = {
-    gicho: "bg-[#ffdad5] text-[#73342b]",
-    giin: "bg-[#d7f0cb] text-[#10200a]",
-    meiyo_giin: "bg-[#fbe7a6] text-[#564419]",
-    guest: "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]",
+const roleBadgeClasses: Record<string, { bg: string; text: string }> = {
+    gicho: { bg: "#ffdad5", text: "#73342b" },
+    giin: { bg: "#d7f0cb", text: "#10200a" },
+    meiyo_giin: { bg: "#fbe7a6", text: "#564419" },
+    guest: { bg: "var(--md-sys-color-surface-container-high)", text: "var(--md-sys-color-on-surface-variant)" },
 };
 
 export function SettingsClient({ user }: SettingsClientProps) {
     const roleLabel = roleLabels[user.role] || "ゲスト";
-    const roleBadgeClass = roleBadgeClasses[user.role] || roleBadgeClasses.guest;
+    const roleBadge = roleBadgeClasses[user.role] || roleBadgeClasses.guest;
     const displayName = user.discordUsername || user.name;
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="max-w-3xl mx-auto space-y-8"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="max-w-3xl mx-auto space-y-8">
             {/* Header */}
             <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-[#ffdad5] rounded-[16px] flex items-center justify-center">
                     <Settings className="w-6 h-6 text-[#73342b]" />
                 </div>
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
-                        設定
-                    </h1>
-                    <p className="text-[var(--md-sys-color-on-surface-variant)]">
-                        アカウントと環境設定
-                    </p>
+                    <h1 className="text-3xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">設定</h1>
+                    <p className="text-[var(--md-sys-color-on-surface-variant)]">アカウントと環境設定</p>
                 </div>
             </div>
 
             {/* Profile Section */}
             <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
-                <CardHeader className="p-8 pb-4 flex-row items-center gap-4">
+                <div className="p-8 pb-4 flex items-center gap-4">
                     <User className="w-5 h-5 text-[#73342b]" />
-                    <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
-                        プロフィール
-                    </h2>
-                </CardHeader>
-                <CardBody className="px-8 pb-8 space-y-6">
+                    <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">プロフィール</h2>
+                </div>
+                <div className="px-8 pb-8 space-y-6">
                     <div className="flex items-center gap-6">
-                        <Avatar
-                            size="lg"
-                            name={displayName[0]}
-                            src={user.image || undefined}
-                            classNames={{
-                                base: "ring-4 ring-[var(--md-sys-color-outline-variant)]/30 rounded-[20px] w-20 h-20",
-                            }}
-                        />
+                        <Avatar size={80} src={user.image || undefined} className="ring-4 ring-[var(--md-sys-color-outline-variant)]/30 rounded-[20px]">{displayName[0]}</Avatar>
                         <div className="flex-1 space-y-2">
-                            <p className="text-2xl font-bold text-[var(--md-sys-color-on-surface)]">
-                                {displayName}
-                            </p>
+                            <p className="text-2xl font-bold text-[var(--md-sys-color-on-surface)]">{displayName}</p>
                             <div className="flex items-center gap-3">
-                                <Chip
-                                    size="sm"
-                                    variant="flat"
-                                    className={`rounded-full px-3 font-medium ${roleBadgeClass}`}
-                                >
-                                    {roleLabel}
-                                </Chip>
-                                {user.discordUsername && (
-                                    <span className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
-                                        @{user.discordUsername}
-                                    </span>
-                                )}
+                                <Tag className="rounded-full px-3 font-medium border-none" style={{ backgroundColor: roleBadge.bg, color: roleBadge.text }}>{roleLabel}</Tag>
+                                {user.discordUsername && (<span className="text-sm text-[var(--md-sys-color-on-surface-variant)]">@{user.discordUsername}</span>)}
                             </div>
                         </div>
                     </div>
@@ -109,18 +79,16 @@ export function SettingsClient({ user }: SettingsClientProps) {
                             <span className="text-[var(--md-sys-color-on-surface)] font-mono text-sm">{user.id.slice(0, 8)}...</span>
                         </div>
                     </div>
-                </CardBody>
+                </div>
             </Card>
 
             {/* Discord Connection */}
             <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
-                <CardHeader className="p-8 pb-4 flex-row items-center gap-4">
+                <div className="p-8 pb-4 flex items-center gap-4">
                     <Link2 className="w-5 h-5 text-[#73342b]" />
-                    <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
-                        連携サービス
-                    </h2>
-                </CardHeader>
-                <CardBody className="px-8 pb-8">
+                    <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">連携サービス</h2>
+                </div>
+                <div className="px-8 pb-8">
                     <div className="flex items-center justify-between p-4 rounded-[20px] bg-[var(--md-sys-color-surface-container-high)]">
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 bg-[#5865F2] rounded-full flex items-center justify-center">
@@ -130,93 +98,60 @@ export function SettingsClient({ user }: SettingsClientProps) {
                             </div>
                             <div>
                                 <p className="font-medium text-[var(--md-sys-color-on-surface)]">Discord</p>
-                                {user.discordId ? (
-                                    <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
-                                        連携済み
-                                    </p>
-                                ) : (
-                                    <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
-                                        未連携
-                                    </p>
-                                )}
+                                <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">{user.discordId ? "連携済み" : "未連携"}</p>
                             </div>
                         </div>
-                        <Chip
-                            size="sm"
-                            variant="flat"
-                            className={`rounded-full px-3 ${user.discordId ? "bg-[#d7f0cb] text-[#10200a]" : "bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface-variant)]"}`}
-                        >
-                            {user.discordId ? "接続済み" : "未接続"}
-                        </Chip>
+                        <Tag className={`rounded-full px-3 border-none ${user.discordId ? "bg-[#d7f0cb] text-[#10200a]" : ""}`}>{user.discordId ? "接続済み" : "未接続"}</Tag>
                     </div>
-                </CardBody>
+                </div>
             </Card>
 
             {/* Notification Settings */}
             <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
-                <CardHeader className="p-8 pb-4 flex-row items-center gap-4">
+                <div className="p-8 pb-4 flex items-center gap-4">
                     <Bell className="w-5 h-5 text-[#73342b]" />
-                    <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
-                        通知設定
-                    </h2>
-                </CardHeader>
-                <CardBody className="px-8 pb-8 space-y-4">
+                    <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">通知設定</h2>
+                </div>
+                <div className="px-8 pb-8 space-y-4">
                     <div className="flex items-center justify-between p-4 rounded-[20px] hover:bg-[var(--md-sys-color-surface-container-high)] transition-colors">
                         <div>
                             <p className="font-medium text-[var(--md-sys-color-on-surface)]">配信通知</p>
                             <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">ライブ配信が開始されたときに通知</p>
                         </div>
-                        <Switch
-                            defaultSelected
-                            color="primary"
-                            classNames={{
-                                wrapper: "group-data-[selected=true]:bg-[#73342b]",
-                            }}
-                            isDisabled
-                        />
+                        <Switch defaultChecked disabled />
                     </div>
                     <div className="flex items-center justify-between p-4 rounded-[20px] hover:bg-[var(--md-sys-color-surface-container-high)] transition-colors">
                         <div>
                             <p className="font-medium text-[var(--md-sys-color-on-surface)]">料理進捗通知</p>
                             <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">料理プロジェクトの状態が変わったときに通知</p>
                         </div>
-                        <Switch
-                            defaultSelected
-                            color="primary"
-                            classNames={{
-                                wrapper: "group-data-[selected=true]:bg-[#73342b]",
-                            }}
-                            isDisabled
-                        />
+                        <Switch defaultChecked disabled />
                     </div>
-                    <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] text-center pt-2">
-                        通知機能は現在開発中です
-                    </p>
-                </CardBody>
+                    <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] text-center pt-2">通知機能は現在開発中です</p>
+                </div>
             </Card>
 
             {/* Account Actions */}
             <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
-                <CardHeader className="p-8 pb-4 flex-row items-center gap-4">
+                <div className="p-8 pb-4 flex items-center gap-4">
                     <Shield className="w-5 h-5 text-[#73342b]" />
-                    <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
-                        アカウント
-                    </h2>
-                </CardHeader>
-                <CardBody className="px-8 pb-8">
+                    <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">アカウント</h2>
+                </div>
+                <div className="px-8 pb-8">
                     <motion.div whileTap={{ scale: 0.95 }}>
                         <Button
-                            color="danger"
-                            variant="flat"
-                            radius="full"
-                            className="w-full h-14 font-bold flex items-center justify-center gap-2"
-                            startContent={<LogOut className="w-5 h-5" />}
-                            onPress={() => signOut()}
+                            danger
+                            size="large"
+                            shape="round"
+                            block
+                            className="h-14 font-bold"
+                            icon={<LogOut className="w-5 h-5" />}
+                            onClick={() => signOut()}
                         >
                             ログアウト
                         </Button>
                     </motion.div>
-                </CardBody>
+                </div>
             </Card>
         </motion.div>
     );

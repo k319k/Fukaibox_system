@@ -1,7 +1,7 @@
 "use client";
 
-import { useDisclosure, Button } from "@heroui/react";
-import { Icon } from "@iconify/react";
+import { Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import ProjectList from "./list/ProjectList";
@@ -15,8 +15,8 @@ interface KitchenListClientProps {
 }
 
 export default function KitchenListClient({ projects: initialProjects, userRole }: KitchenListClientProps) {
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+    const [isOpen, setIsOpen] = useState(false);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [projects, setProjects] = useState(initialProjects);
     const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
 
@@ -24,7 +24,7 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
 
     const handleDeleteClick = (project: Project) => {
         setDeleteTarget(project);
-        onDeleteOpen();
+        setIsDeleteOpen(true);
     };
 
     const handleProjectDeleted = (deletedId: string) => {
@@ -46,9 +46,11 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                 {isGicho && (
                     <motion.div whileTap={{ scale: 0.95 }}>
                         <Button
-                            className="bg-[#ffdad5] text-[#73342b] font-semibold rounded-full"
-                            startContent={<Icon icon="mdi:plus" className="text-xl" />}
-                            onPress={onOpen}
+                            type="primary"
+                            shape="round"
+                            icon={<PlusOutlined />}
+                            onClick={() => setIsOpen(true)}
+                            className="bg-[#ffdad5] text-[#73342b] font-semibold border-none hover:bg-[#ffdad5]/80"
                         >
                             新しい料理を作る
                         </Button>
@@ -60,11 +62,11 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                 projects={projects}
                 isGicho={isGicho}
                 onDeleteClick={handleDeleteClick}
-                onCreateClick={onOpen}
+                onCreateClick={() => setIsOpen(true)}
             />
 
-            <CreateProjectModal isOpen={isOpen} onClose={onClose} />
-            <DeleteProjectModal isOpen={isDeleteOpen} onClose={onDeleteClose} project={deleteTarget} onProjectDeleted={handleProjectDeleted} />
+            <CreateProjectModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+            <DeleteProjectModal isOpen={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} project={deleteTarget} onProjectDeleted={handleProjectDeleted} />
         </motion.div>
     );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, Button } from "@heroui/react";
+import { Card, Button } from "antd";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import { Project } from "@/types/kitchen";
@@ -31,20 +31,21 @@ export default function ProjectList({ projects, isGicho, onDeleteClick, onCreate
                 animate={{ opacity: 1, y: 0 }}
             >
                 <Card className="bg-[var(--md-sys-color-surface-container-lowest)] border-none shadow-none rounded-[28px]">
-                    <CardBody className="text-center py-12">
+                    <div className="text-center py-12">
                         <Icon icon="mdi:pot-steam-outline" className="text-6xl text-[#73342b] mx-auto mb-4" />
                         <p className="text-[var(--md-sys-color-on-surface-variant)]">まだプロジェクトがありません</p>
                         {isGicho && (
                             <motion.div whileTap={{ scale: 0.95 }} className="mt-4 inline-block">
                                 <Button
-                                    className="rounded-full bg-[#ffdad5] text-[#73342b] font-semibold"
-                                    onPress={onCreateClick}
+                                    shape="round"
+                                    onClick={onCreateClick}
+                                    className="bg-[#ffdad5] text-[#73342b] font-semibold border-none"
                                 >
                                     最初の料理を作る
                                 </Button>
                             </motion.div>
                         )}
-                    </CardBody>
+                    </div>
                 </Card>
             </motion.div>
         );

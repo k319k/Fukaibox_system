@@ -1,7 +1,7 @@
 "use client";
 
-import { Modal, ModalContent, ModalBody, Button } from "@heroui/react";
-import { Icon } from "@iconify/react";
+import { Modal, Button } from "antd";
+import { LeftOutlined, RightOutlined, CloseOutlined } from "@ant-design/icons";
 import { UploadedImage } from "@/types/kitchen";
 
 interface LightboxProps {
@@ -14,12 +14,7 @@ interface LightboxProps {
 }
 
 export default function Lightbox({
-    isOpen,
-    onClose,
-    images,
-    currentIndex,
-    onIndexChange,
-    uploaderNames
+    isOpen, onClose, images, currentIndex, onIndexChange, uploaderNames
 }: LightboxProps) {
     if (!isOpen || images.length === 0) return null;
 
@@ -35,70 +30,69 @@ export default function Lightbox({
 
     return (
         <Modal
-            isOpen={isOpen}
-            onClose={onClose}
-            size="full"
-            classNames={{
-                base: "bg-black/95",
-                body: "p-0",
+            open={isOpen}
+            onCancel={onClose}
+            footer={null}
+            width="100%"
+            centered
+            closable={false}
+            className="lightbox-modal"
+            styles={{
+                mask: { backgroundColor: "rgba(0,0,0,0.95)" },
+                content: { backgroundColor: "transparent", boxShadow: "none" },
             }}
         >
-            <ModalContent>
-                <ModalBody className="flex items-center justify-center relative w-full h-full">
-                    {/* 前へボタン */}
-                    <Button
-                        isIconOnly
-                        variant="flat"
-                        radius="full"
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-white/20 hover:bg-white/40"
-                        onPress={goToPrevImage}
-                    >
-                        <Icon icon="mdi:chevron-left" className="text-2xl text-[#f5f5f5]" />
-                    </Button>
+            <div className="flex items-center justify-center relative w-full h-[90vh]">
+                {/* 前へボタン */}
+                <Button
+                    type="text"
+                    shape="circle"
+                    size="large"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-white/20 hover:bg-white/40 border-none"
+                    onClick={goToPrevImage}
+                    icon={<LeftOutlined className="text-[#f5f5f5]" />}
+                />
 
-                    {/* 画像 */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                        src={currentImage?.imageUrl}
-                        alt="拡大画像"
-                        className="max-h-[90vh] max-w-[90vw] object-contain select-none"
-                    />
+                {/* 画像 */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                    src={currentImage?.imageUrl}
+                    alt="拡大画像"
+                    className="max-h-[90vh] max-w-[90vw] object-contain select-none"
+                />
 
-                    {/* 次へボタン */}
-                    <Button
-                        isIconOnly
-                        variant="flat"
-                        radius="full"
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-white/20 hover:bg-white/40"
-                        onPress={goToNextImage}
-                    >
-                        <Icon icon="mdi:chevron-right" className="text-2xl text-[#f5f5f5]" />
-                    </Button>
+                {/* 次へボタン */}
+                <Button
+                    type="text"
+                    shape="circle"
+                    size="large"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-white/20 hover:bg-white/40 border-none"
+                    onClick={goToNextImage}
+                    icon={<RightOutlined className="text-[#f5f5f5]" />}
+                />
 
-                    {/* 閉じるボタン */}
-                    <Button
-                        isIconOnly
-                        variant="flat"
-                        radius="full"
-                        className="absolute top-4 right-4 z-50 bg-white/20 hover:bg-white/40"
-                        onPress={onClose}
-                    >
-                        <Icon icon="mdi:close" className="text-xl text-[#f5f5f5]" />
-                    </Button>
+                {/* 閉じるボタン */}
+                <Button
+                    type="text"
+                    shape="circle"
+                    size="large"
+                    className="absolute top-4 right-4 z-50 bg-white/20 hover:bg-white/40 border-none"
+                    onClick={onClose}
+                    icon={<CloseOutlined className="text-[#f5f5f5]" />}
+                />
 
-                    {/* 画像情報 */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 px-4 py-2 rounded-lg z-50">
-                        <p className="text-[#f5f5f5] text-sm">
-                            {currentIndex + 1} / {images.length}
-                            {currentImage?.uploadedBy && uploaderNames[currentImage.uploadedBy] && (
-                                <span className="ml-2 text-[#f5f5f5]/70">
-                                    by {uploaderNames[currentImage.uploadedBy]}
-                                </span>
-                            )}
-                        </p>
-                    </div>
-                </ModalBody>
-            </ModalContent>
+                {/* 画像情報 */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 px-4 py-2 rounded-lg z-50">
+                    <p className="text-[#f5f5f5] text-sm">
+                        {currentIndex + 1} / {images.length}
+                        {currentImage?.uploadedBy && uploaderNames[currentImage.uploadedBy] && (
+                            <span className="ml-2 text-[#f5f5f5]/70">
+                                by {uploaderNames[currentImage.uploadedBy]}
+                            </span>
+                        )}
+                    </p>
+                </div>
+            </div>
         </Modal>
     );
 }

@@ -15,13 +15,18 @@
 | フロントエンド | Next.js 16 (App Router) | Webアプリケーション |
 | バンドラー | Turbopack | 高速ビルド |
 | ホスティング | Vercel | デプロイ・配信・Edge Functions |
-| UIライブラリ | HeroUI 2.8.7 | コンポーネントライブラリ |
-| スタイリング | Tailwind CSS 4 | ユーティリティCSS |
-| メインDB | Turso (libSQL) | ユーザー、料理、百科事典、Toolsコード保存 |
-| Tools用DB | Supabase | 各ToolsのAppが実行時に使用 |
-| ストレージ | Vercel Blob Storage | 画像アップロード・保存 |
-| 儀員点数API | Hono または FastAPI | スタンドアローンAPI |
-| AI | GLM-4.6V-Flash, Qwen3 (OpenRouter経由) | 評価・コード生成 |
+| UIライブラリ | Ant Design v6 | コンポーネントライブラリ |
+| スタイリング | Tailwind CSS | ユーティリティCSS |
+| アニメーション | Motion | UIアニメーション |
+| 状態管理 | Zustand | グローバル状態管理 |
+| データフェッチ | TanStack Query | サーバー状態管理 |
+| フォーム | React Hook Form | フォーム処理 |
+| 認証 | BetterAuth | Discord OAuth連携 |
+| メインDB | Turso (libSQL) | ユーザー、料理、百科事典データ |
+| Tools用DB | Supabase | Toolsアプリ実行時データ |
+| ORM | Drizzle ORM | DBアクセスレイヤー |
+| ストレージ | Cloudflare R2 | 画像アップロード・保存 |
+| AI | Vercel AI SDK + OpenRouter | AI評価・App生成 |
 
 ---
 

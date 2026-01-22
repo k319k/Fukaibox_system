@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, CardHeader, Chip } from "@heroui/react";
+import { Card, Tag } from "antd";
 import Link from "next/link";
 import { Tv, Play, ExternalLink } from "lucide-react";
 import { formatDate, formatRelativeTime } from "@/lib/youtube";
@@ -19,8 +19,11 @@ export function LiveStreamWidget({ latestStream }: LiveStreamWidgetProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
         >
-            <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none min-h-[440px] relative overflow-hidden">
-                <CardHeader className="p-8 pb-0 flex-col items-start">
+            <Card
+                className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none min-h-[440px] relative overflow-hidden"
+                styles={{ body: { padding: 0 } }}
+            >
+                <div className="p-8 pb-0">
                     <div className="flex justify-between items-center w-full">
                         <div>
                             <h2 className="text-2xl font-bold tracking-tight flex items-center gap-4 text-[var(--md-sys-color-on-surface)]">
@@ -32,17 +35,13 @@ export function LiveStreamWidget({ latestStream }: LiveStreamWidgetProps) {
                             </p>
                         </div>
                         {latestStream && (
-                            <Chip
-                                size="lg"
-                                variant="flat"
-                                className="text-[11px] font-bold uppercase tracking-[0.1em] rounded-full px-4 bg-[#ffdad5] text-[#73342b]"
-                            >
+                            <Tag className="text-[11px] font-bold uppercase tracking-[0.1em] rounded-full px-4 py-1 bg-[#ffdad5] text-[#73342b] border-none">
                                 {formatRelativeTime(latestStream.publishedAt)}
-                            </Chip>
+                            </Tag>
                         )}
                     </div>
-                </CardHeader>
-                <CardBody className="p-8 flex flex-col flex-grow">
+                </div>
+                <div className="p-8 flex flex-col flex-grow">
                     {latestStream ? (
                         <Link href={latestStream.videoUrl} target="_blank" className="flex flex-col flex-grow group">
                             <motion.div whileTap={{ scale: 0.98 }}>
@@ -65,7 +64,7 @@ export function LiveStreamWidget({ latestStream }: LiveStreamWidgetProps) {
                                 {latestStream.title}
                             </h3>
                             <div className="flex items-center gap-3 mt-3 text-[var(--md-sys-color-on-surface-variant)]">
-                                <Chip size="sm" variant="flat" className="rounded-full bg-[var(--md-sys-color-surface-container-high)]">配信</Chip>
+                                <Tag className="rounded-full bg-[var(--md-sys-color-surface-container-high)] border-none">配信</Tag>
                                 <span className="text-base font-normal leading-relaxed">{formatDate(latestStream.publishedAt)}</span>
                                 <ExternalLink className="w-4 h-4 ml-auto opacity-50" />
                             </div>
@@ -80,7 +79,7 @@ export function LiveStreamWidget({ latestStream }: LiveStreamWidgetProps) {
                             </p>
                         </div>
                     )}
-                </CardBody>
+                </div>
                 <div className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-[#ffdad5] to-transparent opacity-20 rounded-full blur-3xl pointer-events-none" />
             </Card>
         </motion.div>

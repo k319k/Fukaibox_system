@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Tooltip } from "@heroui/react";
+import { Button, Tooltip } from "antd";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronsLeft, ChevronsRight } from "lucide-react";
@@ -53,28 +53,31 @@ function SidebarLogo({ isCollapsed, onClose, onToggleCollapse }: {
             {/* Mobile close button */}
             {onClose && !isCollapsed && (
                 <motion.div whileTap={{ scale: 0.95 }}>
-                    <Button isIconOnly variant="light" className="md:hidden rounded-full flex items-center justify-center" onPress={onClose}>
-                        <X strokeWidth={1.5} className="w-5 h-5" />
-                    </Button>
+                    <Button
+                        type="text"
+                        shape="circle"
+                        className="md:hidden flex items-center justify-center"
+                        onClick={onClose}
+                        icon={<X strokeWidth={1.5} className="w-5 h-5" />}
+                    />
                 </motion.div>
             )}
 
             {/* Desktop collapse toggle */}
             {onToggleCollapse && (
                 <motion.div whileTap={{ scale: 0.95 }} className="hidden md:block">
-                    <Tooltip content={isCollapsed ? "展開" : "折りたたむ"} placement="right">
+                    <Tooltip title={isCollapsed ? "展開" : "折りたたむ"} placement="right">
                         <Button
-                            isIconOnly
-                            variant="light"
-                            className="rounded-full flex items-center justify-center"
-                            onPress={onToggleCollapse}
-                        >
-                            {isCollapsed ? (
+                            type="text"
+                            shape="circle"
+                            className="flex items-center justify-center"
+                            onClick={onToggleCollapse}
+                            icon={isCollapsed ? (
                                 <ChevronsRight strokeWidth={1.5} className="w-5 h-5" />
                             ) : (
                                 <ChevronsLeft strokeWidth={1.5} className="w-5 h-5" />
                             )}
-                        </Button>
+                        />
                     </Tooltip>
                 </motion.div>
             )}
@@ -105,13 +108,12 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
             {/* Mobile hamburger button */}
             <motion.div whileTap={{ scale: 0.95 }} className="md:hidden">
                 <Button
-                    isIconOnly
-                    variant="light"
-                    className="fixed top-4 left-4 z-50 rounded-full bg-[var(--md-sys-color-surface-container-lowest)] shadow-sm flex items-center justify-center"
-                    onPress={() => setIsMobileOpen(true)}
-                >
-                    <Menu strokeWidth={1.5} className="w-5 h-5" />
-                </Button>
+                    type="text"
+                    shape="circle"
+                    className="fixed top-4 left-4 z-50 bg-[var(--md-sys-color-surface-container-lowest)] shadow-sm flex items-center justify-center"
+                    onClick={() => setIsMobileOpen(true)}
+                    icon={<Menu strokeWidth={1.5} className="w-5 h-5" />}
+                />
             </motion.div>
 
             {/* Mobile backdrop */}

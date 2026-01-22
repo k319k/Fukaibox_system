@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getAllUsersWithStatus } from "@/app/actions/user";
-import { Card, CardBody, Avatar, Chip, Spinner } from "@heroui/react";
+import { Card, Avatar, Tag, Spin } from "antd";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 
@@ -16,10 +16,10 @@ interface User {
 }
 
 const roleConfig: Record<string, { bg: string; text: string; label: string }> = {
-    gicho: { bg: "bg-[#ffdad5]", text: "text-[#73342b]", label: "儀長" },
-    giin: { bg: "bg-[#d7f0cb]", text: "text-[#10200a]", label: "儀員" },
-    meiyo_giin: { bg: "bg-[#fbe7a6]", text: "text-[#564419]", label: "名誉儀員" },
-    guest: { bg: "bg-[#f3f4f6]", text: "text-[#6b7280]", label: "ゲスト" },
+    gicho: { bg: "#ffdad5", text: "#73342b", label: "儀長" },
+    giin: { bg: "#d7f0cb", text: "#10200a", label: "儀員" },
+    meiyo_giin: { bg: "#fbe7a6", text: "#564419", label: "名誉儀員" },
+    guest: { bg: "#f3f4f6", text: "#6b7280", label: "ゲスト" },
 };
 
 const containerVariants = {
@@ -55,7 +55,7 @@ export default function UsersPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-[calc(100vh-200px)]">
-                <Spinner size="lg" classNames={{ circle1: "border-b-[#73342b]", circle2: "border-b-[#ffdad5]" }} />
+                <Spin size="large" />
             </div>
         );
     }
@@ -70,9 +70,7 @@ export default function UsersPage() {
             <div className="flex items-center gap-3 mb-8">
                 <Icon icon="solar:users-group-rounded-bold" className="text-3xl text-[#73342b]" />
                 <h1 className="text-2xl font-bold text-[var(--md-sys-color-on-surface)]">儀員名簿</h1>
-                <Chip size="sm" className="rounded-full bg-[#ffdad5] text-[#73342b]">
-                    {users.length}名
-                </Chip>
+                <Tag className="rounded-full bg-[#ffdad5] text-[#73342b] border-none">{users.length}名</Tag>
             </div>
 
             <motion.div
@@ -87,25 +85,22 @@ export default function UsersPage() {
                         <motion.div key={user.id} variants={itemVariants}>
                             <motion.div whileTap={{ scale: 0.95 }}>
                                 <Card className="bg-[var(--md-sys-color-surface-container-lowest)] border-none shadow-none hover:shadow-lg transition-all duration-300 rounded-[20px]">
-                                    <CardBody className="flex flex-row items-center gap-4 p-4">
+                                    <div className="flex flex-row items-center gap-4">
                                         <div className="relative">
-                                            <Avatar
-                                                src={user.image || undefined}
-                                                name={user.discordUsername?.[0] || user.name?.[0] || "?"}
-                                                size="lg"
-                                                classNames={{ base: "rounded-[16px]" }}
-                                            />
+                                            <Avatar src={user.image || undefined} size="large" className="rounded-[16px]">
+                                                {user.discordUsername?.[0] || user.name?.[0] || "?"}
+                                            </Avatar>
                                             <span className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-[#fff8f6] ${user.isOnline ? "bg-[#10200a]" : "bg-[#6b7280]"}`} />
                                         </div>
                                         <div className="flex flex-col min-w-0">
                                             <span className="font-bold text-[var(--md-sys-color-on-surface)] truncate">
                                                 {user.discordUsername || user.name || "Unknown"}
                                             </span>
-                                            <span className={`inline-block px-2 py-0.5 text-xs rounded-full font-medium mt-1 w-fit ${role.bg} ${role.text}`}>
+                                            <Tag className="rounded-full font-medium mt-1 w-fit border-none" style={{ backgroundColor: role.bg, color: role.text }}>
                                                 {role.label}
-                                            </span>
+                                            </Tag>
                                         </div>
-                                    </CardBody>
+                                    </div>
                                 </Card>
                             </motion.div>
                         </motion.div>

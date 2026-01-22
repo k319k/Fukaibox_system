@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, CardBody, CardHeader, Input } from "@heroui/react";
+import { Button, Card, Input, Alert } from "antd";
 import { useState } from "react";
 import { signIn } from "@/lib/auth-client";
 import Link from "next/link";
@@ -55,7 +55,7 @@ export default function LoginPage() {
             <div className="absolute bottom-[-30%] right-[-15%] w-[500px] md:w-[700px] h-[500px] md:h-[700px] bg-[#fbe7a6] rounded-full blur-[120px] md:blur-[150px] opacity-15 pointer-events-none" />
 
             <Card className="w-full max-w-sm md:max-w-md bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] shadow-sm border-none relative z-10">
-                <CardHeader className="flex flex-col gap-3 items-center justify-center pt-8 md:pt-12 pb-2 md:pb-4 px-6 md:px-10">
+                <div className="flex flex-col gap-3 items-center justify-center pt-8 md:pt-12 pb-2 md:pb-4 px-6 md:px-10">
                     <div className="w-14 h-14 md:w-16 md:h-16 bg-[#ffdad5] rounded-[16px] flex items-center justify-center">
                         <Package strokeWidth={1.5} className="w-7 h-7 md:w-8 md:h-8 text-[#73342b]" />
                     </div>
@@ -63,27 +63,31 @@ export default function LoginPage() {
                         <h1 className="text-2xl md:text-3xl text-[var(--md-sys-color-on-surface)] font-extrabold tracking-tight">封解Box</h1>
                         <p className="text-base text-[var(--md-sys-color-on-surface-variant)] mt-1">メンバー専用ポータル</p>
                     </div>
-                </CardHeader>
-                <CardBody className="px-6 md:px-10 pb-8 md:pb-10 space-y-4 md:space-y-5">
+                </div>
+                <div className="px-6 md:px-10 pb-8 md:pb-10 space-y-4 md:space-y-5">
                     {error && (
-                        <div className="bg-[#ffdad6] text-[#93000a] p-3 md:p-4 rounded-[16px] flex items-center gap-3 text-sm">
-                            <AlertCircle strokeWidth={1.5} className="w-5 h-5 flex-shrink-0" />
-                            <p className="font-medium">{error}</p>
-                        </div>
+                        <Alert
+                            message={error}
+                            type="error"
+                            showIcon
+                            icon={<AlertCircle className="w-5 h-5" />}
+                            className="rounded-[16px]"
+                        />
                     )}
 
                     {!isGuestMode ? (
                         <div className="space-y-3 md:space-y-4">
                             <motion.div whileTap={{ scale: 0.95 }}>
                                 <Button
-                                    color="primary"
-                                    size="lg"
-                                    className="w-full font-semibold rounded-full h-12 md:h-14 gap-3 flex items-center justify-center text-[#ffdad5] border-none"
-                                    onPress={handleDiscordLogin}
-                                    isLoading={isLoading}
+                                    type="primary"
+                                    size="large"
+                                    block
+                                    className="font-semibold rounded-full h-12 md:h-14 flex items-center justify-center bg-[#73342b] border-none"
+                                    onClick={handleDiscordLogin}
+                                    loading={isLoading}
+                                    icon={!isLoading && <DiscordIcon />}
                                 >
-                                    {!isLoading && <DiscordIcon />}
-                                    <span>Discordでログイン</span>
+                                    Discordでログイン
                                 </Button>
                             </motion.div>
 
@@ -95,22 +99,23 @@ export default function LoginPage() {
 
                             <motion.div whileTap={{ scale: 0.95 }}>
                                 <Button
-                                    variant="flat"
-                                    size="lg"
-                                    className="w-full rounded-full h-11 md:h-12 bg-[#ffdad5] text-[#73342b] gap-3 border-none"
-                                    onPress={() => setIsGuestMode(true)}
+                                    size="large"
+                                    block
+                                    className="rounded-full h-11 md:h-12 bg-[#ffdad5] text-[#73342b] border-none flex items-center justify-center gap-2"
+                                    onClick={() => setIsGuestMode(true)}
+                                    icon={<User strokeWidth={1.5} className="w-5 h-5" />}
                                 >
-                                    <User strokeWidth={1.5} className="w-5 h-5" />
-                                    <span>ゲストログイン</span>
+                                    ゲストログイン
                                 </Button>
                             </motion.div>
 
                             <motion.div whileTap={{ scale: 0.95 }}>
                                 <Button
-                                    variant="light"
-                                    size="lg"
-                                    className="w-full rounded-full h-10 md:h-11 text-[var(--md-sys-color-on-surface-variant)] border-none"
-                                    onPress={() => window.location.href = "/"}
+                                    type="text"
+                                    size="large"
+                                    block
+                                    className="rounded-full h-10 md:h-11 text-[var(--md-sys-color-on-surface-variant)]"
+                                    onClick={() => window.location.href = "/"}
                                 >
                                     ログインせずに続行
                                 </Button>
@@ -118,48 +123,51 @@ export default function LoginPage() {
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            <Input
-                                label="ユーザー名 / メールアドレス"
-                                variant="flat"
-                                value={username}
-                                onValueChange={setUsername}
-                                isDisabled={isLoading}
-                                size="lg"
-                                classNames={{ inputWrapper: "bg-content2/50 rounded-[16px] border-none shadow-none !opacity-100" }}
-                            />
-                            <Input
-                                label="パスワード"
-                                type="password"
-                                variant="flat"
-                                value={password}
-                                onValueChange={setPassword}
-                                isDisabled={isLoading}
-                                size="lg"
-                                classNames={{ inputWrapper: "bg-content2/50 rounded-[16px] border-none shadow-none !opacity-100" }}
-                            />
+                            <div>
+                                <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">ユーザー名 / メールアドレス</label>
+                                <Input
+                                    size="large"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    disabled={isLoading}
+                                    className="rounded-[16px]"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">パスワード</label>
+                                <Input.Password
+                                    size="large"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    disabled={isLoading}
+                                    className="rounded-[16px]"
+                                />
+                            </div>
 
                             <motion.div whileTap={{ scale: 0.95 }}>
                                 <Button
-                                    color="primary"
-                                    size="lg"
-                                    className="w-full font-semibold rounded-full h-12 md:h-14 gap-3 flex items-center justify-center text-[#ffdad5] border-none"
-                                    onPress={handleGuestLogin}
-                                    isLoading={isLoading}
+                                    type="primary"
+                                    size="large"
+                                    block
+                                    className="font-semibold rounded-full h-12 md:h-14 flex items-center justify-center bg-[#73342b] border-none"
+                                    onClick={handleGuestLogin}
+                                    loading={isLoading}
+                                    icon={!isLoading && <LogIn strokeWidth={1.5} className="w-5 h-5" />}
                                 >
-                                    {!isLoading && <LogIn strokeWidth={1.5} className="w-5 h-5" />}
-                                    <span>ログイン</span>
+                                    ログイン
                                 </Button>
                             </motion.div>
 
                             <motion.div whileTap={{ scale: 0.95 }}>
                                 <Button
-                                    variant="light"
-                                    size="lg"
-                                    className="w-full rounded-full h-10 md:h-11 gap-2 border-none"
-                                    onPress={() => setIsGuestMode(false)}
+                                    type="text"
+                                    size="large"
+                                    block
+                                    className="rounded-full h-10 md:h-11 flex items-center justify-center gap-2"
+                                    onClick={() => setIsGuestMode(false)}
+                                    icon={<ArrowLeft strokeWidth={1.5} className="w-4 h-4" />}
                                 >
-                                    <ArrowLeft strokeWidth={1.5} className="w-4 h-4" />
-                                    <span>戻る</span>
+                                    戻る
                                 </Button>
                             </motion.div>
                         </div>
@@ -174,7 +182,7 @@ export default function LoginPage() {
                     <p className="text-sm text-center text-[var(--md-sys-color-on-surface-variant)] leading-relaxed">
                         ログインすることで、利用規約とプライバシーポリシーに同意したものとみなされます。
                     </p>
-                </CardBody>
+                </div>
             </Card>
         </div>
     );

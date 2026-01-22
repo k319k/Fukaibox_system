@@ -1,12 +1,14 @@
 "use client";
 
-import { Card, CardBody, Button, Input, Textarea, Select, SelectItem, Switch } from "@heroui/react";
+import { Card, Button, Input, Select, Switch, Alert } from "antd";
 import { Wrench, ArrowLeft, Save, Link2, Code, FileCode, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createApp } from "@/app/actions/tools";
+
+const { TextArea } = Input;
 
 interface UserData {
     id: string;
@@ -69,170 +71,126 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="max-w-2xl mx-auto flex flex-col gap-8 w-full"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="max-w-2xl mx-auto flex flex-col gap-8 w-full">
             {/* Header */}
             <div className="flex items-center gap-4">
                 <Link href="/tools">
-                    <Button
-                        isIconOnly
-                        variant="light"
-                        radius="full"
-                        className="flex items-center justify-center active:scale-95 transition-all"
-                    >
-                        <ArrowLeft className="w-5 h-5" />
-                    </Button>
+                    <Button type="text" shape="circle" icon={<ArrowLeft className="w-5 h-5" />} />
                 </Link>
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-primary rounded-[16px] flex items-center justify-center">
+                    <div className="w-12 h-12 bg-[#ffdad5] rounded-[16px] flex items-center justify-center">
                         <Wrench className="w-6 h-6 text-[#73342b]" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                            新規ツール作成
-                        </h1>
-                        <p className="text-foreground/70">
-                            ツールを登録してみんなと共有しよう
-                        </p>
+                        <h1 className="text-3xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">新規ツール作成</h1>
+                        <p className="text-[var(--md-sys-color-on-surface-variant)]">ツールを登録してみんなと共有しよう</p>
                     </div>
                 </div>
             </div>
 
             {/* Form */}
-            <Card className="bg-content1 rounded-[28px] shadow-none border-none w-full">
-                <CardBody className="p-8 flex flex-col gap-8 w-full">
-                    {error && (
-                        <div className="p-4 rounded-[16px] bg-danger text-[#93000a] shadow-sm border-none">
-                            {error}
-                        </div>
-                    )}
+            <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] shadow-none border-none w-full">
+                <div className="p-8 flex flex-col gap-6 w-full">
+                    {error && <Alert message={error} type="error" showIcon className="rounded-[16px]" />}
 
-                    <Input
-                        label="ツール名"
-                        placeholder="例: カウンター"
-                        variant="flat"
-                        radius="lg"
-                        value={name}
-                        onValueChange={setName}
-                        isRequired
-                        classNames={{
-                            inputWrapper: "bg-content2/50 px-4 h-14 !opacity-100 rounded-[16px] border-none shadow-none",
-                        }}
-                    />
-
-                    <Textarea
-                        label="説明"
-                        placeholder="ツールの説明を入力..."
-                        variant="flat"
-                        radius="lg"
-                        value={description}
-                        onValueChange={setDescription}
-                        minRows={4}
-                        classNames={{
-                            inputWrapper: "bg-content2/50 rounded-[16px] !opacity-100 min-h-[140px] border-none shadow-none",
-                            input: "placeholder:text-default-400 py-2 leading-relaxed",
-                        }}
-                    />
-
-                    <Input
-                        label="カテゴリ"
-                        placeholder="例: ユーティリティ"
-                        variant="flat"
-                        radius="lg"
-                        value={category}
-                        onValueChange={setCategory}
-                        classNames={{
-                            inputWrapper: "bg-content2/50 px-4 h-14 !opacity-100 rounded-[16px] border-none shadow-none",
-                        }}
-                    />
-
-                    <Select
-                        label="ツールタイプ"
-                        placeholder="タイプを選択"
-                        variant="flat"
-                        radius="lg"
-                        selectedKeys={[type]}
-                        onSelectionChange={(keys) => {
-                            const selected = Array.from(keys)[0] as "embed" | "link" | "react" | "html";
-                            if (selected) setType(selected);
-                        }}
-                        classNames={{
-                            trigger: "bg-content2/50 h-14 rounded-[16px]",
-                        }}
-                        popoverProps={{ className: "rounded-[20px] shadow-2xl bg-background border-none p-2" }}
-                    >
-                        {appTypes.map((t) => (
-                            <SelectItem key={t.key} textValue={t.label}>
-                                <div className="flex items-center gap-3">
-                                    <t.icon className="w-4 h-4" />
-                                    <div>
-                                        <p className="font-medium">{t.label}</p>
-                                        <p className="text-xs text-foreground/60">
-                                            {t.description}
-                                        </p>
-                                    </div>
-                                </div>
-                            </SelectItem>
-                        ))}
-                    </Select>
-
-                    {(type === "embed" || type === "link") && (
+                    <div>
+                        <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">ツール名 <span className="text-red-500">*</span></label>
                         <Input
-                            label="URL"
-                            placeholder="https://example.com"
-                            variant="flat"
-                            radius="lg"
-                            value={embedUrl}
-                            onValueChange={setEmbedUrl}
-                            isRequired
-                            classNames={{
-                                inputWrapper: "bg-content2/50 px-4 h-14 !opacity-100 rounded-[16px] border-none shadow-none",
-                            }}
-                        />
-                    )}
-
-                    {(type === "react" || type === "html") && (
-                        <div className="p-4 rounded-[16px] bg-warning text-[#564419] shadow-sm border-none">
-                            React/HTMLファイルのアップロード機能は今後実装予定です。
-                            現在は埋め込みまたはリンクタイプをご利用ください。
-                        </div>
-                    )}
-
-                    <div className="flex items-center justify-between p-4 rounded-[20px] bg-content2/50">
-                        <div>
-                            <p className="font-medium text-foreground">
-                                公開する
-                            </p>
-                            <p className="text-sm text-foreground/70">
-                                他のユーザーがGalleryで閲覧できます
-                            </p>
-                        </div>
-                        <Switch
-                            isSelected={isPublic}
-                            onValueChange={setIsPublic}
-                            color="primary"
-                            classNames={{
-                                wrapper: "group-data-[selected=true]:bg-primary shadow-none",
-                            }}
+                            placeholder="例: カウンター"
+                            size="large"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="rounded-[16px]"
                         />
                     </div>
 
+                    <div>
+                        <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">説明</label>
+                        <TextArea
+                            placeholder="ツールの説明を入力..."
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            rows={4}
+                            className="rounded-[16px]"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">カテゴリ</label>
+                        <Input
+                            placeholder="例: ユーティリティ"
+                            size="large"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            className="rounded-[16px]"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">ツールタイプ</label>
+                        <Select
+                            value={type}
+                            onChange={(value) => setType(value)}
+                            size="large"
+                            className="w-full"
+                            options={appTypes.map((t) => ({
+                                value: t.key,
+                                label: (
+                                    <div className="flex items-center gap-3">
+                                        <t.icon className="w-4 h-4" />
+                                        <div>
+                                            <p className="font-medium">{t.label}</p>
+                                            <p className="text-xs text-[var(--md-sys-color-on-surface-variant)]">{t.description}</p>
+                                        </div>
+                                    </div>
+                                ),
+                            }))}
+                        />
+                    </div>
+
+                    {(type === "embed" || type === "link") && (
+                        <div>
+                            <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">URL <span className="text-red-500">*</span></label>
+                            <Input
+                                placeholder="https://example.com"
+                                size="large"
+                                value={embedUrl}
+                                onChange={(e) => setEmbedUrl(e.target.value)}
+                                className="rounded-[16px]"
+                            />
+                        </div>
+                    )}
+
+                    {(type === "react" || type === "html") && (
+                        <Alert
+                            message="React/HTMLファイルのアップロード機能は今後実装予定です。現在は埋め込みまたはリンクタイプをご利用ください。"
+                            type="warning"
+                            showIcon
+                            className="rounded-[16px]"
+                        />
+                    )}
+
+                    <div className="flex items-center justify-between p-4 rounded-[20px] bg-[var(--md-sys-color-surface-container-high)]/50">
+                        <div>
+                            <p className="font-medium text-[var(--md-sys-color-on-surface)]">公開する</p>
+                            <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">他のユーザーがGalleryで閲覧できます</p>
+                        </div>
+                        <Switch checked={isPublic} onChange={setIsPublic} />
+                    </div>
+
                     <Button
-                        color="primary"
-                        variant="flat"
-                        radius="full"
-                        className="w-full h-14 font-bold bg-primary text-[#73342b] flex items-center justify-center gap-2 active:scale-95 transition-all"
-                        startContent={<Save className="w-5 h-5" />}
-                        isLoading={isSubmitting}
-                        onPress={handleSubmit}
+                        type="primary"
+                        shape="round"
+                        size="large"
+                        block
+                        className="h-14 font-bold bg-[#ffdad5] text-[#73342b] border-none"
+                        icon={<Save className="w-5 h-5" />}
+                        loading={isSubmitting}
+                        onClick={handleSubmit}
                     >
                         作成する
                     </Button>
-                </CardBody>
+                </div>
             </Card>
         </motion.div>
     );
