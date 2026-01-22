@@ -139,6 +139,65 @@ export async function GET(request: NextRequest) {
             results.push(`✗ user_roles: ${e.message}`);
         }
 
+        // tools_appsテーブル
+        try {
+            await client.execute(`
+                CREATE TABLE IF NOT EXISTS tools_apps (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    name TEXT NOT NULL,
+                    description TEXT,
+                    category TEXT,
+                    type TEXT NOT NULL,
+                    embed_url TEXT,
+                    is_public INTEGER DEFAULT 0,
+                    created_by TEXT NOT NULL,
+                    created_at INTEGER NOT NULL,
+                    updated_at INTEGER NOT NULL,
+                    FOREIGN KEY (created_by) REFERENCES users(id)
+                )
+            `);
+            results.push("✓ tools_apps table created/verified");
+        } catch (e: any) {
+            results.push(`✗ tools_apps: ${e.message}`);
+        }
+
+        // tools_filesテーブル
+        try {
+            await client.execute(`
+                CREATE TABLE IF NOT EXISTS tools_files (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    app_id TEXT NOT NULL,
+                    filename TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    created_at INTEGER NOT NULL,
+                    updated_at INTEGER NOT NULL,
+                    FOREIGN KEY (app_id) REFERENCES tools_apps(id) ON DELETE CASCADE
+                )
+            `);
+            results.push("✓ tools_files table created/verified");
+        } catch (e: any) {
+            results.push(`✗ tools_files: ${e.message}`);
+        }
+
+        // tools_ratingsテーブル
+        try {
+            await client.execute(`
+                CREATE TABLE IF NOT EXISTS tools_ratings (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    app_id TEXT NOT NULL,
+                    user_id TEXT NOT NULL,
+                    rating INTEGER NOT NULL,
+                    comment TEXT,
+                    created_at INTEGER NOT NULL,
+                    FOREIGN KEY (app_id) REFERENCES tools_apps(id) ON DELETE CASCADE,
+                    FOREIGN KEY (user_id) REFERENCES users(id)
+                )
+            `);
+            results.push("✓ tools_ratings table created/verified");
+        } catch (e: any) {
+            results.push(`✗ tools_ratings: ${e.message}`);
+        }
+
         // 更新後のテーブル一覧
         results.push("\n=== Tables after migration ===");
         const tablesAfter = await client.execute(
