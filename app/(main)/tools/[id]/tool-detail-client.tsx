@@ -144,7 +144,7 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
             </div>
 
             {/* App Content */}
-            <Card className="bg-content1 rounded-[28px] shadow-none overflow-hidden w-full">
+            <Card className="bg-content1 rounded-[28px] shadow-none border-none overflow-hidden w-full">
                 {app.type === "embed" && app.embedUrl && (
                     <div className="w-full aspect-video">
                         <iframe
@@ -190,7 +190,7 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
             </Card>
 
             {/* Rating Section */}
-            <Card className="bg-content1 rounded-[28px] shadow-none w-full">
+            <Card className="bg-content1 rounded-[28px] shadow-none border-none w-full">
                 <CardHeader className="p-8 pb-4 flex-row items-center justify-between">
                     <h2 className="text-xl font-bold tracking-tight text-foreground">
                         評価
@@ -211,7 +211,7 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                     {currentUserId && !isOwner && (
                         <div className="gap-4 flex flex-col">
                             {userRating ? (
-                                <div className="p-4 rounded-[20px] bg-content2/40">
+                                <div className="p-4 rounded-[20px] bg-content2/50">
                                     <p className="text-sm text-foreground/70 mb-2">
                                         あなたの評価
                                     </p>
@@ -246,10 +246,12 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                                         radius="lg"
                                         value={comment}
                                         onValueChange={setComment}
+                                        minRows={3}
                                         classNames={{
-                                            inputWrapper: "bg-content2/40 px-4 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all",
+                                            inputWrapper: "bg-content2/50 rounded-[16px] border-1 border-divider/30 focus-within:border-primary/50 shadow-inner !opacity-100",
+                                            input: "placeholder:text-default-400 py-2",
                                         }}
-                                        minRows={2}
+                                        className="min-h-[100px]"
                                     />
                                     <div className="flex gap-3">
                                         <Button
@@ -298,7 +300,7 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                     {/* Comments List */}
                     {ratings.filter((r) => r.comment).length > 0 && (
                         <>
-                            <Divider className="bg-divider/30 my-6" />
+                            <Divider className="bg-divider/30 my-8" />
                             <div className="gap-4 flex flex-col">
                                 <h3 className="font-medium text-foreground">
                                     コメント
@@ -308,7 +310,7 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                                     .map((r) => (
                                         <div
                                             key={r.id}
-                                            className="flex gap-4 p-4 rounded-[20px] bg-content2/40"
+                                            className="flex gap-4 p-4 rounded-[20px] bg-content2/50"
                                         >
                                             <Avatar
                                                 size="sm"
@@ -345,7 +347,7 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
             </Card>
 
             {/* Info Section */}
-            <Card className="bg-content1 rounded-[28px] shadow-none w-full">
+            <Card className="bg-content1 rounded-[28px] shadow-none border-none w-full">
                 <CardBody className="p-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div>

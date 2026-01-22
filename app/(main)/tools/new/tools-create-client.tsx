@@ -73,7 +73,7 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="max-w-2xl mx-auto gap-8 flex flex-col"
+            className="max-w-2xl mx-auto flex flex-col gap-8 w-full"
         >
             {/* Header */}
             <div className="flex items-center gap-4">
@@ -103,10 +103,10 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
             </div>
 
             {/* Form */}
-            <Card className="bg-content1 rounded-[28px] shadow-none w-full">
-                <CardBody className="p-8 gap-6 flex flex-col">
+            <Card className="bg-content1 rounded-[28px] shadow-none border-none w-full">
+                <CardBody className="p-8 flex flex-col gap-8 w-full">
                     {error && (
-                        <div className="p-4 rounded-[16px] bg-danger text-[#93000a] gap-4">
+                        <div className="p-4 rounded-[16px] bg-danger text-[#93000a] shadow-sm border-none">
                             {error}
                         </div>
                     )}
@@ -120,7 +120,7 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                         onValueChange={setName}
                         isRequired
                         classNames={{
-                            inputWrapper: "bg-content2/40 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all",
+                            inputWrapper: "bg-content2/50 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner !opacity-100 rounded-[16px]",
                         }}
                     />
 
@@ -131,10 +131,12 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                         radius="lg"
                         value={description}
                         onValueChange={setDescription}
+                        minRows={4}
                         classNames={{
-                            inputWrapper: "bg-content2/40 px-4 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all",
+                            inputWrapper: "bg-content2/50 rounded-[16px] border-1 border-divider/30 focus-within:border-primary/50 shadow-inner !opacity-100",
+                            input: "placeholder:text-default-400 py-2",
                         }}
-                        minRows={3}
+                        className="min-h-[140px]"
                     />
 
                     <Input
@@ -145,7 +147,7 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                         value={category}
                         onValueChange={setCategory}
                         classNames={{
-                            inputWrapper: "bg-content2/40 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all",
+                            inputWrapper: "bg-content2/50 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner !opacity-100 rounded-[16px]",
                         }}
                     />
 
@@ -160,9 +162,9 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                             if (selected) setType(selected);
                         }}
                         classNames={{
-                            trigger: "bg-content2/40 h-14",
+                            trigger: "bg-content2/50 h-14 rounded-[16px]",
                         }}
-                        popoverProps={{ className: "rounded-[20px] shadow-2xl" }}
+                        popoverProps={{ className: "rounded-[20px] shadow-2xl bg-background border-none p-2" }}
                     >
                         {appTypes.map((t) => (
                             <SelectItem key={t.key} textValue={t.label}>
@@ -189,19 +191,19 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                             onValueChange={setEmbedUrl}
                             isRequired
                             classNames={{
-                                inputWrapper: "bg-content2/40 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all",
+                                inputWrapper: "bg-content2/50 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner !opacity-100 rounded-[16px]",
                             }}
                         />
                     )}
 
                     {(type === "react" || type === "html") && (
-                        <div className="p-4 rounded-[16px] bg-warning text-[#564419] gap-4">
+                        <div className="p-4 rounded-[16px] bg-warning text-[#564419] shadow-sm border-none">
                             React/HTMLファイルのアップロード機能は今後実装予定です。
                             現在は埋め込みまたはリンクタイプをご利用ください。
                         </div>
                     )}
 
-                    <div className="flex items-center justify-between p-4 rounded-[20px] bg-content2/40">
+                    <div className="flex items-center justify-between p-4 rounded-[20px] bg-content2/50">
                         <div>
                             <p className="font-medium text-foreground">
                                 公開する

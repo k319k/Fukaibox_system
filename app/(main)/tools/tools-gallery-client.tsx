@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, Button, Chip, Input, Skeleton } from "@heroui/react";
+import { Card, CardBody, Button, Chip, Input } from "@heroui/react";
 import { Wrench, Search, Plus, Package, Code } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useMemo } from "react";
@@ -44,7 +44,7 @@ function ToolCard({ app }: { app: ToolApp }) {
         <motion.div variants={itemVariants}>
             <Link href={`/tools/${app.id}`}>
                 <Card
-                    className="bg-content1 rounded-[28px] shadow-none hover:bg-content2/50 transition-all cursor-pointer group w-full"
+                    className="bg-content1 rounded-[28px] shadow-none border-none hover:bg-content2/50 transition-all cursor-pointer group w-full"
                     isPressable
                 >
                     <CardBody className="p-6 gap-4">
@@ -160,7 +160,7 @@ export function ToolsGalleryClient({ apps, categories }: ToolsGalleryClientProps
                     value={searchQuery}
                     onValueChange={setSearchQuery}
                     classNames={{
-                        inputWrapper: "bg-content2/40 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all",
+                        inputWrapper: "bg-content2/50 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner !opacity-100 rounded-[16px]",
                     }}
                     className="flex-1"
                 />
@@ -202,7 +202,7 @@ export function ToolsGalleryClient({ apps, categories }: ToolsGalleryClientProps
                     ))}
                 </motion.div>
             ) : (
-                <Card className="bg-content1 rounded-[28px] shadow-none w-full">
+                <Card className="bg-content1 rounded-[28px] shadow-none border-none w-full">
                     <CardBody className="py-16 text-center">
                         <div className="w-16 h-16 bg-content2 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Package className="w-8 h-8 text-foreground/60" />

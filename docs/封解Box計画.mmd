@@ -1,126 +1,221 @@
----
-config:
-  layout: dagre
-  theme: redux
-  look: classic
----
-flowchart TB
-    n1["ウェブアプリ、封解Box訪問(fukaibox.kanjousekai.jp)"] --> n2["ログイン画面"]
-    n2 -- Discordログイン --> n3["Discordログイン"]
-    n2 -- IDログイン --> n4["ゲストログイン<br>（パスワード/ユーザー名）"]
-    n3 --> n5["儀長？<br>（アカウントID確認）"]
-    n5 -- Yes --> n6["儀長ロール"]
-    n5 -- No --> n7["儀員？<br>（ロール確認）"]
-    n7 -- Yes --> n8["儀員ロール"]
-    n7 -- No --> n9["ゲストロール"]
-    n4 -- 成功 --> n9
-    n4 -- 失敗 --> n1
-    n9 --> n10["ホーム画面"]
-    n6 --> n10
-    n8 --> n13["名誉儀員?<br>"]
-    n13 -- Yes --> n14["名誉儀員ロール"]
-    n13 -- No --> n10
-    n14 --> n10
-    n12["儀長ロール？"] -- Yes --> n16["儀長が料理開始"]
-    n16 --> n17["調理タブ<br>(セクション分けできる・セクションごとに画像指示可能・セクションごとに参考画像up可能・儀長が推敲する・儀長は画像提出できないセクションも作成可能・儀員は推敲提案可能・儀長は推敲提案を承認/非承認)"]
-    n17 --> n18["調理(推敲)完了"] & n83["AI評価(第三者としてGLM-4.6V-Flashからのショート動画の台本としての評価/採点(100点満点,厳しめ,5視点から)/伸び度/4秒でひきつけられるか/セクションごとのテンポは良いか)"]
-    n19["画像upタブ<br>(セクションごとにup,upするごとに点数が上がる・アセットレジストリから持ってくることも可能)"] --> n20["画像up完了<br>(儀長が判断)"]
-    n18 --> n19
-    n12 -- No --> n21["待機"]
-    n21 --> n18
-    n20 --> n22["画像採用タブ<br>(セクションごとに儀長が暫定選定(複数可能)・儀員は何が暫定採用されたか見れる・採用されるごとに点数up)"]
-    n22 --> n23["ダウンロードタブ"]
-    n23 --> n24["儀長がダウンロード"]
-    n11["封解Box 台所(ホーム画面のサイドバーに表示)"] --> n25["料理一覧画面"]
-    n25 --> n12
-    n24 --> n26["料理アーカイブ<br>(儀員はGdriveへ保存も可能)"]
-    n26 --> n75["儀長?"]
-    n27["情報反映ボタンが押された"] --> n28["環状世界wiki<br>https://kanjou.miraheze.org/wiki/封解公儀:原稿/[年]/[月]に原稿を自動書き込み"] & n80["台本をもとにAI(GLM-4.6V-Flash)で単語を界域百科事典に追加"] & n90["儀長に最終採用した画像を選ばせる。儀長は画像upすることもできる"]
-    n30["儀員点数APIが呼び出された（この機能はスタンドアローンにする。本体から切り離す）"] -- Yes --> n62["接続認証が通った？"]
-    n32["Youtube儀長チャンネルでライブ配信が開始された<br>https://www.youtube.com/@tokinohiroba"] --> n33["ホーム画面に掲載"]
-    n34["封解Box 設定(ホーム画面のサイドバーの最下部に表示)"] --> n35["ユーザー設定"] & n40["儀長?"]
-    n40 -- Yes --> n36["DevStudio"] & n41["AdminPanel"]
-    n10 --> n11 & n34 & n63["封解Box Tools(ホーム画面のサイドバーの最下部に表示)"] & n67["界域百科事典(ホーム画面のサイドバーに表示)"] & n93["ホーム画面ウィジェット"] & n100["儀長?"]
-    n46["Appを参照・実行"] --> n47["Appに高評価/低評価/コメントできる"] & n84["右サイドバーで実行"]
-    n36 --> n48["儀員点数APIキー発行"] & n61["API仕様確認"]
-    n31["呼び出されたエンドポイント"] --> n52["点数取得"] & n53["順位を取得"] & n54["順位から取得"] & n55["APIキーがあっている？"] & n51["ヘルスチェック"]
-    n41 --> n58["儀員点数の履歴"] & n59["儀員点数の増減"] & n66["ユーザーの追放"]
-    n62 -- Yes --> n31
-    n55 --> n56["点数の増減"]
-    n63 --> n65["Gallary"] & n85["封解Box Tools工房<br>AppをReactファイル/HTMLファイルとして登録 複数ファイル可能(儀員/儀長のみ)"]
-    n65 --> n46 & n86["各カテゴリ"]
-    n67 --> n74["界域百科事典ホーム"]
-    n70["検索"] --> n72["単語について表示（下のほうに関連した単語を表示）"]
-    n69["ジャンルごとに表示"] --> n72
-    n71["年表から表示"] --> n72
-    n72 --> n73["関連した単語"]
-    n74 --> n71 & n70 & n69
-    n75 --> n76["投稿予約ボタンが押された?"] & n27
-    n76 -- Yes --> n77["儀長が日付指定・動画upしてYoutube自動予約"]
-    n77 --> n78["投稿予約日がかぶった?"]
-    n78 -- Yes --> n79["元々その日の予定だったものを一個後にもっていく"]
-    n79 --> n78
-    n78 -- No --> n81["予約完了通知"]
-    n62 -- No --> n30
-    n80 --> n82["情報反映通知"]
-    n28 --> n82
-    n83 --> n18
-    n85 --> n88["まだクレジット残ってる？"]
-    n86 --> n46
-    n84 --> n47
-    n87["Qwen3 coder(openrouter経由)で作成・補正(左に会話、右にコード/プレビュー)"] --> n45["Toolsに保存・追加"]
-    n88 -- Yes --> n87
-    n88 -- No --> n45
-    n45 --> n89["公開設定"]
-    n89 --> n63
-    n90 --> n91["GLM-4.6V-Flashに画像解析させて各画像ごとの名前を付けさせる"]
-    n91 --> n92["儀長が承認"]
-    n92 --> n29@{ label: "環状世界wiki<br>https://kanjou.miraheze.org/wiki/<span class=\"mw-page-title-namespace\">封解公儀</span><span class=\"mw-page-title-separator\">:</span><span class=\"mw-page-title-main\">使用素材</span>/[年]/[月]に最終採用画像を自動書き込み" }
-    n21 -- 推敲提案 --> n17
-    n93 --> n32 & n94["ランキングトップ3/自分の順位"] & n95["今日の名誉儀員"] & n50["Youtube封解公儀チャンネルの最新ショート動画https://www.youtube.com/@fukaikougi/shorts"]
-    n35 --> n96["Discord連携設定"] & n97["GoogleDrive連携設定"] & n98["通知設定"] & n99["ユーザー名/パスワード"]
-    n29 --> n82
-    n100 --> n101["YoutubeManager"]
-    n101 --> n102["アナリティクスタブ"] & n103["予約投稿タブ"]
-    n103 --> n104["予約変更"]
-    n102 --> n105["番号名前日付曜日更新日動画尺文字数再生回数コメント数高評価数低評価数登録者数エンゲージ ビューユニーク視聴者数総再生時間(時間)平均視聴時間視聴を継続スワイプして消去確かめ算未登録者数登録済み者数確かめ算女性男性確かめ算女性比男性比未登録者登録済み視聴を継続スワイプして消去視聴を継続スワイプして消去継続千回と再生回数二千回高評価率（低評価比）低評価率高評価率(再生比)高評価値（下限）低評価率(再生比)低評価値（上限）安全度健全度総合評価総合評価分類文字数評価←評価文動画尺評価←評価文視聴維持率(一人当たりの長さ)対表示率(エンゲージ)対表示率実質エンゲージ率リピート率登録率（再生全体比）登録率(未登録再生比率)偏差値（再生回数）"]
-    n73 -- 戻るボタン --> n72
-    n2 -- ログインせずに続行 --> n106["未ログインロール"]
-    n106 --> n10
+封解Box × Material Design 3 × HeroUI 究極デザイン聖典 (Ver 18.0 Ironclad)
 
-    n1@{ shape: rounded}
-    n2@{ shape: diam}
-    n4@{ shape: diam}
-    n5@{ shape: diam}
-    n6@{ shape: rect}
-    n7@{ shape: diam}
-    n8@{ shape: rect}
-    n10@{ shape: rounded}
-    n13@{ shape: diam}
-    n12@{ shape: diam}
-    n16@{ shape: diam}
-    n18@{ shape: diam}
-    n19@{ shape: rect}
-    n20@{ shape: diam}
-    n11@{ shape: rounded}
-    n25@{ shape: rect}
-    n75@{ shape: diam}
-    n27@{ shape: diam}
-    n30@{ shape: diam}
-    n62@{ shape: diam}
-    n32@{ shape: diam}
-    n33@{ shape: rect}
-    n34@{ shape: rounded}
-    n35@{ shape: rect}
-    n40@{ shape: diam}
-    n63@{ shape: rounded}
-    n67@{ shape: rounded}
-    n100@{ shape: diam}
-    n31@{ shape: diam}
-    n55@{ shape: diam}
-    n76@{ shape: diam}
-    n78@{ shape: diam}
-    n88@{ shape: diam}
-    n29@{ shape: rect}
-    n50@{ shape: rect}
-    n105@{ shape: rect}
+1. デザインの物理法則 (Physical Constants)
+
+AIエージェントは以下の数値を「不変の定数」とし、これ以外の数値を生成してはならない。
+
+A. 8dp グリッド・スペーシング (Spacing System)
+
+2px (XXXS): ボーダー微調整。
+
+4px (XXS): gap-1（チップ内/ボタン内アイコン間隔）。
+
+8px (XS): gap-2（標準要素間）。
+
+12px (Small): p-3（サブリスト）。
+
+16px (Medium): p-4, gap-4（標準パディング/フォーム行間）。
+
+24px (Large): p-6, gap-6（コンポーネント間ギャップ）。
+
+32px (XL): p-8, gap-8（メインボード内部）。
+
+48px (XXL): gap-12（セクション区切り）。
+
+64px (XXXL): p-16（ページ上下）。
+
+B. 角丸階層 (Radius Hierarchy)
+
+Extra Large (28px): rounded-[28px] (Main Card, Modal, Drawer, Main Container)
+
+Large (20px): rounded-[20px] (Sidebar, Table, Accordion, Image, Secondary Card)
+
+Medium (16px): rounded-[16px] (Input, Alert, User, Avatar, Skeleton)
+
+Pill (Full): rounded-full (Button, Chip, Tab, Switch, Search Bar)
+
+C. 色彩マッピング (Token Mapping)
+
+背景色と文字色の組み合わせは、アクセシビリティ（コントラスト比）を死守せよ。
+
+役割
+
+トークン名
+
+背景 (Container)
+
+文字 (On-Container)
+
+Primary
+
+primary
+
+#ffdad5
+
+#73342b
+
+Warning
+
+warning
+
+#fbe7a6
+
+#564419
+
+Danger
+
+danger
+
+#ffdad6
+
+#93000a
+
+Success
+
+success
+
+#d7f0cb
+
+#10200a
+
+Surface
+
+content1
+
+#fceae7
+
+#231918
+
+Background
+
+background
+
+#fff8f6
+
+#231918
+
+2. レイアウト構造 & 衝突回避 (Architecture & Collision)
+
+A. 決定論的サイズ指定 (Width Enforcement)
+
+「文字数によってカードやコンテナの幅が変わる」実装は厳禁とする。
+
+原則: コンテナ（Card, Modal）には必ず w-full または固定グリッド（例：col-span-4）を指定せよ。
+
+指示: コンテンツ量に関わらず、レイアウトのグリッドに沿った一定の幅を維持することで、画面の整列（Alignment）を死守せよ。
+
+B. 重なり・視認性バグの修正 (Layering & Clarity)
+
+テキストの重なりや、入力欄の背景透過問題を解決する。
+
+不透明度の強制: 入力欄（Input, Textarea）の inputWrapper には必ず bg-background または bg-content2 を指定し、不透明（Opaque）であることを保証せよ。背景にある文字が透けて見える状態を排除する。
+
+Z-Index 管理: 浮遊するアイコンやラベルが入力テキストと重ならないよう、HeroUIの innerWrapper に十分な gap-3 (12px) を持たせよ。
+
+プレースホルダー回避: labelPlacement="outside" または "inside" を使用し、入力値とプレースホルダーが視覚的に衝突しないようにせよ。
+
+C. サイドバーと背景の分離
+
+Main Canvas: 必ず #fff8f6 (bg-background)。
+
+Sidebar: 背景は #fceae7 (bg-content1)。rounded-r-[28px] を適用し、メイン画面から「一段高い層」として視覚的に分離せよ。
+
+3. コンポーネント完全網羅定義 (The Encyclopedia)
+
+AIは以下の仕様を強制的に適用せよ。
+
+3.1 ナビゲーション & アクション
+
+Accordion: variant="light" item: "bg-content1 rounded-[20px] mb-2"
+
+Autocomplete: popoverProps={{ className: "rounded-[20px] shadow-2xl bg-background" }}
+
+Breadcrumbs: separator: "text-default-300", 最終要素は font-bold text-primary
+
+Button: radius="full" font-bold active:scale-95 transition-all
+
+重要: アイコン整列: className="flex items-center justify-center gap-2 px-6 h-12" (アイコンが左上に寄るのを防ぐ)。
+
+Dropdown: radius="md" (12px), content: "bg-background/80 backdrop-blur-xl rounded-[16px] shadow-2xl border-1 border-white/20"
+
+Link: className="text-primary font-medium hover:underline transition-all"
+
+Navbar: className="h-16 px-8 bg-background/80 backdrop-blur-md fixed top-0 w-full z-50"
+
+Pagination: radius="full" cursor: "bg-primary text-white shadow-md"
+
+Tabs: variant="solid" radius="full" classNames={{ tabList: "bg-content2/50 p-1", cursor: "bg-primary shadow-lg" }}
+
+3.2 フォーム・入力系 (Forms)
+
+Checkbox / Radio Group: color="primary" label: "ml-2 font-medium"
+
+Date Input / Picker / Range Calendar / Calendar: radius="lg" calendarProps={{ className: "rounded-[28px] bg-background p-4 shadow-xl" }}
+
+Form: className="flex flex-col gap-6" (垂直方向の呼吸を確保)
+
+Input / Textarea / Number Input:
+
+variant="flat" radius="lg" (16px)
+
+classNames={{ inputWrapper: "bg-content2/50 px-4 h-14 min-h-[56px] focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner !opacity-100" }}
+
+Textarea: 文字数によって高さが変わる場合は min-h-[120px] を確保せよ。
+
+Input OTP: radius="md" input: "border-2 border-transparent focus:border-primary h-14"
+
+Slider: color="primary" classNames={{ track: "bg-content2", thumb: "bg-primary shadow-lg" }}
+
+Switch: radius="full" classNames={{ wrapper: "group-data-[selected=true]:bg-primary" }}
+
+Time Input: variant="flat" radius="lg"
+
+3.3 データ表示 (Data Display)
+
+Avatar / User: radius="lg" (16px) / name: "font-bold text-on-surface"
+
+Badge / Chip: radius="full" variant="flat" className="bg-primary-50 text-primary-900"
+
+Card: rounded-[28px] bg-content1 p-8 shadow-none w-full
+
+Circular Progress / Progress: color="primary" track: "bg-content2"
+
+Code / Snippet: className="bg-content2 rounded-lg text-primary"
+
+Divider: className="bg-divider/30 my-6"
+
+Image: radius="lg" (20px) shadow-none object-cover
+
+Listbox: item: "rounded-full px-6 py-2 my-1 data-[hover=true]:bg-primary-50"
+
+Scroll Shadow: className="max-h-[400px]"
+
+Table: radius="lg" (20px) th: "bg-content2/50 text-primary font-bold py-4", td: "py-4"
+
+3.4 フィードバック & ユーティリティ (Feedback & Utility)
+
+Alert: variant="flat" radius="lg" className="p-4 gap-4" (文字色は1.C参照)
+
+Drawer / Modal: radius="lg" (28px) base: "bg-background/90 backdrop-blur-xl border-none shadow-2xl"
+
+Kbd: className="bg-content2/50 border-none font-mono text-primary"
+
+Popover / Tooltip: radius="md" (12px) className="bg-content2 shadow-xl border-none"
+
+Skeleton: radius="lg" (16px) before:bg-primary-50 (200ms以上のロードに必須)
+
+Spinner: color="primary" size="sm"
+
+Toast: radius="full" className="bg-on-surface text-background font-bold px-8 shadow-2xl"
+
+4. 品質保証チェックリスト (Final Guardrails)
+
+❌ 可変幅コンテナ禁止: コンテンツ量で幅が変わる w-fit を多用していないか？ (Cardには w-full を使用せよ)
+
+❌ 重なり・透過バグ: 入力欄の背景は不透明か？ テキストとアイコンが衝突していないか？
+
+❌ アイコン整列不備: ボタン内アイコンは flex items-center justify-center で中心にあるか？
+
+❌ 純白 (#FFFFFF) 禁止: 全ての背景に #fff8f6 を徹底しているか？
+
+✅ Skeletonの多用: 非同期データ読み込みには必ずスケルトンを配置している
