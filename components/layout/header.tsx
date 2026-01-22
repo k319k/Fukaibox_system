@@ -16,7 +16,7 @@ export function Header() {
     const title = pageTitles[pathname] || "封解Box";
 
     return (
-        <header className="h-16 flex items-center px-8 pl-16 md:pl-8 bg-background/70 backdrop-blur-xl border-b-1 border-divider/20">
+        <header className="h-16 flex items-center px-8 pl-16 md:pl-8 bg-background/70 backdrop-blur-xl border-none">
             <h1 className="text-2xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
                 {title}
             </h1>

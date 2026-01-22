@@ -78,7 +78,7 @@ export default function LoginPage() {
                                 <Button
                                     color="primary"
                                     size="lg"
-                                    className="w-full font-semibold rounded-full h-12 md:h-14 gap-3 flex items-center justify-center text-[#ffdad5]"
+                                    className="w-full font-semibold rounded-full h-12 md:h-14 gap-3 flex items-center justify-center text-[#ffdad5] border-none"
                                     onPress={handleDiscordLogin}
                                     isLoading={isLoading}
                                 >
@@ -97,7 +97,7 @@ export default function LoginPage() {
                                 <Button
                                     variant="flat"
                                     size="lg"
-                                    className="w-full rounded-full h-11 md:h-12 bg-[#ffdad5] text-[#73342b] gap-3"
+                                    className="w-full rounded-full h-11 md:h-12 bg-[#ffdad5] text-[#73342b] gap-3 border-none"
                                     onPress={() => setIsGuestMode(true)}
                                 >
                                     <User strokeWidth={1.5} className="w-5 h-5" />
@@ -109,7 +109,7 @@ export default function LoginPage() {
                                 <Button
                                     variant="light"
                                     size="lg"
-                                    className="w-full rounded-full h-10 md:h-11 text-[var(--md-sys-color-on-surface-variant)]"
+                                    className="w-full rounded-full h-10 md:h-11 text-[var(--md-sys-color-on-surface-variant)] border-none"
                                     onPress={() => window.location.href = "/"}
                                 >
                                     ログインせずに続行
@@ -120,29 +120,29 @@ export default function LoginPage() {
                         <div className="space-y-4">
                             <Input
                                 label="ユーザー名 / メールアドレス"
-                                variant="bordered"
+                                variant="flat"
                                 value={username}
                                 onValueChange={setUsername}
                                 isDisabled={isLoading}
                                 size="lg"
-                                classNames={{ inputWrapper: "rounded-[16px] border-[var(--md-sys-color-outline-variant)]" }}
+                                classNames={{ inputWrapper: "bg-content2/50 rounded-[16px] border-none shadow-none !opacity-100" }}
                             />
                             <Input
                                 label="パスワード"
                                 type="password"
-                                variant="bordered"
+                                variant="flat"
                                 value={password}
                                 onValueChange={setPassword}
                                 isDisabled={isLoading}
                                 size="lg"
-                                classNames={{ inputWrapper: "rounded-[16px] border-[var(--md-sys-color-outline-variant)]" }}
+                                classNames={{ inputWrapper: "bg-content2/50 rounded-[16px] border-none shadow-none !opacity-100" }}
                             />
 
                             <motion.div whileTap={{ scale: 0.95 }}>
                                 <Button
                                     color="primary"
                                     size="lg"
-                                    className="w-full font-semibold rounded-full h-12 md:h-14 gap-3 flex items-center justify-center text-[#ffdad5]"
+                                    className="w-full font-semibold rounded-full h-12 md:h-14 gap-3 flex items-center justify-center text-[#ffdad5] border-none"
                                     onPress={handleGuestLogin}
                                     isLoading={isLoading}
                                 >
@@ -155,7 +155,7 @@ export default function LoginPage() {
                                 <Button
                                     variant="light"
                                     size="lg"
-                                    className="w-full rounded-full h-10 md:h-11 gap-2"
+                                    className="w-full rounded-full h-10 md:h-11 gap-2 border-none"
                                     onPress={() => setIsGuestMode(false)}
                                 >
                                     <ArrowLeft strokeWidth={1.5} className="w-4 h-4" />

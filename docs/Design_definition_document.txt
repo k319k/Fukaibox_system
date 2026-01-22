@@ -1,4 +1,4 @@
-封解Box × Material Design 3 × HeroUI 究極デザイン聖典 (Ver 20.0 Ironclad Ultimate)
+封解Box × Material Design 3 × HeroUI 究極デザイン聖典 (Ver 21.0 Borderless Ironclad)
 
 1. デザインの物理法則 (Physical Constants)
 
@@ -6,13 +6,13 @@ AIエージェントは以下の数値を「不変の定数」とし、これ以
 
 A. 8dp グリッド・スペーシング (Spacing System)
 
-2px (XXXS): 極小の調整。
+2px (XXXS): 極小の重なり調整。
 
 4px (XXS): gap-1 (チップ/ボタン内アイコン間隔)。
 
 8px (XS): gap-2 (標準要素間)。
 
-12px (Small): p-3 (サブリスト、密集エリア)。
+12px (Small): p-3 (サブリスト)。
 
 16px (Medium): p-4, gap-4 (標準パディング/フォーム行間)。
 
@@ -20,7 +20,7 @@ A. 8dp グリッド・スペーシング (Spacing System)
 
 32px (XL): p-8, gap-8 (メインボード内部、モーダル内余白)。
 
-64px (XXXL): p-16 (ページ上下の呼吸)。
+64px (XXXL): p-16 (ページ上下の大きな余白)。
 
 B. 絶対角丸階層 (Absolute Radius Hierarchy)
 
@@ -96,87 +96,83 @@ background
 
 2. レイアウト構造 & 衝突回避 (Architecture & Anti-Collision)
 
-A. 決定論的サイズ指定 (Width Enforcement)
+A. 枠線廃止ポリシー (Borderless Policy)
+
+カード、入力欄、ボタン等における「枠線（Border）」の使用を原則廃止とする。
+
+理由: 枠線は情報のノイズとなり、M3の洗練された「面」の美しさを損なうため。
+
+代替策: bg-background の上に bg-content1（Card）、その上に bg-content2（Input）を載せる「色の階層」で構造を表現せよ。
+
+実装: 全てのコンポーネントに border-none または variant="flat" を適用し、境界線を消去せよ。
+
+B. 決定論的サイズ指定 (Width Enforcement)
 
 「文字数によってカードやコンテナの幅が変わる」実装は厳禁とする。
 
-原則: カード（Card）や主要コンテナには必ず w-full または固定グリッド（grid-cols-12）を使用せよ。
+原則: コンテナ（特にCard）には必ず w-full または固定グリッド（例：grid-cols-12）を指定せよ。
 
-指示: コンテンツ量に関わらず、レイアウトの枠組みを維持せよ。
+C. 重なり・透過・視覚的衝突の完全排除
 
-B. 重なり・透過・視覚的衝突の完全排除
+不透明度の強制: テキストエリア等の inputWrapper には必ず !opacity-100 と明確な背景色を指定し、下の文字が透ける現象を物理的に排除せよ。
 
-不透明度の強制: 全ての入力欄（Input, Textarea）の inputWrapper には必ず !opacity-100 と明確な背景色（bg-background または bg-content2/50）を指定し、下の文字が透ける現象を物理的に排除せ do。
+衝突防止 (Anti-Overlap): innerWrapper に十分な gap-3 (12px) を持たせ、アイコンが入力文字に被らないよう設計せよ。
 
-衝突防止 (Anti-Overlap): アイコンとテキストが重ならないよう、innerWrapper に十分な gap-3 (12px) を持たせ、アイコンが入力文字に被らない z-index を管理せよ。
-
-プレースホルダー消失問題: 文字入力時に背景に「入力してください」が残るバグを回避するため、HeroUIの labelPlacement="outside" を標準とし、placeholder は text-default-400 で控えめに表示せよ。
-
-C. サイドバーと背景の分離
-
-Main Canvas: 必ず #fff8f6 (bg-background)。
-
-Sidebar: 背景は #fceae7 (bg-content1)。rounded-r-[28px] を適用し、画面の「基盤」として分離せよ。
+プレースホルダー問題: labelPlacement="outside" を標準とし、入力時に背景に「入力してください」が残るのを防げ。
 
 3. コンポーネント完全網羅定義 (The Omnia Encyclopedia)
 
 3.1 ナビゲーション & アクション
 
-Accordion: variant="light" item: "bg-content1 rounded-[20px] mb-2 px-4"
+Accordion: variant="light" item: "bg-content1 rounded-[20px] mb-2 border-none"
 
 Autocomplete: popoverProps={{ className: "rounded-[20px] shadow-2xl bg-background border-none" }}
 
-Alert: variant="flat" radius="lg" className="p-4 gap-4 shadow-sm border-none" (文字色は定義1.C)
-
-Badge / Chip: radius="full" variant="flat" className="bg-primary-50 text-primary-900 px-3"
+Badge / Chip: radius="full" variant="flat" className="bg-primary-50 text-primary-900 px-3 border-none"
 
 Breadcrumbs: separator: "text-default-300", 最終要素は font-bold text-primary
 
-Button: radius="full" font-bold active:scale-95 transition-all
+Button: radius="full" font-bold active:scale-95 transition-all border-none
 
-重要: アイコン整列: className="flex items-center justify-center gap-2 px-6 h-12" (アイコンが左上に寄るのを防ぐ)。
+整列: className="flex items-center justify-center gap-2 px-6 h-12" (アイコン左上寄り防止)。
 
 Dropdown: radius="md" (12px), content: "bg-background rounded-[16px] shadow-2xl border-none p-2"
 
 Link: className="text-primary font-medium hover:underline transition-all"
 
-Navbar: className="h-16 px-8 bg-background/80 backdrop-blur-md fixed top-0 w-full z-50 shadow-sm"
+Navbar: className="h-16 px-8 bg-background/80 backdrop-blur-md fixed top-0 w-full z-50 border-none"
 
-Pagination: radius="full" cursor: "bg-primary text-white shadow-md"
+Pagination: radius="full" cursor: "bg-primary text-white shadow-none border-none"
 
-Tabs: variant="solid" radius="full" classNames={{ tabList: "bg-content2/50 p-1", cursor: "bg-primary shadow-lg" }}
+Tabs: variant="solid" radius="full" classNames={{ tabList: "bg-content2/50 p-1 border-none", cursor: "bg-primary shadow-lg" }}
 
 3.2 フォーム・入力系 (Forms)
 
-Checkbox / Radio Group / Checkbox Group: color="primary" label: "ml-2 font-medium text-on-surface"
+Checkbox / Radio Group / Checkbox Group: color="primary" label: "ml-2 font-medium"
 
-Date Input / Picker / Range Calendar / Calendar: radius="lg" calendarProps={{ className: "rounded-[28px] bg-background p-4 shadow-xl border-none" }}
+Date Input / Picker / Range Calendar / Calendar: radius="lg" calendarProps={{ className: "rounded-[28px] bg-background border-none" }}
 
-Form: className="flex flex-col gap-8 w-full" (広い呼吸を確保)
+Form: className="flex flex-col gap-8 w-full"
 
-Input / Number Input / Time Input:
+Input / Number Input / Time Input / Input OTP:
 
 variant="flat" radius="lg" (16px)
 
-classNames={{ inputWrapper: "bg-content2/50 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner !opacity-100 rounded-[16px]" }}
+classNames={{ inputWrapper: "bg-content2/50 border-none shadow-none !opacity-100 rounded-[16px]" }}
 
 Textarea:
 
-美学の強制: variant="flat" radius="lg" min-h-[140px] leading-relaxed p-4 !opacity-100
+枠線廃止・完全角丸: variant="flat" radius="lg" !opacity-100 border-none
 
 classNames:
 
-inputWrapper: bg-content2/50 rounded-[16px] border-1 border-divider/30 focus-within:border-primary/50 shadow-inner !opacity-100
+inputWrapper: bg-content2/50 rounded-[16px] border-none shadow-none !opacity-100 min-h-[140px]
 
-input: placeholder:text-default-400 py-2 scrollbar-hide
+input: placeholder:text-default-400 py-2 leading-relaxed scrollbar-hide
 
-注意: 枠線を黒くしすぎないよう border-divider/30 を使用し、角丸が消えないよう rounded-[16px] を inputWrapper に明示せよ。
+Slider: color="primary" classNames={{ track: "bg-content2 border-none", thumb: "bg-primary shadow-lg border-2 border-background" }}
 
-Input OTP: radius="md" input: "border-2 border-transparent focus:border-primary h-14 bg-background rounded-xl"
-
-Slider: color="primary" classNames={{ track: "bg-content2", thumb: "bg-primary shadow-lg border-2 border-background" }}
-
-Switch: radius="full" classNames={{ wrapper: "group-data-[selected=true]:bg-primary shadow-none" }}
+Switch: radius="full" classNames={{ wrapper: "group-data-[selected=true]:bg-primary shadow-none border-none" }}
 
 3.3 データ表示 (Data Display)
 
@@ -184,44 +180,42 @@ Avatar / User: radius="lg" (16px) / name: "font-bold text-on-surface"
 
 Card: rounded-[28px] bg-content1 p-8 shadow-none w-full border-none
 
-Circular Progress / Progress: color="primary" track: "bg-content2" strokeWidth={3}
+Circular Progress / Progress: color="primary" track: "bg-content2 border-none" strokeWidth={3}
 
-Code / Snippet: className="bg-content2 rounded-lg text-primary p-4"
+Code / Snippet: className="bg-content2 rounded-lg text-primary p-4 border-none"
 
-Divider: className="bg-divider/30 my-8"
+Divider: className="bg-divider/20 my-8 border-none h-[1px]"
 
-Image: radius="lg" (20px) shadow-none object-cover border-none transition-transform hover:scale-[1.02]"
+Image: radius="lg" (20px) shadow-none border-none object-cover
 
-Listbox: item: "rounded-full px-6 py-2 my-1 data-[hover=true]:bg-primary-50 transition-colors"
+Listbox: item: "rounded-full px-6 py-2 my-1 border-none"
 
-Scroll Shadow: className="max-h-[500px] w-full"
+Scroll Shadow: className="max-h-[500px] w-full border-none"
 
-Table: radius="lg" (20px) th: "bg-content2/50 text-primary font-bold py-4", td: "py-4", base: "w-full"
+Table: radius="lg" (20px) th: "bg-content2/50 text-primary font-bold py-4 border-none", td: "py-4 border-none", base: "w-full"
 
 3.4 フィードバック & ユーティリティ (Feedback & Utility)
 
-Drawer / Modal: radius="lg" (28px) base: "bg-background/90 backdrop-blur-xl border-none shadow-2xl p-4"
+Drawer / Modal: radius="lg" (28px) base: "bg-background/90 backdrop-blur-xl border-none p-4"
 
 Kbd: className="bg-content2/50 border-none font-mono text-primary"
 
-Popover / Tooltip: radius="md" (12px) className="bg-content2 shadow-xl border-none text-on-surface p-3"
+Popover / Tooltip: radius="md" (12px) className="bg-content2 border-none text-on-surface p-3"
 
-Skeleton: radius="lg" (16px) before:bg-primary-50 (非同期ロードに必須)
+Skeleton: radius="lg" (16px) before:bg-primary-50
 
 Spinner: color="primary" size="lg"
 
-Toast: radius="full" className="bg-on-surface text-background font-bold px-10 py-4 shadow-2xl"
-
-User: avatarProps={{ radius: "lg" }} name: "font-bold text-on-surface"
+Toast: radius="full" className="bg-on-surface text-background font-bold px-10 border-none"
 
 4. 品質保証チェックリスト (Final Guardrails)
 
+❌ 枠線 (Border) の禁止: カードや入力欄に枠線が残っていないか？ (常に border-none を確認)
+
 ❌ 可変幅コンテナ禁止: カードの幅が w-fit になっていないか？ (w-full を基本とせよ)
 
-❌ 衝突・重なり・透過: テキストエリアの背景から下の文字が透けていないか？ アイコンが文字に被っていないか？
-
-❌ 四角いテキストエリア禁止: inputWrapper に rounded-[16px] が適用され、枠線が淡い色 (border-divider/30) になっているか？
+❌ 衝突・重なり・透過: テキストエリアの背景から下の文字が透けていないか？ (!opacity-100)
 
 ❌ アイコン整列不備: ボタン内アイコンが左上に寄っていないか？ (flex items-center justify-center)
 
-✅ Skeletonの多用: データの読み込み待ちには必ずスケルトンを表示しているか？
+✅ 絶対かくまる: 28px/20px/16pxの角丸ルールが正確に適用されているか？

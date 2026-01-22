@@ -97,7 +97,7 @@ export function SidebarNav({ items, userRole }: SidebarNavProps) {
             {/* 儀長専用ナビゲーション */}
             {isGicho && (
                 <>
-                    <Divider className="my-4 bg-[var(--md-sys-color-outline-variant)]/30" />
+                    <Divider className="my-4 bg-divider/20 border-none h-[1px]" />
                     <AnimatePresence>
                         {!isCollapsed && (
                             <motion.p

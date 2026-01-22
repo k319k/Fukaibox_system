@@ -120,7 +120,7 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                         onValueChange={setName}
                         isRequired
                         classNames={{
-                            inputWrapper: "bg-content2/50 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner !opacity-100 rounded-[16px]",
+                            inputWrapper: "bg-content2/50 px-4 h-14 !opacity-100 rounded-[16px] border-none shadow-none",
                         }}
                     />
 
@@ -133,7 +133,7 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                         onValueChange={setDescription}
                         minRows={4}
                         classNames={{
-                            inputWrapper: "bg-content2/50 rounded-[16px] border-1 border-divider/30 focus-within:border-primary shadow-inner !opacity-100 min-h-[140px]",
+                            inputWrapper: "bg-content2/50 rounded-[16px] !opacity-100 min-h-[140px] border-none shadow-none",
                             input: "placeholder:text-default-400 py-2 leading-relaxed",
                         }}
                     />
@@ -146,7 +146,7 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                         value={category}
                         onValueChange={setCategory}
                         classNames={{
-                            inputWrapper: "bg-content2/50 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner !opacity-100 rounded-[16px]",
+                            inputWrapper: "bg-content2/50 px-4 h-14 !opacity-100 rounded-[16px] border-none shadow-none",
                         }}
                     />
 
@@ -190,7 +190,7 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                             onValueChange={setEmbedUrl}
                             isRequired
                             classNames={{
-                                inputWrapper: "bg-content2/50 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner !opacity-100 rounded-[16px]",
+                                inputWrapper: "bg-content2/50 px-4 h-14 !opacity-100 rounded-[16px] border-none shadow-none",
                             }}
                         />
                     )}

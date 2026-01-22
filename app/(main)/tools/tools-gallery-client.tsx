@@ -160,7 +160,7 @@ export function ToolsGalleryClient({ apps, categories }: ToolsGalleryClientProps
                     value={searchQuery}
                     onValueChange={setSearchQuery}
                     classNames={{
-                        inputWrapper: "bg-content2/50 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner !opacity-100 rounded-[16px]",
+                        inputWrapper: "bg-content2/50 px-4 h-14 !opacity-100 rounded-[16px] border-none shadow-none",
                     }}
                     className="flex-1"
                 />

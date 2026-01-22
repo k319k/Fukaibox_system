@@ -248,7 +248,7 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                                         onValueChange={setComment}
                                         minRows={3}
                                         classNames={{
-                                            inputWrapper: "bg-content2/50 rounded-[16px] border-1 border-divider/30 focus-within:border-primary shadow-inner !opacity-100 min-h-[100px]",
+                                            inputWrapper: "bg-content2/50 rounded-[16px] !opacity-100 min-h-[100px] border-none shadow-none",
                                             input: "placeholder:text-default-400 py-2 leading-relaxed",
                                         }}
                                     />

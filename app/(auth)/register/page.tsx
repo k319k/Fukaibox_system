@@ -73,55 +73,59 @@ export default function RegisterPage() {
 
                 <CardBody className="gap-4 px-6 pb-8">
                     {error && (
-                        <div className="bg-danger/10 border border-danger/20 rounded-lg p-3 text-danger text-sm">
+                        <div className="bg-danger/10 rounded-[16px] p-3 text-danger text-sm border-none">
                             {error}
                         </div>
                     )}
 
                     <Input
                         label="名前"
-                        variant="bordered"
+                        variant="flat"
                         value={name}
                         onValueChange={setName}
                         isDisabled={isLoading}
                         isRequired
+                        classNames={{ inputWrapper: "bg-content2/50 rounded-[16px] border-none shadow-none !opacity-100" }}
                     />
 
                     <Input
                         label="メールアドレス"
                         type="email"
-                        variant="bordered"
+                        variant="flat"
                         value={email}
                         onValueChange={setEmail}
                         isDisabled={isLoading}
                         isRequired
+                        classNames={{ inputWrapper: "bg-content2/50 rounded-[16px] border-none shadow-none !opacity-100" }}
                     />
 
                     <Input
                         label="パスワード"
                         type="password"
-                        variant="bordered"
+                        variant="flat"
                         value={password}
                         onValueChange={setPassword}
                         isDisabled={isLoading}
                         isRequired
                         description="8文字以上"
+                        classNames={{ inputWrapper: "bg-content2/50 rounded-[16px] border-none shadow-none !opacity-100" }}
                     />
 
                     <Input
                         label="パスワード（確認）"
                         type="password"
-                        variant="bordered"
+                        variant="flat"
                         value={confirmPassword}
                         onValueChange={setConfirmPassword}
                         isDisabled={isLoading}
                         isRequired
+                        classNames={{ inputWrapper: "bg-content2/50 rounded-[16px] border-none shadow-none !opacity-100" }}
                     />
 
                     <Button
                         color="primary"
                         size="lg"
-                        className="w-full mt-2 rounded-full flex items-center justify-center text-[#ffdad5]"
+                        className="w-full mt-2 rounded-full flex items-center justify-center text-[#ffdad5] border-none"
                         onPress={handleRegister}
                         isLoading={isLoading}
                     >
