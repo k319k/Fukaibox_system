@@ -8,10 +8,15 @@
 
 :root {
   /* Primary (Carmine Red) */
+  /* M3 Tonal Palettes & Surface Hierarchy */
+  /* Reference: https://m3.material.io/styles/color/the-color-system/tokens */
+
+  /* Primary (Carmine Red) */
   --md-sys-color-primary: #73342b;
-  --md-sys-color-on-primary: #ffdad5;
+  --md-sys-color-on-primary: #ffffff;
   --md-sys-color-primary-container: #ffdad5;
-  --md-sys-color-on-primary-container: #73342b;
+  --md-sys-color-on-primary-container: #2d0b08;
+  /* Darker for better contrast */
 
   /* Secondary (Deep Red) */
   --md-sys-color-secondary: #9E2B1F;
@@ -21,28 +26,27 @@
 
   /* Tertiary (Brown) */
   --md-sys-color-tertiary: #564419;
-  --md-sys-color-on-tertiary: #fbe7a6;
+  --md-sys-color-on-tertiary: #ffffff;
   --md-sys-color-tertiary-container: #fbe7a6;
-  --md-sys-color-on-tertiary-container: #564419;
+  --md-sys-color-on-tertiary-container: #1e1603;
 
-  /* Surface Hierarchy (M3) */
+  /* Surface & Background */
   --md-sys-color-surface: #fff8f6;
-  /* Background */
-  --md-sys-color-surface-dim: #ded8d6;
-  --md-sys-color-surface-bright: #fff8f6;
-
-  /* Containers (for Cards) */
-  --md-sys-color-surface-container-lowest: #ffffff;
-  /* Base Card */
-  --md-sys-color-surface-container-low: #fef5f2;
-  --md-sys-color-surface-container: #fceae5;
-  --md-sys-color-surface-container-high: #f7e0da;
-  --md-sys-color-surface-container-highest: #f3d6ce;
-
   --md-sys-color-on-surface: #201a19;
+  --md-sys-color-surface-variant: #f3d6ce;
   --md-sys-color-on-surface-variant: #53433f;
+
+  /* Outline */
   --md-sys-color-outline: #85736f;
   --md-sys-color-outline-variant: #d8c2bc;
+
+  /* Surface Container Hierarchy (Borderless Design) */
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #fef5f2;
+  --md-sys-color-surface-container: #fceae5;
+  /* Default Card */
+  --md-sys-color-surface-container-high: #f7e0da;
+  --md-sys-color-surface-container-highest: #f3d6ce;
 
   /* Legacy / Tailwind mappings */
   --background: var(--md-sys-color-surface);
@@ -63,8 +67,11 @@
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
+  /* M3 Medium */
   --radius-lg: 16px;
+  /* M3 Large */
   --radius-xl: 28px;
+  /* M3 Extra Large */
   --radius-full: 9999px;
 
   /* Typography */
@@ -75,6 +82,16 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
+
+  /* Surface Colors for Tailwind */
+  --color-surface: var(--md-sys-color-surface);
+  --color-surface-container-lowest: var(--md-sys-color-surface-container-lowest);
+  --color-surface-container-low: var(--md-sys-color-surface-container-low);
+  --color-surface-container: var(--md-sys-color-surface-container);
+  --color-surface-container-high: var(--md-sys-color-surface-container-high);
+  --color-surface-container-highest: var(--md-sys-color-surface-container-highest);
+  --color-outline: var(--md-sys-color-outline);
+  --color-outline-variant: var(--md-sys-color-outline-variant);
 
   /* Extend spacing */
   --spacing-18: 4.5rem;
@@ -89,6 +106,60 @@ body {
   min-height: 100vh;
   line-height: normal;
   /* Ant Design handles line-height */
+}
+
+/* Typography Hierarchy */
+.text-headline-large {
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 400;
+  /* Regular */
+}
+
+.text-headline-medium {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 400;
+}
+
+.text-headline-small {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 400;
+}
+
+.text-title-large {
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 400;
+}
+
+.text-body-large {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.text-body-medium {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0.25px;
+}
+
+.text-body-small {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+}
+
+.text-label-large {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
 }
 
 /* Utilities */
@@ -124,7 +195,8 @@ body {
   color: var(--md-sys-color-on-surface);
 }
 
-/* M3 Card Styles Helper (if needed outside Ant Card) */
+/* M3 Card Styles Helper (Borderless) */
+/* Use these classes instead of borders */
 .m3-card-filled {
   background: var(--md-sys-color-surface-container-lowest);
   border-radius: var(--radius-lg);
@@ -135,6 +207,13 @@ body {
   background: var(--md-sys-color-surface);
   border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: var(--radius-lg);
+}
+
+.m3-card-elevated {
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: var(--radius-lg);
+  border: none;
+  /* No Shadow, just color tint */
 }
 
 /* Custom Roll Badges */

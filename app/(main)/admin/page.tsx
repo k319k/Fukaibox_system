@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { AdminPanelClient } from "./admin-panel-client";
 import { getPointHistory, getAllUsersWithPoints } from "@/app/actions/admin";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminPage() {
     const user = await getCurrentUserWithRole();
 

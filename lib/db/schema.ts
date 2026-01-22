@@ -163,6 +163,17 @@ export const cookingProposals = sqliteTable("cooking_proposals", {
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
 
+export const kitchenPresence = sqliteTable("kitchen_presence", {
+    id: text("id").primaryKey(),
+    projectId: text("project_id")
+        .notNull()
+        .references(() => cookingProjects.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+        .notNull()
+        .references(() => users.id, { onDelete: "cascade" }),
+    lastSeenAt: integer("last_seen_at", { mode: "timestamp" }).notNull(),
+});
+
 // =============================================
 // 界域百科事典
 // =============================================

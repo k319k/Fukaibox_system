@@ -7,7 +7,14 @@ import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSidebar } from "./sidebar";
 
-const navigation = [
+type NavigationItem = {
+    name: string;
+    href: string;
+    icon: string;
+    activeIcon?: string;
+};
+
+const navigation: NavigationItem[] = [
     { name: "ホーム", href: "/", icon: "material-symbols:home-outline", activeIcon: "material-symbols:home" },
     { name: "儀員名簿", href: "/users", icon: "material-symbols:group-outline", activeIcon: "material-symbols:group" },
     { name: "炊事場", href: "/cooking", icon: "material-symbols:skillet-outline", activeIcon: "material-symbols:skillet" },
@@ -15,12 +22,12 @@ const navigation = [
     { name: "封解Box Tools", href: "/tools", icon: "material-symbols:build-outline", activeIcon: "material-symbols:build" },
 ];
 
-const bottomNavigation = [
+const bottomNavigation: NavigationItem[] = [
     { name: "設定", href: "/settings", icon: "material-symbols:settings-outline", activeIcon: "material-symbols:settings" },
 ];
 
-const gichoNavigation = [
-    { name: "DevStudio", href: "/dev-studio", icon: "material-symbols:code" },
+const gichoNavigation: NavigationItem[] = [
+    { name: "DevStudio", href: "/dev-studio", icon: "material-symbols:code", activeIcon: "material-symbols:code" },
     { name: "AdminPanel", href: "/admin", icon: "material-symbols:shield-outline", activeIcon: "material-symbols:shield" },
 ];
 
@@ -29,7 +36,7 @@ interface SidebarNavProps {
     userRole?: string;
 }
 
-function NavItem({ item }: { item: typeof navigation[0] }) {
+function NavItem({ item }: { item: NavigationItem }) {
     const pathname = usePathname();
     const { isCollapsed } = useSidebar();
     const isActive = pathname === item.href;
@@ -48,7 +55,7 @@ function NavItem({ item }: { item: typeof navigation[0] }) {
                     className={`
                         w-full h-14 relative overflow-hidden
                         flex items-center justify-center border-none
-                        ${isCollapsed ? "" : "justify-start gap-4 px-6"}
+                        ${isCollapsed ? "" : "justify-start gap-4 px-4"}
                         ${isActive ? activeClass : inactiveClass}
                     `}
                     aria-current={isActive ? "page" : undefined}
@@ -104,7 +111,7 @@ export function SidebarNav({ items, userRole }: SidebarNavProps) {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] px-6 py-2 uppercase tracking-wider"
+                                className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] px-4 py-2 uppercase tracking-wider"
                             >
                                 Admin Controls
                             </motion.p>

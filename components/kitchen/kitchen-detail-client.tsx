@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { KitchenDetailClientProps } from "@/types/kitchen";
 import { useKitchenDetail } from "@/hooks/kitchen/useKitchenDetail";
-import { deleteCookingProject } from "@/app/actions/kitchen";
+import { deleteCookingProject, updateCookingProjectStatus } from "@/app/actions/kitchen";
+import { usePresence } from "@/hooks/kitchen/usePresence";
 import KitchenHeader from "./detail/KitchenHeader";
 import SectionList from "./detail/SectionList";
 import ImageUploadTab from "./detail/ImageUploadTab";
@@ -21,6 +22,7 @@ export default function KitchenDetailClient({
 }: KitchenDetailClientProps) {
     const router = useRouter();
     const store = useKitchenDetail(project, initialSections, userRole);
+    const { activeUsers } = usePresence(project.id);
 
     const handleDeleteProject = async () => {
         if (!confirm("プロジェクトを削除しますか？\nこの操作は取り消せません。")) return;
@@ -30,6 +32,16 @@ export default function KitchenDetailClient({
         } catch (error) {
             console.error("Failed to delete project:", error);
             alert("プロジェクトの削除に失敗しました。");
+        }
+    };
+
+    const handleStatusChange = async (status: any) => {
+        try {
+            await updateCookingProjectStatus(project.id, status);
+            router.refresh();
+        } catch (error) {
+            console.error("Failed to update status:", error);
+            alert("ステータスの更新に失敗しました。");
         }
     };
 
@@ -61,9 +73,11 @@ export default function KitchenDetailClient({
             key: "images",
             label: <div className="flex items-center gap-2"><Icon icon="mdi:image-plus" className="text-lg" /><span className="hidden md:inline">画像UP</span></div>,
             children: (
-                <ImageUploadTab sections={store.sections} images={store.images} editorFontSize={store.editorFontSize}
+                <ImageUploadTab
+                    sections={store.sections} images={store.images} editorFontSize={store.editorFontSize}
                     uploadingSectionId={store.uploadingSectionId} uploadProgress={store.uploadProgress} uploaderNames={store.userNames}
-                    projectTitle={project.title}
+                    projectTitle={project.title} projectId={project.id} activeUsers={activeUsers}
+                    onTabChange={store.setSelectedTab}
                     onAddSection={store.handleAddSection} onDeleteSection={store.handleDeleteSection}
                     onImageUpload={store.handleImageUpload} onDeleteImage={store.handleDeleteImage} onOpenLightbox={store.openLightbox}
                 />
@@ -106,6 +120,7 @@ export default function KitchenDetailClient({
                 editorFontSize={store.editorFontSize}
                 onEditorFontSizeChange={store.setEditorFontSize}
                 onDeleteProject={handleDeleteProject}
+                onStatusChange={handleStatusChange}
             />
 
             <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none min-h-[600px]" styles={{ body: { padding: 0 } }}>

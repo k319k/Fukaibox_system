@@ -17,26 +17,42 @@ const theme = {
 
         // Surface Colors (M3 Hierarchy)
         colorBgLayout: "#fff8f6",    // Surface (Background)
-        colorBgContainer: "#ffffff", // Surface Container Lowest (Card default)
-        colorBgElevated: "#fceae5",  // Surface Container (Dialogs/Popovers)
+        colorBgContainer: "#fceae5", // Surface Container (M3 default container color)
+        colorBgElevated: "#fbe7a6",  // Surface Container (Dialogs/Popovers - slightly different for contrast)
 
-        // Borders
-        colorBorder: "#CCC6B5",       // Outline
-        colorBorderSecondary: "transparent", // Remove default card borders for generic use if needed, but keeping outline is M3 Outlined Card style. 
-        // User requested "Filled Card" style (color separation), so we might prefer transparency or specific colored backgrounds.
+        // Borders - M3 Borderless design mostly, but define for Outlined components
+        colorBorder: "#85736f",       // Outline
+        colorBorderSecondary: "transparent", // Remove default card borders
 
-        // Typography
+        // Typography - Headline vs Body distinction
         fontFamily: "'Inter', 'Noto Sans JP', sans-serif",
+        fontSizeHeading1: 32,
+        fontSizeHeading2: 28,
+        fontSizeHeading3: 24,
+        fontSizeHeading4: 22,
 
         // Shapes (Corner Radius)
-        borderRadius: 12,   // Medium (12dp)
-        borderRadiusLG: 16, // Large (16dp) - For Cards
-        borderRadiusSM: 8,  // Small (8dp)
+        borderRadius: 12,   // M3 Medium (12dp) - Default for many small components
+        borderRadiusLG: 16, // M3 Large (16dp) - For Cards
+        borderRadiusSM: 8,  // M3 Small (8dp)
+        borderRadiusXS: 4,  // M3 Extra Small (4dp)
 
-        // Shadows (Elevation) - 平坦化指示対応
+        // Shadows (Elevation) - Remove shadows for flat, color-based hierarchy
         boxShadow: "none",
         boxShadowSecondary: "none",
         boxShadowTertiary: "none",
+
+        // Spacing - 8dp grid base
+        marginXS: 4,
+        marginSM: 8,
+        margin: 16,
+        marginMD: 24,
+        marginLG: 32,
+        paddingXS: 4,
+        paddingSM: 8,
+        padding: 16,
+        paddingMD: 24,
+        paddingLG: 32,
     },
     components: {
         Button: {
@@ -45,25 +61,31 @@ const theme = {
             controlHeightLG: 48,
             controlHeightSM: 32,
             primaryShadow: "none", // Remove shadow from primary button
+            defaultShadow: "none",
+            dangerShadow: "none",
         },
         Card: {
             borderRadiusLG: 16, // M3 Card corner
             boxShadowTertiary: "none", // Remove shadow
-            colorBorderSecondary: "transparent", // Hide border by default to prefer Filled Card style
+            colorBorderSecondary: "transparent", // Hide border
+            colorBgContainer: "#fceae5", // Surface Container (Default Card)
+            headerbg: "transparent", // Transparent header
         },
         Modal: {
-            borderRadiusLG: 28, // Dialogs (Extra Large)
-            boxShadow: "0px 8px 24px -6px rgba(0,0,0,0.1)", // Dialogs still need slight separation
+            borderRadiusLG: 28, // Dialogs (Extra Large 28dp)
+            boxShadow: "0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15)", // Dialogs need slight elevation
         },
         Input: {
-            borderRadius: 16, // M3 Text Field (Outlined) is usually 4px, but Search bars are full rounded. Let's keep 16px for friendly look.
-            controlHeight: 48, // Taller inputs
+            borderRadius: 4, // Text Fields usually have small corners in M3 unless search
+            controlHeight: 56, // Tall inputs (M3 spec)
             activeShadow: "none",
+            colorBorder: "#85736f", // Outline color
         },
         Select: {
-            borderRadius: 16,
-            controlHeight: 48,
+            borderRadius: 4,
+            controlHeight: 56,
             controlOutline: "none",
+            colorBorder: "#85736f",
         },
         Tag: {
             borderRadiusSM: 8, // Assist Chip style
