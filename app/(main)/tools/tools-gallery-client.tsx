@@ -1,8 +1,8 @@
 "use client";
 
-import { Card, CardBody, CardHeader, Button, Chip, Input, Skeleton } from "@heroui/react";
-import { Wrench, Search, Plus, Package, ExternalLink, Code } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardBody, Button, Chip, Input, Skeleton } from "@heroui/react";
+import { Wrench, Search, Plus, Package, Code } from "lucide-react";
+import { motion } from "framer-motion";
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import type { ToolApp } from "@/app/actions/tools";
@@ -20,10 +20,10 @@ const typeLabels: Record<string, string> = {
 };
 
 const typeBadgeClasses: Record<string, string> = {
-    embed: "bg-[#d7f0cb] text-[#10200a]",
-    link: "bg-[#fbe7a6] text-[#564419]",
-    react: "bg-[#ffdad5] text-[#73342b]",
-    html: "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]",
+    embed: "bg-success text-[#10200a]",
+    link: "bg-warning text-[#564419]",
+    react: "bg-primary text-[#73342b]",
+    html: "bg-content2 text-foreground",
 };
 
 const containerVariants = {
@@ -44,12 +44,12 @@ function ToolCard({ app }: { app: ToolApp }) {
         <motion.div variants={itemVariants}>
             <Link href={`/tools/${app.id}`}>
                 <Card
-                    className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none hover:bg-[var(--md-sys-color-surface-container-low)] transition-all cursor-pointer group"
+                    className="bg-content1 rounded-[28px] shadow-none hover:bg-content2/50 transition-all cursor-pointer group w-full"
                     isPressable
                 >
-                    <CardBody className="p-6 space-y-4">
+                    <CardBody className="p-6 gap-4">
                         <div className="flex items-start justify-between">
-                            <div className="w-12 h-12 bg-[#ffdad5] rounded-[16px] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                            <div className="w-12 h-12 bg-primary rounded-[16px] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                                 {app.type === "react" || app.type === "html" ? (
                                     <Code className="w-6 h-6 text-[#73342b]" />
                                 ) : (
@@ -65,11 +65,11 @@ function ToolCard({ app }: { app: ToolApp }) {
                             </Chip>
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-[var(--md-sys-color-on-surface)] group-hover:text-[#73342b] transition-colors">
+                            <h3 className="text-lg font-bold text-foreground group-hover:text-[#73342b] transition-colors">
                                 {app.name}
                             </h3>
                             {app.description && (
-                                <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] mt-1 line-clamp-2">
+                                <p className="text-sm text-foreground/70 mt-1 line-clamp-2">
                                     {app.description}
                                 </p>
                             )}
@@ -79,12 +79,12 @@ function ToolCard({ app }: { app: ToolApp }) {
                                 <Chip
                                     size="sm"
                                     variant="flat"
-                                    className="rounded-full px-2 bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]"
+                                    className="rounded-full px-2 bg-content2 text-foreground/70"
                                 >
                                     {app.category}
                                 </Chip>
                             )}
-                            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)]">
+                            <span className="text-xs text-foreground/60">
                                 by {app.creatorName || "不明"}
                             </span>
                         </div>
@@ -118,35 +118,33 @@ export function ToolsGalleryClient({ apps, categories }: ToolsGalleryClientProps
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="max-w-6xl mx-auto space-y-8"
+            className="max-w-6xl mx-auto gap-8 flex flex-col"
         >
             {/* Header */}
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-[#ffdad5] rounded-[16px] flex items-center justify-center">
+                    <div className="w-12 h-12 bg-primary rounded-[16px] flex items-center justify-center">
                         <Wrench className="w-6 h-6 text-[#73342b]" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">
                             封解Box Tools
                         </h1>
-                        <p className="text-[var(--md-sys-color-on-surface-variant)]">
+                        <p className="text-foreground/70">
                             便利なツールを見つけて使おう
                         </p>
                     </div>
                 </div>
                 <Link href="/tools/new">
-                    <motion.div whileTap={{ scale: 0.95 }}>
-                        <Button
-                            color="primary"
-                            variant="flat"
-                            radius="full"
-                            className="h-12 px-6 font-bold bg-[#ffdad5] text-[#73342b] flex items-center justify-center gap-2"
-                            startContent={<Plus className="w-4 h-4" />}
-                        >
-                            新規作成
-                        </Button>
-                    </motion.div>
+                    <Button
+                        color="primary"
+                        variant="flat"
+                        radius="full"
+                        className="h-12 px-6 font-bold bg-primary text-[#73342b] flex items-center justify-center gap-2 active:scale-95 transition-all"
+                        startContent={<Plus className="w-4 h-4" />}
+                    >
+                        新規作成
+                    </Button>
                 </Link>
             </div>
 
@@ -155,22 +153,22 @@ export function ToolsGalleryClient({ apps, categories }: ToolsGalleryClientProps
                 <Input
                     placeholder="ツールを検索..."
                     variant="flat"
-                    radius="full"
+                    radius="lg"
                     startContent={
-                        <Search className="w-4 h-4 text-[var(--md-sys-color-on-surface-variant)]" />
+                        <Search className="w-4 h-4 text-foreground/60" />
                     }
                     value={searchQuery}
                     onValueChange={setSearchQuery}
                     classNames={{
-                        inputWrapper: "bg-[var(--md-sys-color-surface-container-low)] h-12",
+                        inputWrapper: "bg-content2/40 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all",
                     }}
                     className="flex-1"
                 />
                 <div className="flex gap-2 flex-wrap">
                     <Chip
                         className={`cursor-pointer rounded-full px-4 transition-all ${selectedCategory === null
-                                ? "bg-[#ffdad5] text-[#73342b]"
-                                : "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]"
+                            ? "bg-primary text-[#73342b]"
+                            : "bg-content2 text-foreground/70"
                             }`}
                         onClick={() => setSelectedCategory(null)}
                     >
@@ -180,8 +178,8 @@ export function ToolsGalleryClient({ apps, categories }: ToolsGalleryClientProps
                         <Chip
                             key={category}
                             className={`cursor-pointer rounded-full px-4 transition-all ${selectedCategory === category
-                                    ? "bg-[#ffdad5] text-[#73342b]"
-                                    : "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]"
+                                ? "bg-primary text-[#73342b]"
+                                : "bg-content2 text-foreground/70"
                                 }`}
                             onClick={() => setSelectedCategory(category)}
                         >
@@ -204,31 +202,29 @@ export function ToolsGalleryClient({ apps, categories }: ToolsGalleryClientProps
                     ))}
                 </motion.div>
             ) : (
-                <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
+                <Card className="bg-content1 rounded-[28px] shadow-none w-full">
                     <CardBody className="py-16 text-center">
-                        <div className="w-16 h-16 bg-[var(--md-sys-color-surface-container-high)] rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Package className="w-8 h-8 text-[var(--md-sys-color-on-surface-variant)]" />
+                        <div className="w-16 h-16 bg-content2 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Package className="w-8 h-8 text-foreground/60" />
                         </div>
-                        <h3 className="text-xl font-bold text-[var(--md-sys-color-on-surface)] mb-2">
+                        <h3 className="text-xl font-bold text-foreground mb-2">
                             ツールが見つかりません
                         </h3>
-                        <p className="text-[var(--md-sys-color-on-surface-variant)] mb-6">
+                        <p className="text-foreground/70 mb-6">
                             {searchQuery || selectedCategory
                                 ? "検索条件に一致するツールがありません"
                                 : "まだツールが登録されていません"}
                         </p>
                         <Link href="/tools/new">
-                            <motion.div whileTap={{ scale: 0.95 }} className="inline-block">
-                                <Button
-                                    color="primary"
-                                    variant="flat"
-                                    radius="full"
-                                    className="h-12 px-6 font-bold bg-[#ffdad5] text-[#73342b] flex items-center justify-center gap-2"
-                                    startContent={<Plus className="w-4 h-4" />}
-                                >
-                                    最初のツールを作成
-                                </Button>
-                            </motion.div>
+                            <Button
+                                color="primary"
+                                variant="flat"
+                                radius="full"
+                                className="h-12 px-6 font-bold bg-primary text-[#73342b] flex items-center justify-center gap-2 active:scale-95 transition-all"
+                                startContent={<Plus className="w-4 h-4" />}
+                            >
+                                最初のツールを作成
+                            </Button>
                         </Link>
                     </CardBody>
                 </Card>

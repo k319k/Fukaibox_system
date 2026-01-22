@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardBody, CardHeader, Button, Chip, Avatar, Textarea, Divider } from "@heroui/react";
-import { ArrowLeft, ThumbsUp, ThumbsDown, ExternalLink, Code, Edit, Trash2, Send } from "lucide-react";
+import { ArrowLeft, ThumbsUp, ThumbsDown, ExternalLink, Code, Edit, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Link from "next/link";
@@ -26,10 +26,10 @@ const typeLabels: Record<string, string> = {
 };
 
 const typeBadgeClasses: Record<string, string> = {
-    embed: "bg-[#d7f0cb] text-[#10200a]",
-    link: "bg-[#fbe7a6] text-[#564419]",
-    react: "bg-[#ffdad5] text-[#73342b]",
-    html: "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]",
+    embed: "bg-success text-[#10200a]",
+    link: "bg-warning text-[#564419]",
+    react: "bg-primary text-[#73342b]",
+    html: "bg-content2 text-foreground",
 };
 
 export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole }: ToolDetailClientProps) {
@@ -87,21 +87,24 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="max-w-4xl mx-auto space-y-8"
+            className="max-w-4xl mx-auto gap-8 flex flex-col"
         >
             {/* Header */}
             <div className="flex items-start justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4">
                     <Link href="/tools">
-                        <motion.div whileTap={{ scale: 0.95 }}>
-                            <Button isIconOnly variant="light" radius="full" className="flex items-center justify-center">
-                                <ArrowLeft className="w-5 h-5" />
-                            </Button>
-                        </motion.div>
+                        <Button
+                            isIconOnly
+                            variant="light"
+                            radius="full"
+                            className="flex items-center justify-center active:scale-95 transition-all"
+                        >
+                            <ArrowLeft className="w-5 h-5" />
+                        </Button>
                     </Link>
                     <div>
                         <div className="flex items-center gap-3 mb-1">
-                            <h1 className="text-3xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
+                            <h1 className="text-3xl font-bold tracking-tight text-foreground">
                                 {app.name}
                             </h1>
                             <Chip size="sm" variant="flat" className={`rounded-full px-3 ${typeBadgeClasses[app.type]}`}>
@@ -109,43 +112,39 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                             </Chip>
                         </div>
                         {app.description && (
-                            <p className="text-[var(--md-sys-color-on-surface-variant)]">{app.description}</p>
+                            <p className="text-foreground/70">{app.description}</p>
                         )}
                     </div>
                 </div>
 
                 {isOwner && (
                     <div className="flex gap-2">
-                        <motion.div whileTap={{ scale: 0.95 }}>
-                            <Button
-                                variant="flat"
-                                radius="full"
-                                className="h-10 px-4 flex items-center justify-center gap-2"
-                                startContent={<Edit className="w-4 h-4" />}
-                                isDisabled
-                            >
-                                編集
-                            </Button>
-                        </motion.div>
-                        <motion.div whileTap={{ scale: 0.95 }}>
-                            <Button
-                                color="danger"
-                                variant="flat"
-                                radius="full"
-                                className="h-10 px-4 flex items-center justify-center gap-2"
-                                startContent={<Trash2 className="w-4 h-4" />}
-                                isLoading={isDeleting}
-                                onPress={handleDelete}
-                            >
-                                削除
-                            </Button>
-                        </motion.div>
+                        <Button
+                            variant="flat"
+                            radius="full"
+                            className="h-10 px-4 flex items-center justify-center gap-2 active:scale-95 transition-all"
+                            startContent={<Edit className="w-4 h-4" />}
+                            isDisabled
+                        >
+                            編集
+                        </Button>
+                        <Button
+                            color="danger"
+                            variant="flat"
+                            radius="full"
+                            className="h-10 px-4 flex items-center justify-center gap-2 active:scale-95 transition-all"
+                            startContent={<Trash2 className="w-4 h-4" />}
+                            isLoading={isDeleting}
+                            onPress={handleDelete}
+                        >
+                            削除
+                        </Button>
                     </div>
                 )}
             </div>
 
             {/* App Content */}
-            <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none overflow-hidden">
+            <Card className="bg-content1 rounded-[28px] shadow-none overflow-hidden w-full">
                 {app.type === "embed" && app.embedUrl && (
                     <div className="w-full aspect-video">
                         <iframe
@@ -159,33 +158,31 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
 
                 {app.type === "link" && app.embedUrl && (
                     <CardBody className="p-8 text-center">
-                        <p className="text-[var(--md-sys-color-on-surface-variant)] mb-6">
+                        <p className="text-foreground/70 mb-6">
                             このツールは外部サイトへのリンクです
                         </p>
-                        <motion.div whileTap={{ scale: 0.95 }} className="inline-block">
-                            <Button
-                                as="a"
-                                href={app.embedUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                color="primary"
-                                variant="flat"
-                                radius="full"
-                                className="h-14 px-8 font-bold bg-[#ffdad5] text-[#73342b] flex items-center justify-center gap-2"
-                                endContent={<ExternalLink className="w-5 h-5" />}
-                            >
-                                外部サイトを開く
-                            </Button>
-                        </motion.div>
+                        <Button
+                            as="a"
+                            href={app.embedUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            color="primary"
+                            variant="flat"
+                            radius="full"
+                            className="h-14 px-8 font-bold bg-primary text-[#73342b] flex items-center justify-center gap-2 active:scale-95 transition-all"
+                            endContent={<ExternalLink className="w-5 h-5" />}
+                        >
+                            外部サイトを開く
+                        </Button>
                     </CardBody>
                 )}
 
                 {(app.type === "react" || app.type === "html") && (
                     <CardBody className="p-8 text-center">
-                        <div className="w-16 h-16 bg-[var(--md-sys-color-surface-container-high)] rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Code className="w-8 h-8 text-[var(--md-sys-color-on-surface-variant)]" />
+                        <div className="w-16 h-16 bg-content2 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Code className="w-8 h-8 text-foreground/60" />
                         </div>
-                        <p className="text-[var(--md-sys-color-on-surface-variant)]">
+                        <p className="text-foreground/70">
                             コード実行機能は今後実装予定です
                         </p>
                     </CardBody>
@@ -193,9 +190,9 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
             </Card>
 
             {/* Rating Section */}
-            <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
+            <Card className="bg-content1 rounded-[28px] shadow-none w-full">
                 <CardHeader className="p-8 pb-4 flex-row items-center justify-between">
-                    <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
+                    <h2 className="text-xl font-bold tracking-tight text-foreground">
                         評価
                     </h2>
                     <div className="flex items-center gap-4">
@@ -209,13 +206,13 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                         </div>
                     </div>
                 </CardHeader>
-                <CardBody className="px-8 pb-8 space-y-6">
+                <CardBody className="px-8 pb-8 gap-6 flex flex-col">
                     {/* Rate Form */}
                     {currentUserId && !isOwner && (
-                        <div className="space-y-4">
+                        <div className="gap-4 flex flex-col">
                             {userRating ? (
-                                <div className="p-4 rounded-[20px] bg-[var(--md-sys-color-surface-container-high)]">
-                                    <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] mb-2">
+                                <div className="p-4 rounded-[20px] bg-content2/40">
+                                    <p className="text-sm text-foreground/70 mb-2">
                                         あなたの評価
                                     </p>
                                     <div className="flex items-center justify-between">
@@ -223,8 +220,8 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                                             size="sm"
                                             variant="flat"
                                             className={`rounded-full px-3 ${userRating.rating === 1
-                                                    ? "bg-[#d7f0cb] text-[#10200a]"
-                                                    : "bg-[#ffdad6] text-[#93000a]"
+                                                ? "bg-success text-[#10200a]"
+                                                : "bg-danger text-[#93000a]"
                                                 }`}
                                         >
                                             {userRating.rating === 1 ? "高評価" : "低評価"}
@@ -235,6 +232,7 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                                             radius="full"
                                             onPress={handleDeleteRating}
                                             isLoading={isRating}
+                                            className="active:scale-95 transition-all"
                                         >
                                             取り消す
                                         </Button>
@@ -249,35 +247,31 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                                         value={comment}
                                         onValueChange={setComment}
                                         classNames={{
-                                            inputWrapper: "bg-[var(--md-sys-color-surface-container-high)]",
+                                            inputWrapper: "bg-content2/40 px-4 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all",
                                         }}
                                         minRows={2}
                                     />
                                     <div className="flex gap-3">
-                                        <motion.div whileTap={{ scale: 0.95 }} className="flex-1">
-                                            <Button
-                                                variant="flat"
-                                                radius="full"
-                                                className="w-full h-12 font-bold bg-[#d7f0cb] text-[#10200a] flex items-center justify-center gap-2"
-                                                startContent={<ThumbsUp className="w-4 h-4" />}
-                                                isLoading={isRating}
-                                                onPress={() => handleRate(1)}
-                                            >
-                                                高評価
-                                            </Button>
-                                        </motion.div>
-                                        <motion.div whileTap={{ scale: 0.95 }} className="flex-1">
-                                            <Button
-                                                variant="flat"
-                                                radius="full"
-                                                className="w-full h-12 font-bold bg-[#ffdad6] text-[#93000a] flex items-center justify-center gap-2"
-                                                startContent={<ThumbsDown className="w-4 h-4" />}
-                                                isLoading={isRating}
-                                                onPress={() => handleRate(-1)}
-                                            >
-                                                低評価
-                                            </Button>
-                                        </motion.div>
+                                        <Button
+                                            variant="flat"
+                                            radius="full"
+                                            className="flex-1 h-12 font-bold bg-success text-[#10200a] flex items-center justify-center gap-2 active:scale-95 transition-all"
+                                            startContent={<ThumbsUp className="w-4 h-4" />}
+                                            isLoading={isRating}
+                                            onPress={() => handleRate(1)}
+                                        >
+                                            高評価
+                                        </Button>
+                                        <Button
+                                            variant="flat"
+                                            radius="full"
+                                            className="flex-1 h-12 font-bold bg-danger text-[#93000a] flex items-center justify-center gap-2 active:scale-95 transition-all"
+                                            startContent={<ThumbsDown className="w-4 h-4" />}
+                                            isLoading={isRating}
+                                            onPress={() => handleRate(-1)}
+                                        >
+                                            低評価
+                                        </Button>
                                     </div>
                                 </>
                             )}
@@ -286,19 +280,17 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
 
                     {!currentUserId && (
                         <div className="text-center py-4">
-                            <p className="text-[var(--md-sys-color-on-surface-variant)] mb-4">
+                            <p className="text-foreground/70 mb-4">
                                 評価するにはログインが必要です
                             </p>
                             <Link href="/login">
-                                <motion.div whileTap={{ scale: 0.95 }} className="inline-block">
-                                    <Button
-                                        variant="flat"
-                                        radius="full"
-                                        className="h-10 px-6 font-medium bg-[#ffdad5] text-[#73342b]"
-                                    >
-                                        ログイン
-                                    </Button>
-                                </motion.div>
+                                <Button
+                                    variant="flat"
+                                    radius="full"
+                                    className="h-10 px-6 font-medium bg-primary text-[#73342b] active:scale-95 transition-all"
+                                >
+                                    ログイン
+                                </Button>
                             </Link>
                         </div>
                     )}
@@ -306,9 +298,9 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                     {/* Comments List */}
                     {ratings.filter((r) => r.comment).length > 0 && (
                         <>
-                            <Divider className="bg-[var(--md-sys-color-outline-variant)]/30" />
-                            <div className="space-y-4">
-                                <h3 className="font-medium text-[var(--md-sys-color-on-surface)]">
+                            <Divider className="bg-divider/30 my-6" />
+                            <div className="gap-4 flex flex-col">
+                                <h3 className="font-medium text-foreground">
                                     コメント
                                 </h3>
                                 {ratings
@@ -316,31 +308,31 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                                     .map((r) => (
                                         <div
                                             key={r.id}
-                                            className="flex gap-4 p-4 rounded-[20px] bg-[var(--md-sys-color-surface-container-high)]"
+                                            className="flex gap-4 p-4 rounded-[20px] bg-content2/40"
                                         >
                                             <Avatar
                                                 size="sm"
                                                 name={r.userName?.[0] || "?"}
                                                 src={r.userImage || undefined}
-                                                classNames={{ base: "shrink-0 rounded-[12px]" }}
+                                                classNames={{ base: "shrink-0 rounded-[16px]" }}
                                             />
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-1">
-                                                    <span className="font-medium text-[var(--md-sys-color-on-surface)]">
+                                                    <span className="font-bold text-foreground">
                                                         {r.userName || "不明"}
                                                     </span>
                                                     <Chip
                                                         size="sm"
                                                         variant="flat"
                                                         className={`rounded-full px-2 text-xs ${r.rating === 1
-                                                                ? "bg-[#d7f0cb] text-[#10200a]"
-                                                                : "bg-[#ffdad6] text-[#93000a]"
+                                                            ? "bg-success text-[#10200a]"
+                                                            : "bg-danger text-[#93000a]"
                                                             }`}
                                                     >
                                                         {r.rating === 1 ? "👍" : "👎"}
                                                     </Chip>
                                                 </div>
-                                                <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
+                                                <p className="text-sm text-foreground/70">
                                                     {r.comment}
                                                 </p>
                                             </div>
@@ -353,11 +345,11 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
             </Card>
 
             {/* Info Section */}
-            <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
+            <Card className="bg-content1 rounded-[28px] shadow-none w-full">
                 <CardBody className="p-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div>
-                            <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mb-1">
+                            <p className="text-xs text-foreground/60 mb-1">
                                 作成者
                             </p>
                             <div className="flex items-center gap-2">
@@ -365,45 +357,45 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                                     size="sm"
                                     name={app.creatorName?.[0] || "?"}
                                     src={app.creatorImage || undefined}
-                                    classNames={{ base: "rounded-[8px]" }}
+                                    classNames={{ base: "rounded-[16px]" }}
                                 />
-                                <span className="font-medium text-[var(--md-sys-color-on-surface)]">
+                                <span className="font-bold text-foreground">
                                     {app.creatorName || "不明"}
                                 </span>
                             </div>
                         </div>
                         {app.category && (
                             <div>
-                                <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mb-1">
+                                <p className="text-xs text-foreground/60 mb-1">
                                     カテゴリ
                                 </p>
                                 <Chip
                                     size="sm"
                                     variant="flat"
-                                    className="rounded-full px-3 bg-[var(--md-sys-color-surface-container-high)]"
+                                    className="rounded-full px-3 bg-content2"
                                 >
                                     {app.category}
                                 </Chip>
                             </div>
                         )}
                         <div>
-                            <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mb-1">
+                            <p className="text-xs text-foreground/60 mb-1">
                                 作成日
                             </p>
-                            <p className="font-medium text-[var(--md-sys-color-on-surface)]">
+                            <p className="font-medium text-foreground">
                                 {app.createdAt.toLocaleDateString("ja-JP")}
                             </p>
                         </div>
                         <div>
-                            <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mb-1">
+                            <p className="text-xs text-foreground/60 mb-1">
                                 公開設定
                             </p>
                             <Chip
                                 size="sm"
                                 variant="flat"
                                 className={`rounded-full px-3 ${app.isPublic
-                                        ? "bg-[#d7f0cb] text-[#10200a]"
-                                        : "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]"
+                                    ? "bg-success text-[#10200a]"
+                                    : "bg-content2 text-foreground/70"
                                     }`}
                             >
                                 {app.isPublic ? "公開" : "非公開"}

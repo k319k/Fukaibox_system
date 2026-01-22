@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, CardHeader, Button, Input, Textarea, Select, SelectItem, Switch } from "@heroui/react";
+import { Card, CardBody, Button, Input, Textarea, Select, SelectItem, Switch } from "@heroui/react";
 import { Wrench, ArrowLeft, Save, Link2, Code, FileCode, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -73,31 +73,29 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="max-w-2xl mx-auto space-y-8"
+            className="max-w-2xl mx-auto gap-8 flex flex-col"
         >
             {/* Header */}
             <div className="flex items-center gap-4">
                 <Link href="/tools">
-                    <motion.div whileTap={{ scale: 0.95 }}>
-                        <Button
-                            isIconOnly
-                            variant="light"
-                            radius="full"
-                            className="flex items-center justify-center"
-                        >
-                            <ArrowLeft className="w-5 h-5" />
-                        </Button>
-                    </motion.div>
+                    <Button
+                        isIconOnly
+                        variant="light"
+                        radius="full"
+                        className="flex items-center justify-center active:scale-95 transition-all"
+                    >
+                        <ArrowLeft className="w-5 h-5" />
+                    </Button>
                 </Link>
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-[#ffdad5] rounded-[16px] flex items-center justify-center">
+                    <div className="w-12 h-12 bg-primary rounded-[16px] flex items-center justify-center">
                         <Wrench className="w-6 h-6 text-[#73342b]" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">
                             新規ツール作成
                         </h1>
-                        <p className="text-[var(--md-sys-color-on-surface-variant)]">
+                        <p className="text-foreground/70">
                             ツールを登録してみんなと共有しよう
                         </p>
                     </div>
@@ -105,10 +103,10 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
             </div>
 
             {/* Form */}
-            <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
-                <CardBody className="p-8 space-y-6">
+            <Card className="bg-content1 rounded-[28px] shadow-none w-full">
+                <CardBody className="p-8 gap-6 flex flex-col">
                     {error && (
-                        <div className="p-4 rounded-[16px] bg-[#ffdad6] text-[#93000a]">
+                        <div className="p-4 rounded-[16px] bg-danger text-[#93000a] gap-4">
                             {error}
                         </div>
                     )}
@@ -122,7 +120,7 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                         onValueChange={setName}
                         isRequired
                         classNames={{
-                            inputWrapper: "bg-[var(--md-sys-color-surface-container-high)] h-14",
+                            inputWrapper: "bg-content2/40 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all",
                         }}
                     />
 
@@ -134,7 +132,7 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                         value={description}
                         onValueChange={setDescription}
                         classNames={{
-                            inputWrapper: "bg-[var(--md-sys-color-surface-container-high)]",
+                            inputWrapper: "bg-content2/40 px-4 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all",
                         }}
                         minRows={3}
                     />
@@ -147,7 +145,7 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                         value={category}
                         onValueChange={setCategory}
                         classNames={{
-                            inputWrapper: "bg-[var(--md-sys-color-surface-container-high)] h-14",
+                            inputWrapper: "bg-content2/40 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all",
                         }}
                     />
 
@@ -162,8 +160,9 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                             if (selected) setType(selected);
                         }}
                         classNames={{
-                            trigger: "bg-[var(--md-sys-color-surface-container-high)] h-14",
+                            trigger: "bg-content2/40 h-14",
                         }}
+                        popoverProps={{ className: "rounded-[20px] shadow-2xl" }}
                     >
                         {appTypes.map((t) => (
                             <SelectItem key={t.key} textValue={t.label}>
@@ -171,7 +170,7 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                                     <t.icon className="w-4 h-4" />
                                     <div>
                                         <p className="font-medium">{t.label}</p>
-                                        <p className="text-xs text-[var(--md-sys-color-on-surface-variant)]">
+                                        <p className="text-xs text-foreground/60">
                                             {t.description}
                                         </p>
                                     </div>
@@ -190,24 +189,24 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                             onValueChange={setEmbedUrl}
                             isRequired
                             classNames={{
-                                inputWrapper: "bg-[var(--md-sys-color-surface-container-high)] h-14",
+                                inputWrapper: "bg-content2/40 px-4 h-14 focus-within:bg-background border-b-2 border-transparent focus-within:border-primary shadow-inner transition-all",
                             }}
                         />
                     )}
 
                     {(type === "react" || type === "html") && (
-                        <div className="p-4 rounded-[16px] bg-[#fbe7a6] text-[#564419]">
+                        <div className="p-4 rounded-[16px] bg-warning text-[#564419] gap-4">
                             React/HTMLファイルのアップロード機能は今後実装予定です。
                             現在は埋め込みまたはリンクタイプをご利用ください。
                         </div>
                     )}
 
-                    <div className="flex items-center justify-between p-4 rounded-[20px] bg-[var(--md-sys-color-surface-container-high)]">
+                    <div className="flex items-center justify-between p-4 rounded-[20px] bg-content2/40">
                         <div>
-                            <p className="font-medium text-[var(--md-sys-color-on-surface)]">
+                            <p className="font-medium text-foreground">
                                 公開する
                             </p>
-                            <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
+                            <p className="text-sm text-foreground/70">
                                 他のユーザーがGalleryで閲覧できます
                             </p>
                         </div>
@@ -216,24 +215,22 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                             onValueChange={setIsPublic}
                             color="primary"
                             classNames={{
-                                wrapper: "group-data-[selected=true]:bg-[#73342b]",
+                                wrapper: "group-data-[selected=true]:bg-primary shadow-none",
                             }}
                         />
                     </div>
 
-                    <motion.div whileTap={{ scale: 0.95 }}>
-                        <Button
-                            color="primary"
-                            variant="flat"
-                            radius="full"
-                            className="w-full h-14 font-bold bg-[#ffdad5] text-[#73342b] flex items-center justify-center gap-2"
-                            startContent={<Save className="w-5 h-5" />}
-                            isLoading={isSubmitting}
-                            onPress={handleSubmit}
-                        >
-                            作成する
-                        </Button>
-                    </motion.div>
+                    <Button
+                        color="primary"
+                        variant="flat"
+                        radius="full"
+                        className="w-full h-14 font-bold bg-primary text-[#73342b] flex items-center justify-center gap-2 active:scale-95 transition-all"
+                        startContent={<Save className="w-5 h-5" />}
+                        isLoading={isSubmitting}
+                        onPress={handleSubmit}
+                    >
+                        作成する
+                    </Button>
                 </CardBody>
             </Card>
         </motion.div>
