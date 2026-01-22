@@ -2,35 +2,35 @@
 
 import { Card } from "antd";
 import Link from "next/link";
-import { ChefHat, Package, Wrench, Settings } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 
 const actions = [
     {
         label: "料理をする",
         href: "/cooking",
-        icon: ChefHat,
+        icon: "material-symbols:skillet",
         bgColor: "bg-[#ffdad5]",
         textColor: "text-[#73342b]"
     },
     {
         label: "保管庫を見る",
         href: "/storage",
-        icon: Package,
+        icon: "material-symbols:package-2-outline",
         bgColor: "bg-[#fbe7a6]",
         textColor: "text-[#564419]"
     },
     {
         label: "道具を使う",
         href: "/tools",
-        icon: Wrench,
+        icon: "material-symbols:build",
         bgColor: "bg-[#d7f0cb]",
         textColor: "text-[#10200a]"
     },
     {
         label: "設定",
         href: "/settings",
-        icon: Settings,
+        icon: "material-symbols:settings",
         bgColor: "bg-[var(--md-sys-color-surface-container-high)]",
         textColor: "text-[var(--md-sys-color-on-surface)]"
     },
@@ -68,8 +68,8 @@ export function QuickActions() {
                                 className={`h-44 border-none shadow-none hover:shadow-lg transition-all duration-300 ${action.bgColor} ${action.textColor} rounded-[28px]`}
                                 styles={{ body: { height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 20, padding: 32 } }}
                             >
-                                <action.icon
-                                    strokeWidth={1.5}
+                                <Icon
+                                    icon={action.icon}
                                     className="w-10 h-10 group-hover:scale-110 transition-transform duration-300"
                                 />
                                 <span className="text-lg font-medium tracking-normal">

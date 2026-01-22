@@ -2,7 +2,7 @@
 
 import { Card } from "antd";
 import Link from "next/link";
-import { Play } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { formatRelativeTime } from "@/lib/youtube";
 import type { YouTubeVideo } from "@/lib/youtube";
 import Image from "next/image";
@@ -38,7 +38,7 @@ export function ShortsGrid({ shorts }: ShortsGridProps) {
             >
                 <div className="p-8 pb-0">
                     <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3 text-[var(--md-sys-color-on-surface)]">
-                        <Play className="w-6 h-6 fill-current text-[#73342b]" />
+                        <Icon icon="material-symbols:play-arrow" className="w-6 h-6 text-[#73342b]" />
                         最新のShorts
                     </h2>
                 </div>
@@ -67,7 +67,7 @@ export function ShortsGrid({ shorts }: ShortsGridProps) {
                                                 />
                                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px]">
                                                     <div className="w-12 h-12 bg-[#fff8f6]/95 rounded-full flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform text-[#73342b] pl-0.5">
-                                                        <Play className="w-6 h-6 fill-current" />
+                                                        <Icon icon="material-symbols:play-arrow" className="w-6 h-6" />
                                                     </div>
                                                 </div>
                                             </div>

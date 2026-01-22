@@ -3,25 +3,25 @@
 import { Button, Tooltip, Divider } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ChefHat, Book, Wrench, Settings, Users, Code, Shield } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSidebar } from "./sidebar";
 
 const navigation = [
-    { name: "ホーム", href: "/", icon: Home },
-    { name: "儀員名簿", href: "/users", icon: Users },
-    { name: "炊事場", href: "/cooking", icon: ChefHat },
-    { name: "界域百科事典", href: "/dictionary", icon: Book },
-    { name: "封解Box Tools", href: "/tools", icon: Wrench },
+    { name: "ホーム", href: "/", icon: "material-symbols:home-outline", activeIcon: "material-symbols:home" },
+    { name: "儀員名簿", href: "/users", icon: "material-symbols:group-outline", activeIcon: "material-symbols:group" },
+    { name: "炊事場", href: "/cooking", icon: "material-symbols:skillet-outline", activeIcon: "material-symbols:skillet" },
+    { name: "界域百科事典", href: "/dictionary", icon: "material-symbols:menu-book-outline", activeIcon: "material-symbols:menu-book" },
+    { name: "封解Box Tools", href: "/tools", icon: "material-symbols:build-outline", activeIcon: "material-symbols:build" },
 ];
 
 const bottomNavigation = [
-    { name: "設定", href: "/settings", icon: Settings },
+    { name: "設定", href: "/settings", icon: "material-symbols:settings-outline", activeIcon: "material-symbols:settings" },
 ];
 
 const gichoNavigation = [
-    { name: "DevStudio", href: "/dev-studio", icon: Code },
-    { name: "AdminPanel", href: "/admin", icon: Shield },
+    { name: "DevStudio", href: "/dev-studio", icon: "material-symbols:code" },
+    { name: "AdminPanel", href: "/admin", icon: "material-symbols:shield-outline", activeIcon: "material-symbols:shield" },
 ];
 
 interface SidebarNavProps {
@@ -35,9 +35,10 @@ function NavItem({ item }: { item: typeof navigation[0] }) {
     const isActive = pathname === item.href;
 
     // Use CSS classes defined in globals.css for M3 Styling
-    // nav-item-active handles background and text color
     const activeClass = "nav-item-active";
     const inactiveClass = "nav-item-inactive";
+
+    const currentIcon = isActive && item.activeIcon ? item.activeIcon : item.icon;
 
     const button = (
         <Link href={item.href} className="group relative block my-1">
@@ -52,8 +53,8 @@ function NavItem({ item }: { item: typeof navigation[0] }) {
                     `}
                     aria-current={isActive ? "page" : undefined}
                 >
-                    <item.icon
-                        strokeWidth={isActive ? 2.5 : 1.5}
+                    <Icon
+                        icon={currentIcon}
                         className={`w-6 h-6 shrink-0 transition-transform duration-200 ${isActive ? "scale-105" : "scale-100"}`}
                     />
                     <AnimatePresence>

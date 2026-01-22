@@ -3,7 +3,7 @@
 import { Button, Tooltip } from "antd";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { SidebarNav, SidebarBottomNav, navigation } from "./sidebar-nav";
@@ -58,7 +58,7 @@ function SidebarLogo({ isCollapsed, onClose, onToggleCollapse }: {
                         shape="circle"
                         className="md:hidden flex items-center justify-center"
                         onClick={onClose}
-                        icon={<X strokeWidth={1.5} className="w-5 h-5" />}
+                        icon={<Icon icon="material-symbols:close" className="w-5 h-5" />}
                     />
                 </motion.div>
             )}
@@ -73,9 +73,9 @@ function SidebarLogo({ isCollapsed, onClose, onToggleCollapse }: {
                             className="flex items-center justify-center"
                             onClick={onToggleCollapse}
                             icon={isCollapsed ? (
-                                <ChevronsRight strokeWidth={1.5} className="w-5 h-5" />
+                                <Icon icon="material-symbols:keyboard-double-arrow-right" className="w-5 h-5" />
                             ) : (
-                                <ChevronsLeft strokeWidth={1.5} className="w-5 h-5" />
+                                <Icon icon="material-symbols:keyboard-double-arrow-left" className="w-5 h-5" />
                             )}
                         />
                     </Tooltip>
@@ -112,7 +112,7 @@ export function Sidebar({ userRole = "guest", userName, userImage }: SidebarProp
                     shape="circle"
                     className="fixed top-4 left-4 z-50 bg-[var(--md-sys-color-surface-container-lowest)] shadow-sm flex items-center justify-center"
                     onClick={() => setIsMobileOpen(true)}
-                    icon={<Menu strokeWidth={1.5} className="w-5 h-5" />}
+                    icon={<Icon icon="material-symbols:menu" className="w-5 h-5" />}
                 />
             </motion.div>
 

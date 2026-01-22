@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, Progress, Avatar, Skeleton } from "antd";
-import { Trophy, Crown } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { getTopRankings, type RankingUser } from "@/app/actions/ranking";
@@ -27,7 +27,7 @@ function getRankStyle(rank: number): { bg: string; text: string } {
 }
 
 function getRankIcon(rank: number) {
-    if (rank === 1) return <Crown className="w-4 h-4 text-[#73342b]" />;
+    if (rank === 1) return <Icon icon="material-symbols:workspace-premium" className="w-4 h-4 text-[#73342b]" />;
     return null;
 }
 
@@ -64,7 +64,7 @@ export function RankingWidget() {
             >
                 <div className="p-8 pb-4">
                     <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3 text-[var(--md-sys-color-on-surface)]">
-                        <Trophy className="w-5 h-5 text-[#564419]" />
+                        <Icon icon="material-symbols:trophy" className="w-5 h-5 text-[#564419]" />
                         貢献度ランキング
                     </h2>
                 </div>

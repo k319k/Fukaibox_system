@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, Button, Tag, Avatar, Input, Modal } from "antd";
-import { Shield, History, Users, Plus, Minus, Search } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { modifyUserPoints, type PointHistoryEntry, type UserWithPoints } from "@/app/actions/admin";
@@ -74,7 +74,7 @@ export function AdminPanelClient({ user, initialPointHistory, initialUsersWithPo
             {/* Header */}
             <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-[#ffdad5] rounded-[16px] flex items-center justify-center">
-                    <Shield className="w-6 h-6 text-[#73342b]" />
+                    <Icon icon="material-symbols:shield-outline" className="w-6 h-6 text-[#73342b]" />
                 </div>
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">AdminPanel</h1>
@@ -88,12 +88,12 @@ export function AdminPanelClient({ user, initialPointHistory, initialUsersWithPo
                 <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
                     <div className="p-8 pb-4 flex flex-col gap-4">
                         <div className="flex items-center gap-4 w-full">
-                            <Users className="w-5 h-5 text-[#73342b]" />
+                            <Icon icon="material-symbols:group-outline" className="w-6 h-6 text-[#73342b]" />
                             <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">儀員一覧</h2>
                         </div>
                         <Input
                             placeholder="ユーザーを検索..."
-                            prefix={<Search className="w-4 h-4 text-[var(--md-sys-color-on-surface-variant)]" />}
+                            prefix={<Icon icon="material-symbols:search" className="w-5 h-5 text-[var(--md-sys-color-on-surface-variant)]" />}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             size="large"
@@ -130,7 +130,7 @@ export function AdminPanelClient({ user, initialPointHistory, initialUsersWithPo
                 {/* Point History */}
                 <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
                     <div className="p-8 pb-4 flex items-center gap-4">
-                        <History className="w-5 h-5 text-[#73342b]" />
+                        <Icon icon="material-symbols:history" className="w-6 h-6 text-[#73342b]" />
                         <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">点数履歴</h2>
                     </div>
                     <div className="px-8 pb-8 max-h-[500px] overflow-y-auto">
@@ -181,7 +181,7 @@ export function AdminPanelClient({ user, initialPointHistory, initialUsersWithPo
                                 size="large"
                                 shape="round"
                                 className="h-12 font-bold"
-                                icon={<Minus className="w-4 h-4" />}
+                                icon={<Icon icon="material-symbols:remove" className="w-5 h-5" />}
                                 loading={isSubmitting}
                                 disabled={!pointAmount || !reason}
                                 onClick={() => handleModifyPoints(false)}
@@ -195,7 +195,7 @@ export function AdminPanelClient({ user, initialPointHistory, initialUsersWithPo
                                 size="large"
                                 shape="round"
                                 className="h-12 font-bold bg-[#d7f0cb] text-[#10200a] border-none"
-                                icon={<Plus className="w-4 h-4" />}
+                                icon={<Icon icon="material-symbols:add" className="w-5 h-5" />}
                                 loading={isSubmitting}
                                 disabled={!pointAmount || !reason}
                                 onClick={() => handleModifyPoints(true)}

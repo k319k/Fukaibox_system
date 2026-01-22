@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, Button, Tag, Avatar, Input, Divider } from "antd";
-import { ArrowLeft, ThumbsUp, ThumbsDown, ExternalLink, Code, Edit, Trash2 } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Link from "next/link";
@@ -83,7 +83,7 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
             <div className="flex items-start justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4">
                     <Link href="/tools">
-                        <Button type="text" shape="circle" icon={<ArrowLeft className="w-5 h-5" />} />
+                        <Button type="text" shape="circle" icon={<Icon icon="material-symbols:arrow-back" className="w-5 h-5" />} />
                     </Link>
                     <div>
                         <div className="flex items-center gap-3 mb-1">
@@ -95,8 +95,8 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                 </div>
                 {isOwner && (
                     <div className="flex gap-2">
-                        <Button shape="round" icon={<Edit className="w-4 h-4" />} disabled>編集</Button>
-                        <Button danger shape="round" icon={<Trash2 className="w-4 h-4" />} loading={isDeleting} onClick={handleDelete}>削除</Button>
+                        <Button shape="round" icon={<Icon icon="material-symbols:edit-outline" className="w-4 h-4" />} disabled>編集</Button>
+                        <Button danger shape="round" icon={<Icon icon="material-symbols:delete-outline" className="w-4 h-4" />} loading={isDeleting} onClick={handleDelete}>削除</Button>
                     </div>
                 )}
             </div>
@@ -111,7 +111,7 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                 {app.type === "link" && app.embedUrl && (
                     <div className="p-8 text-center">
                         <p className="text-[var(--md-sys-color-on-surface-variant)] mb-6">このツールは外部サイトへのリンクです</p>
-                        <Button type="primary" shape="round" size="large" href={app.embedUrl} target="_blank" rel="noopener noreferrer" className="h-14 px-8 font-bold bg-[#73342b] border-none" icon={<ExternalLink className="w-5 h-5" />}>
+                        <Button type="primary" shape="round" size="large" href={app.embedUrl} target="_blank" rel="noopener noreferrer" className="h-14 px-8 font-bold bg-[#73342b] border-none" icon={<Icon icon="material-symbols:open-in-new" className="w-5 h-5" />}>
                             外部サイトを開く
                         </Button>
                     </div>
@@ -119,7 +119,7 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                 {(app.type === "react" || app.type === "html") && (
                     <div className="p-8 text-center">
                         <div className="w-16 h-16 bg-[var(--md-sys-color-surface-container-high)] rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Code className="w-8 h-8 text-[var(--md-sys-color-on-surface-variant)]" />
+                            <Icon icon="material-symbols:code" className="w-8 h-8 text-[var(--md-sys-color-on-surface-variant)]" />
                         </div>
                         <p className="text-[var(--md-sys-color-on-surface-variant)]">コード実行機能は今後実装予定です</p>
                     </div>
@@ -131,8 +131,14 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                 <div className="p-8 pb-4 flex items-center justify-between">
                     <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">評価</h2>
                     <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2"><ThumbsUp className="w-4 h-4 text-[#10200a]" /><span className="font-mono">{likes}</span></div>
-                        <div className="flex items-center gap-2"><ThumbsDown className="w-4 h-4 text-[#93000a]" /><span className="font-mono">{dislikes}</span></div>
+                        <div className="flex items-center gap-2">
+                            <Icon icon="material-symbols:thumb-up" className="w-4 h-4 text-[#10200a]" />
+                            <span className="font-mono">{likes}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Icon icon="material-symbols:thumb-down" className="w-4 h-4 text-[#93000a]" />
+                            <span className="font-mono">{dislikes}</span>
+                        </div>
                     </div>
                 </div>
                 <div className="px-8 pb-8 gap-6 flex flex-col">
@@ -152,8 +158,8 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                                 <>
                                     <TextArea placeholder="コメントを追加（任意）" value={comment} onChange={(e) => setComment(e.target.value)} rows={3} className="rounded-[16px]" />
                                     <div className="flex gap-3">
-                                        <Button block size="large" shape="round" className="flex-1 h-12 font-bold bg-[#d7f0cb] text-[#10200a] border-none" icon={<ThumbsUp className="w-4 h-4" />} loading={isRating} onClick={() => handleRate(1)}>高評価</Button>
-                                        <Button block size="large" shape="round" className="flex-1 h-12 font-bold bg-[#ffdad6] text-[#93000a] border-none" icon={<ThumbsDown className="w-4 h-4" />} loading={isRating} onClick={() => handleRate(-1)}>低評価</Button>
+                                        <Button block size="large" shape="round" className="flex-1 h-12 font-bold bg-[#d7f0cb] text-[#10200a] border-none" icon={<Icon icon="material-symbols:thumb-up-outline" className="w-4 h-4" />} loading={isRating} onClick={() => handleRate(1)}>高評価</Button>
+                                        <Button block size="large" shape="round" className="flex-1 h-12 font-bold bg-[#ffdad6] text-[#93000a] border-none" icon={<Icon icon="material-symbols:thumb-down-outline" className="w-4 h-4" />} loading={isRating} onClick={() => handleRate(-1)}>低評価</Button>
                                     </div>
                                 </>
                             )}

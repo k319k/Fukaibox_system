@@ -2,7 +2,7 @@
 
 import { Avatar, Dropdown, Tooltip } from "antd";
 import type { MenuProps } from "antd";
-import { LogIn, LogOut } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { signOut } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,7 +40,7 @@ export function SidebarUser({ userName, userImage, userRole = "guest" }: Sidebar
         ? [
             {
                 key: "logout",
-                icon: <LogOut className="w-4 h-4" />,
+                icon: <Icon icon="material-symbols:logout" className="w-4 h-4" />,
                 label: "ログアウト",
                 danger: true,
                 onClick: () => signOut(),
@@ -49,7 +49,7 @@ export function SidebarUser({ userName, userImage, userRole = "guest" }: Sidebar
         : [
             {
                 key: "login",
-                icon: <LogIn className="w-4 h-4" />,
+                icon: <Icon icon="material-symbols:login" className="w-4 h-4" />,
                 label: <Link href="/login">ログイン</Link>,
             },
         ];

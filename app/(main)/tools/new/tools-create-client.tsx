@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, Button, Input, Select, Switch, Alert } from "antd";
-import { Wrench, ArrowLeft, Save, Link2, Code, FileCode, ExternalLink } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -21,10 +21,10 @@ interface ToolsCreateClientProps {
 }
 
 const appTypes = [
-    { key: "embed", label: "埋め込み", description: "外部サイトをiframeで埋め込み", icon: ExternalLink },
-    { key: "link", label: "リンク", description: "外部サイトへのリンク", icon: Link2 },
-    { key: "react", label: "React", description: "Reactコンポーネント", icon: Code },
-    { key: "html", label: "HTML", description: "HTMLファイル", icon: FileCode },
+    { key: "embed", label: "埋め込み", description: "外部サイトをiframeで埋め込み", icon: "material-symbols:open-in-new" },
+    { key: "link", label: "リンク", description: "外部サイトへのリンク", icon: "material-symbols:link" },
+    { key: "react", label: "React", description: "Reactコンポーネント", icon: "material-symbols:code" },
+    { key: "html", label: "HTML", description: "HTMLファイル", icon: "material-symbols:html" },
 ];
 
 export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
@@ -75,11 +75,11 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
             {/* Header */}
             <div className="flex items-center gap-4">
                 <Link href="/tools">
-                    <Button type="text" shape="circle" icon={<ArrowLeft className="w-5 h-5" />} />
+                    <Button type="text" shape="circle" icon={<Icon icon="material-symbols:arrow-back" className="w-5 h-5" />} />
                 </Link>
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-[#ffdad5] rounded-[16px] flex items-center justify-center">
-                        <Wrench className="w-6 h-6 text-[#73342b]" />
+                        <Icon icon="material-symbols:build-outline" className="w-6 h-6 text-[#73342b]" />
                     </div>
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">新規ツール作成</h1>
@@ -137,7 +137,7 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                                 value: t.key,
                                 label: (
                                     <div className="flex items-center gap-3">
-                                        <t.icon className="w-4 h-4" />
+                                        <Icon icon={t.icon} className="w-4 h-4" />
                                         <div>
                                             <p className="font-medium">{t.label}</p>
                                             <p className="text-xs text-[var(--md-sys-color-on-surface-variant)]">{t.description}</p>
@@ -184,7 +184,7 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
                         size="large"
                         block
                         className="h-14 font-bold bg-[#ffdad5] text-[#73342b] border-none"
-                        icon={<Save className="w-5 h-5" />}
+                        icon={<Icon icon="material-symbols:save-outline" className="w-5 h-5" />}
                         loading={isSubmitting}
                         onClick={handleSubmit}
                     >

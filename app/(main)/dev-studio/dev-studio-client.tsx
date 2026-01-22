@@ -1,8 +1,7 @@
 "use client";
 
 import { Card, Button, Tag, Divider, Input, Typography } from "antd";
-import { CopyOutlined } from "@ant-design/icons";
-import { Code, Key, FileText, Terminal, ExternalLink } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 
 const { Paragraph } = Typography;
@@ -30,7 +29,7 @@ export function DevStudioClient({ user }: DevStudioClientProps) {
             {/* Header */}
             <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-[#ffdad5] rounded-[16px] flex items-center justify-center">
-                    <Code className="w-6 h-6 text-[#73342b]" />
+                    <Icon icon="material-symbols:code" className="w-6 h-6 text-[#73342b]" />
                 </div>
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">DevStudio</h1>
@@ -42,7 +41,7 @@ export function DevStudioClient({ user }: DevStudioClientProps) {
             {/* API Key Section */}
             <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
                 <div className="p-8 pb-4 flex items-center gap-4">
-                    <Key className="w-5 h-5 text-[#73342b]" />
+                    <Icon icon="material-symbols:vpn-key-outline" className="w-5 h-5 text-[#73342b]" />
                     <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">APIキー</h2>
                 </div>
                 <div className="px-8 pb-8 space-y-6">
@@ -51,7 +50,7 @@ export function DevStudioClient({ user }: DevStudioClientProps) {
                             儀員点数APIを外部から利用するためのAPIキーです。機密情報として保管してください。
                         </p>
                         <div className="flex items-center gap-4">
-                            <Paragraph copyable={{ icon: <CopyOutlined className="w-4 h-4" /> }} className="flex-1 rounded-full bg-[var(--md-sys-color-surface-container-highest)] px-4 py-2 font-mono mb-0">
+                            <Paragraph copyable={{ icon: <Icon icon="material-symbols:content-copy" className="w-4 h-4" /> }} className="flex-1 rounded-full bg-[var(--md-sys-color-surface-container-highest)] px-4 py-2 font-mono mb-0">
                                 fk_••••••••••••••••••••
                             </Paragraph>
                         </div>
@@ -61,7 +60,7 @@ export function DevStudioClient({ user }: DevStudioClientProps) {
                             shape="round"
                             size="large"
                             className="h-12 px-6 font-bold bg-[#ffdad5] text-[#73342b] border-none"
-                            icon={<Key className="w-4 h-4" />}
+                            icon={<Icon icon="material-symbols:vpn-key-outline" className="w-4 h-4" />}
                             disabled
                         >
                             新しいAPIキーを発行（準備中）
@@ -73,7 +72,7 @@ export function DevStudioClient({ user }: DevStudioClientProps) {
             {/* API Documentation */}
             <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
                 <div className="p-8 pb-4 flex items-center gap-4">
-                    <FileText className="w-5 h-5 text-[#73342b]" />
+                    <Icon icon="material-symbols:description-outline" className="w-5 h-5 text-[#73342b]" />
                     <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">API仕様</h2>
                 </div>
                 <div className="px-8 pb-8 space-y-4">
@@ -98,7 +97,7 @@ export function DevStudioClient({ user }: DevStudioClientProps) {
             {/* Quick Actions */}
             <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
                 <div className="p-8 pb-4 flex items-center gap-4">
-                    <Terminal className="w-5 h-5 text-[#73342b]" />
+                    <Icon icon="material-symbols:terminal" className="w-5 h-5 text-[#73342b]" />
                     <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">クイックリンク</h2>
                 </div>
                 <div className="px-8 pb-8">
@@ -111,7 +110,7 @@ export function DevStudioClient({ user }: DevStudioClientProps) {
                                 size="large"
                                 block
                                 className="h-14 font-medium flex items-center justify-center gap-2 bg-[var(--md-sys-color-surface-container-high)]"
-                                icon={<ExternalLink className="w-4 h-4" />}
+                                icon={<Icon icon="material-symbols:open-in-new" className="w-4 h-4" />}
                             >
                                 GitHub リポジトリ
                             </Button>
@@ -124,7 +123,7 @@ export function DevStudioClient({ user }: DevStudioClientProps) {
                                 size="large"
                                 block
                                 className="h-14 font-medium flex items-center justify-center gap-2 bg-[var(--md-sys-color-surface-container-high)]"
-                                icon={<ExternalLink className="w-4 h-4" />}
+                                icon={<Icon icon="material-symbols:open-in-new" className="w-4 h-4" />}
                             >
                                 Vercel ダッシュボード
                             </Button>

@@ -4,7 +4,7 @@ import { Button, Card, Input, Alert } from "antd";
 import { useState } from "react";
 import { signIn } from "@/lib/auth-client";
 import Link from "next/link";
-import { Package, LogIn, User, ArrowLeft, AlertCircle } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 
 export default function LoginPage() {
@@ -57,7 +57,7 @@ export default function LoginPage() {
             <Card className="w-full max-w-sm md:max-w-md bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] shadow-sm border-none relative z-10">
                 <div className="flex flex-col gap-3 items-center justify-center pt-8 md:pt-12 pb-2 md:pb-4 px-6 md:px-10">
                     <div className="w-14 h-14 md:w-16 md:h-16 bg-[#ffdad5] rounded-[16px] flex items-center justify-center">
-                        <Package strokeWidth={1.5} className="w-7 h-7 md:w-8 md:h-8 text-[#73342b]" />
+                        <Icon icon="material-symbols:package-2-outline" className="w-7 h-7 md:w-8 md:h-8 text-[#73342b]" />
                     </div>
                     <div className="text-center">
                         <h1 className="text-2xl md:text-3xl text-[var(--md-sys-color-on-surface)] font-extrabold tracking-tight">封解Box</h1>
@@ -70,7 +70,7 @@ export default function LoginPage() {
                             message={error}
                             type="error"
                             showIcon
-                            icon={<AlertCircle className="w-5 h-5" />}
+                            icon={<Icon icon="material-symbols:error-outline" className="w-5 h-5" />}
                             className="rounded-[16px]"
                         />
                     )}
@@ -103,7 +103,7 @@ export default function LoginPage() {
                                     block
                                     className="rounded-full h-11 md:h-12 bg-[#ffdad5] text-[#73342b] border-none flex items-center justify-center gap-2"
                                     onClick={() => setIsGuestMode(true)}
-                                    icon={<User strokeWidth={1.5} className="w-5 h-5" />}
+                                    icon={<Icon icon="material-symbols:person-outline" className="w-5 h-5" />}
                                 >
                                     ゲストログイン
                                 </Button>
@@ -152,7 +152,7 @@ export default function LoginPage() {
                                     className="font-semibold rounded-full h-12 md:h-14 flex items-center justify-center bg-[#73342b] border-none"
                                     onClick={handleGuestLogin}
                                     loading={isLoading}
-                                    icon={!isLoading && <LogIn strokeWidth={1.5} className="w-5 h-5" />}
+                                    icon={!isLoading && <Icon icon="material-symbols:login" className="w-5 h-5" />}
                                 >
                                     ログイン
                                 </Button>
@@ -165,7 +165,7 @@ export default function LoginPage() {
                                     block
                                     className="rounded-full h-10 md:h-11 flex items-center justify-center gap-2"
                                     onClick={() => setIsGuestMode(false)}
-                                    icon={<ArrowLeft strokeWidth={1.5} className="w-4 h-4" />}
+                                    icon={<Icon icon="material-symbols:arrow-back" className="w-4 h-4" />}
                                 >
                                     戻る
                                 </Button>

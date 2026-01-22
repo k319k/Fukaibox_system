@@ -2,7 +2,7 @@
 
 import { Card, Tag } from "antd";
 import Link from "next/link";
-import { Tv, Play, ExternalLink } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { formatDate, formatRelativeTime } from "@/lib/youtube";
 import type { YouTubeVideo } from "@/lib/youtube";
 import Image from "next/image";
@@ -55,7 +55,7 @@ export function LiveStreamWidget({ latestStream }: LiveStreamWidgetProps) {
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px]">
                                         <div className="w-16 h-16 bg-[#fff8f6]/95 rounded-full flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform text-[#73342b] pl-1">
-                                            <Play className="w-8 h-8 fill-current" />
+                                            <Icon icon="material-symbols:play-arrow" className="w-8 h-8" />
                                         </div>
                                     </div>
                                 </div>
@@ -66,13 +66,13 @@ export function LiveStreamWidget({ latestStream }: LiveStreamWidgetProps) {
                             <div className="flex items-center gap-3 mt-3 text-[var(--md-sys-color-on-surface-variant)]">
                                 <Tag className="rounded-full bg-[var(--md-sys-color-surface-container-high)] border-none">配信</Tag>
                                 <span className="text-base font-normal leading-relaxed">{formatDate(latestStream.publishedAt)}</span>
-                                <ExternalLink className="w-4 h-4 ml-auto opacity-50" />
+                                <Icon icon="material-symbols:open-in-new" className="w-4 h-4 ml-auto opacity-50" />
                             </div>
                         </Link>
                     ) : (
                         <div className="text-center space-y-8 opacity-70 flex-grow flex flex-col items-center justify-center">
                             <div className="w-40 h-40 mx-auto rounded-full bg-[var(--md-sys-color-surface-container-highest)] flex items-center justify-center shadow-inner ring-4 ring-[#fff8f6]">
-                                <Tv strokeWidth={1} className="w-20 h-20 text-[var(--md-sys-color-on-surface-variant)]" />
+                                <Icon icon="material-symbols:tv" className="w-20 h-20 text-[var(--md-sys-color-on-surface-variant)]" />
                             </div>
                             <p className="text-2xl font-bold tracking-tight text-[var(--md-sys-color-on-surface-variant)]">
                                 配信情報を取得できませんでした
