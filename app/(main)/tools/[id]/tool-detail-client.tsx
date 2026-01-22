@@ -248,10 +248,9 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
                                         onValueChange={setComment}
                                         minRows={3}
                                         classNames={{
-                                            inputWrapper: "bg-content2/50 rounded-[16px] border-1 border-divider/30 focus-within:border-primary/50 shadow-inner !opacity-100",
-                                            input: "placeholder:text-default-400 py-2",
+                                            inputWrapper: "bg-content2/50 rounded-[16px] border-1 border-divider/30 focus-within:border-primary shadow-inner !opacity-100 min-h-[100px]",
+                                            input: "placeholder:text-default-400 py-2 leading-relaxed",
                                         }}
-                                        className="min-h-[100px]"
                                     />
                                     <div className="flex gap-3">
                                         <Button
