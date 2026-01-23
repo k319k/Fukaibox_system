@@ -188,14 +188,14 @@ export default function MyComponent() {
 
 ### ❌ やってはいけないこと
 
-1. **Turbopackの無効化**
+1. **Turbopackの無効化禁止**
    - Next.js 16ではTurbopackがデフォルトで有効
    - Vercelは完全対応しているため無効化不要
 
-2. **直接的なWebpack設定**
+2. **直接的なWebpack設定禁止**
    - Next.js 16 + Vercelでは不要
 
-3. **ローカルでのビルド**
+3. **ローカルでのビルド・サーバー起動禁止**
    - ローカルでやると重くなるので禁止。Vercelでやること。
 
 4. **標準HTMLの原則使用禁止**

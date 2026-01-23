@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Button, Tag, Divider, Input, Typography } from "antd";
+import { Card, Button, Tag, Divider, Typography } from "antd";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 
@@ -23,7 +23,7 @@ const apiEndpoints = [
     { method: "POST", path: "/api/points/{userId}", description: "点数を増減（要認証）" },
 ];
 
-export function DevStudioClient({ user }: DevStudioClientProps) {
+export function DevStudioClient({ }: DevStudioClientProps) {
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="max-w-4xl mx-auto space-y-8">
             {/* Header */}

@@ -89,8 +89,8 @@
   - [ ] 名誉儀員表示
   - [x] 最新動画表示
 - [x] ユーザー設定画面
-- [ ] DevStudio（儀長）
-- [ ] AdminPanel（儀長）
+- [/] DevStudio（儀長） (Fix Pending Prod Verification)
+- [/] AdminPanel（儀長） (Fix Pending Prod Verification)
 
 ---
 

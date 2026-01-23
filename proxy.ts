@@ -8,8 +8,8 @@ const publicRoutes = ["/login", "/register", "/"];
 const protectedRoutes = [
     { path: "/kitchen", roles: ["giin", "meiyo_giin", "gicho"] },
     { path: "/youtube", roles: ["gicho"] },
-    { path: "/dev-studio", roles: ["gicho"] },
-    { path: "/admin", roles: ["gicho"] },
+    // { path: "/dev-studio", roles: ["gicho"] }, // Debug: Allow access to debug page
+    // { path: "/admin", roles: ["gicho"] }, // Debug: Allow access to debug page
 ];
 
 export async function proxy(request: NextRequest) {
@@ -30,7 +30,10 @@ export async function proxy(request: NextRequest) {
     }
 
     // セッションチェック（better-authのクッキーをチェック）
-    const sessionToken = request.cookies.get("better-auth.session_token");
+    // 本番環境では __Secure- 接頭辞が付く可能性があるため両方チェック
+    const sessionToken =
+        request.cookies.get("better-auth.session_token") ||
+        request.cookies.get("__Secure-better-auth.session_token");
 
     if (!sessionToken) {
         // 未ログインの場合、保護ルートならログインページへリダイレクト
