@@ -3,6 +3,9 @@
 import { Card, Button, Tag, Divider, Typography } from "antd";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { checkPointsApiHealth, getUserPoints, manageUserPoints, getUserRank } from "@/app/actions/points";
+import { Input, InputNumber, notification } from "antd";
 
 const { Paragraph } = Typography;
 
@@ -94,6 +97,17 @@ export function DevStudioClient({ }: DevStudioClientProps) {
                 </div>
             </Card>
 
+            {/* API Test Section */}
+            <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
+                <div className="p-8 pb-4 flex items-center gap-4">
+                    <Icon icon="material-symbols:science-outline" className="w-5 h-5 text-[#73342b]" />
+                    <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">APIテストコンソール</h2>
+                </div>
+                <div className="px-8 pb-8 space-y-6">
+                    <ApiTester />
+                </div>
+            </Card>
+
             {/* Quick Actions */}
             <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
                 <div className="p-8 pb-4 flex items-center gap-4">
@@ -132,5 +146,100 @@ export function DevStudioClient({ }: DevStudioClientProps) {
                 </div>
             </Card>
         </motion.div>
+    );
+}
+
+function ApiTester() {
+    const [loading, setLoading] = useState(false);
+    const [result, setResult] = useState<object | null>(null);
+    const [targetId, setTargetId] = useState("");
+    const [amount, setAmount] = useState<number | null>(100);
+    const [reason, setReason] = useState("Debug Test");
+
+    const handleHealthCheck = async () => {
+        setLoading(true);
+        const res = await checkPointsApiHealth();
+        setResult(res);
+        setLoading(false);
+    };
+
+    const handleGetPoints = async () => {
+        if (!targetId) return notification.error({ message: "User ID Required" });
+        setLoading(true);
+        const res = await getUserPoints(targetId);
+        setResult(res);
+        setLoading(false);
+    };
+
+    const handleGetRank = async () => {
+        if (!targetId) return notification.error({ message: "User ID Required" });
+        setLoading(true);
+        const res = await getUserRank(targetId);
+        setResult(res);
+        setLoading(false);
+    };
+
+    const handleUpdatePoints = async () => {
+        if (!targetId) return notification.error({ message: "User ID Required" });
+        if (!amount) return notification.error({ message: "Amount Required" });
+
+        setLoading(true);
+        const res = await manageUserPoints(targetId, amount, reason);
+        setResult(res);
+        setLoading(false);
+    };
+
+    return (
+        <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-[var(--md-sys-color-on-surface-variant)]">Target User ID</label>
+                    <Input
+                        placeholder="user_..."
+                        value={targetId}
+                        onChange={(e) => setTargetId(e.target.value)}
+                        className="h-10 rounded-lg"
+                    />
+                </div>
+                <div className="flex items-end gap-2">
+                    <Button onClick={handleHealthCheck} loading={loading} shape="round">
+                        Health Check
+                    </Button>
+                    <Button onClick={handleGetPoints} loading={loading} shape="round">
+                        Get Points
+                    </Button>
+                    <Button onClick={handleGetRank} loading={loading} shape="round">
+                        Get Rank
+                    </Button>
+                </div>
+            </div>
+
+            <div className="p-4 rounded-[20px] bg-[var(--md-sys-color-surface-container-high)] space-y-4">
+                <h3 className="text-sm font-bold text-[var(--md-sys-color-on-surface)]">Points Mutation</h3>
+                <div className="flex gap-2">
+                    <InputNumber
+                        placeholder="Amount"
+                        value={amount}
+                        onChange={(val) => setAmount(val)}
+                        className="w-32 h-10 rounded-lg"
+                    />
+                    <Input
+                        placeholder="Reason"
+                        value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                        className="flex-1 h-10 rounded-lg"
+                    />
+                    <Button type="primary" onClick={handleUpdatePoints} loading={loading} shape="round" className="bg-[#73342b] h-10">
+                        Add/Sub
+                    </Button>
+                </div>
+            </div>
+
+            {result && (
+                <div className="p-4 rounded-[20px] bg-black text-green-400 font-mono text-xs overflow-auto max-h-60">
+                    <pre>{JSON.stringify(result, null, 2)}</pre>
+                </div>
+            )}
+        </div>
     );
 }
