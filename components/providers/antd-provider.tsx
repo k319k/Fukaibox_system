@@ -65,7 +65,7 @@ const theme = {
             dangerShadow: "none",
         },
         Card: {
-            borderRadiusLG: 16, // M3 Card corner
+            borderRadiusLG: 12, // M3 Card corner (Medium)
             boxShadowTertiary: "none", // Remove shadow
             colorBorderSecondary: "transparent", // Hide border
             colorBgContainer: "#fceae5", // Surface Container (Default Card)

@@ -78,16 +78,28 @@ export function useDownloads(projectId: string, projectTitle: string) {
             const folder = zip.folder(`${projectTitle}_採用画像`);
 
             await Promise.all(images.map(async (img) => {
-                const response = await fetch(img.imageUrl);
-                const blob = await response.blob();
-                // ファイル名を決定（元のファイル名がない場合はIDを使用）
-                const ext = img.imageUrl.split('.').pop()?.split('?')[0] || "jpg";
-                const filename = `Section${(img.sectionId ? "??" : "Unknown")}_${img.id}.${ext}`;
-                // Section index would be nice but hard to get here efficiently without lookup map.
-                // Using ID for now. User might want order.
-                // Let's keep it simple for now, file name optimization can be done later if requested.
+                try {
+                    const response = await fetch(img.imageUrl, { mode: 'cors' });
+                    if (!response.ok) throw new Error(`Fetch failed: ${response.statusText}`);
 
-                folder?.file(filename, blob);
+                    const blob = await response.blob();
+                    if (blob.size === 0) throw new Error("Empty blob received");
+
+                    // ファイル名を決定: Section(番号)_(ユーザー名).ext
+                    const ext = img.imageUrl.split('.').pop()?.split('?')[0] || "jpg";
+                    const sectionNum = (img.sectionIndex ?? 0) + 1;
+                    const userName = img.uploaderName || "Unknown";
+                    // ファイル名の重複を避けるためにIDの一部を付与する可能性も考慮推奨だが、
+                    // 要望通りまずは指定のフォーマットにする。重複時はzipが上書きor連番になる挙動に依存。
+                    // 安全のためIDの先頭4文字を末尾につける: Section1_UserA_a1b2.jpg
+                    // ユーザー要望: "セクション(数字)＿○○作" -> Section1_UserA.jpg (のイメージ)
+                    // 日本語ファイル名は文字化けリスクあるが、モダンブラウザ/OSなら概ねOK。
+                    const filename = `Section${sectionNum}_${userName}.${ext}`;
+
+                    folder?.file(filename, blob);
+                } catch (e) {
+                    console.error(`Failed to download image ${img.id}`, e);
+                }
             }));
 
             const content = await zip.generateAsync({ type: "blob" });
@@ -126,10 +138,18 @@ export function useDownloads(projectId: string, projectTitle: string) {
                 const imgFolder = root?.folder("images");
                 await Promise.all(images.map(async (img) => {
                     try {
-                        const response = await fetch(img.imageUrl);
+                        const response = await fetch(img.imageUrl, { mode: 'cors' });
+                        if (!response.ok) throw new Error(`Fetch failed: ${response.statusText}`);
+
                         const blob = await response.blob();
+                        if (blob.size === 0) throw new Error("Empty blob received");
+
                         const ext = img.imageUrl.split('.').pop()?.split('?')[0] || "jpg";
-                        imgFolder?.file(`${img.id}.${ext}`, blob);
+                        const sectionNum = (img.sectionIndex ?? 0) + 1;
+                        const userName = img.uploaderName || "Unknown";
+                        const filename = `Section${sectionNum}_${userName}.${ext}`;
+
+                        imgFolder?.file(filename, blob);
                     } catch (e) {
                         console.error(`Failed to download image ${img.id}`, e);
                     }

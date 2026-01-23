@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { cookingImages, userRoles } from "@/lib/db/schema";
+import { cookingImages, userRoles, cookingSections, users } from "@/lib/db/schema";
 import { eq, desc, asc, and } from "drizzle-orm";
 import { getSession } from "../auth";
 import { generateUploadUrl, getPublicUrl } from "@/lib/r2";
@@ -104,15 +104,23 @@ export async function updateImageSelection(
  */
 export async function getSelectedImages(projectId: string) {
     const images = await db
-        .select()
+        .select({
+            id: cookingImages.id,
+            imageUrl: cookingImages.imageUrl,
+            sectionId: cookingImages.sectionId,
+            sectionIndex: cookingSections.orderIndex,
+            uploaderName: users.name,
+        })
         .from(cookingImages)
+        .leftJoin(cookingSections, eq(cookingImages.sectionId, cookingSections.id))
+        .leftJoin(users, eq(cookingImages.uploadedBy, users.id))
         .where(
             and(
                 eq(cookingImages.projectId, projectId),
                 eq(cookingImages.isSelected, true)
             )
         )
-        .orderBy(asc(cookingImages.sectionId));
+        .orderBy(asc(cookingSections.orderIndex));
 
     return images;
 }
@@ -120,7 +128,7 @@ export async function getSelectedImages(projectId: string) {
 /**
  * 料理画像を削除
  */
-export async function deleteCookingImage(imageId: string, _projectId: string) {
+export async function deleteCookingImage(imageId: string) {
     const session = await getSession();
     if (!session?.user) {
         throw new Error("Unauthorized");

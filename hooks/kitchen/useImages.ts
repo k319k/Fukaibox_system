@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UploadedImage } from "@/types/kitchen";
 import {
     getUploadUrl,
@@ -22,6 +22,29 @@ export function useImages(
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [lightboxImages, setLightboxImages] = useState<UploadedImage[]>([]);
     const [lightboxImageIndex, setLightboxImageIndex] = useState(0);
+
+    // Polling for images
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            // Only poll if not uploading to avoid jitter or race conditions (optional, but safer)
+            if (!uploadingSectionId) {
+                try {
+                    const latestImages = await getCookingImages(projectId);
+                    // Simple comparison to avoid re-renders if length is same (optimization could be deeper)
+                    setImages(prev => {
+                        if (prev.length !== latestImages.length) return latestImages;
+                        // Check if any ID changed (simple content check)
+                        const prevIds = prev.map(p => p.id).sort().join(',');
+                        const newIds = latestImages.map(p => p.id).sort().join(',');
+                        return prevIds !== newIds ? latestImages : prev;
+                    });
+                } catch (e) {
+                    console.error("Failed to poll images", e);
+                }
+            }
+        }, 10000);
+        return () => clearInterval(interval);
+    }, [projectId, uploadingSectionId, setImages]);
 
     const handleImageUpload = async (sectionId: string, file: File) => {
         if (!file.type.startsWith("image/")) {
@@ -76,7 +99,7 @@ export function useImages(
     const handleDeleteImage = async (imageId: string) => {
         if (!confirm("画像を削除しますか？")) return;
         try {
-            await deleteCookingImage(imageId, projectId);
+            await deleteCookingImage(imageId);
             setImages(prev => prev.filter(img => img.id !== imageId));
         } catch (error) {
             console.error("Delete image error:", error);

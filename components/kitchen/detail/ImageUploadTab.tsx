@@ -1,6 +1,5 @@
-// ... imports
 import { useState } from "react";
-import { Button, Tag, Divider, Progress, Spin, Avatar, Tooltip } from "antd";
+import { Button, Tag, Divider, Progress, Spin, Avatar } from "antd";
 import { Icon } from "@iconify/react";
 import { Section, UploadedImage } from "@/types/kitchen";
 import { PresenceUser } from "@/hooks/kitchen/usePresence";
@@ -15,7 +14,7 @@ interface ImageUploadTabProps {
     uploadProgress: number;
     uploaderNames: Record<string, string>;
     projectTitle: string;
-    projectId: string;
+    projectId: string; // Keep in interface if passed by parent, but suppress unused if inevitable
     activeUsers?: PresenceUser[];
     onTabChange?: (key: string) => void;
     onAddSection: (index: number) => void;
@@ -27,7 +26,7 @@ interface ImageUploadTabProps {
 
 export default function ImageUploadTab({
     sections, images, editorFontSize, uploadingSectionId, uploadProgress, uploaderNames, projectTitle,
-    projectId, activeUsers = [], onTabChange,
+    activeUsers = [], onTabChange,
     onAddSection, onDeleteSection, onImageUpload, onDeleteImage, onOpenLightbox
 }: ImageUploadTabProps) {
     const [isScriptViewerOpen, setIsScriptViewerOpen] = useState(false);
@@ -52,26 +51,49 @@ export default function ImageUploadTab({
             <div className="space-y-8 pb-12">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-2">
                     {/* Active Users Display */}
-                    <div className="flex items-center gap-2 overflow-x-auto max-w-full pb-2 md:pb-0">
-                        {activeUsers.length > 0 && (
-                            <div className="flex items-center -space-x-2 mr-2">
-                                {activeUsers.map((user) => (
-                                    <Tooltip key={user.userId} title={`${user.userName || 'User'} (編集中)`}>
+                    {/* Participant Status */}
+                    <div className="flex gap-2 items-center overflow-x-auto pb-2">
+                        {/* Merge active users and uploaders */}
+                        {(() => {
+                            const allUserIds = new Set([
+                                ...activeUsers.map(u => u.userId),
+                                ...images.map(i => i.uploadedBy)
+                            ]);
+
+                            return Array.from(allUserIds).map(userId => {
+                                const userImages = images.filter(img => img.uploadedBy === userId);
+                                const isActive = activeUsers.some(u => u.userId === userId);
+                                const user = activeUsers.find(u => u.userId === userId);
+                                const userName = uploaderNames[userId] || user?.userName || "Guest";
+                                const userImage = user?.userImage;
+
+                                let statusColor = "bg-gray-100 text-gray-500";
+                                let statusText = "未提出";
+                                if (userImages.length > 0) {
+                                    statusColor = "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]";
+                                    statusText = `${userImages.length}枚提出`;
+                                }
+                                if (isActive && userImages.length === 0) {
+                                    statusColor = "bg-green-100 text-green-700";
+                                    statusText = "収集中...";
+                                }
+
+                                return (
+                                    <div key={userId} className="flex items-center gap-2 pr-4 min-w-max border-r last:border-0 border-[var(--md-sys-color-outline-variant)]">
                                         <div className="relative">
-                                            <Avatar
-                                                src={user.userImage}
-                                                icon={<Icon icon="mdi:account" />}
-                                                className="border-2 border-[var(--md-sys-color-surface)] shadow-sm"
-                                            />
-                                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white"></span>
+                                            <Avatar src={userImage} icon={<Icon icon="mdi:account" />} size="small" />
+                                            {isActive && <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-white" />}
                                         </div>
-                                    </Tooltip>
-                                ))}
-                                <span className="ml-3 text-label-medium text-[var(--md-sys-color-on-surface-variant)]">
-                                    {activeUsers.length}人が編集中
-                                </span>
-                            </div>
-                        )}
+                                        <div className="flex flex-col">
+                                            <span className="text-xs font-bold text-[var(--md-sys-color-on-surface)]">{userName}</span>
+                                            <span className={`text-[10px] px-1.5 rounded-full w-fit ${statusColor}`}>
+                                                {statusText}
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            });
+                        })()}
                     </div>
 
                     <div className="flex gap-2">
@@ -175,7 +197,7 @@ export default function ImageUploadTab({
                                         <label htmlFor={`file-input-${section.id}`}>
                                             <div className={cn(
                                                 "rounded-xl p-8 text-center cursor-pointer transition-all duration-200",
-                                                "border border-dashed",
+                                                "border border-solid",
                                                 isUploading
                                                     ? "border-[var(--md-sys-color-primary)] bg-[var(--md-sys-color-primary-container)]/20"
                                                     : "border-[var(--md-sys-color-outline)] hover:border-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-surface-container-high)]"

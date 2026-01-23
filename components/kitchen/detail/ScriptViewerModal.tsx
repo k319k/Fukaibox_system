@@ -61,8 +61,8 @@ export default function ScriptViewerModal({
                 <CharacterCountDisplay text={fullScript} />
                 <Divider className="my-4" />
                 <div
-                    className="whitespace-pre-wrap text-[var(--md-sys-color-on-surface)] leading-relaxed bg-[var(--md-sys-color-surface-container)] p-4 rounded-lg"
-                    style={{ fontSize: "14px" }}
+                    className="whitespace-pre-wrap text-[var(--md-sys-color-on-surface)] leading-relaxed bg-[var(--md-sys-color-surface-container)] p-4 rounded-lg overflow-y-auto"
+                    style={{ fontSize: "14px", maxHeight: "60vh" }}
                 >
                     {fullScript || "原稿がありません"}
                 </div>

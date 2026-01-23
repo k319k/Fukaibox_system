@@ -116,6 +116,7 @@ export default function KitchenDetailClient({
             <KitchenHeader
                 project={project}
                 isGicho={store.isGicho}
+                activeUsers={activeUsers}
                 showFontSizeControl={store.selectedTab === "cooking"}
                 editorFontSize={store.editorFontSize}
                 onEditorFontSizeChange={store.setEditorFontSize}

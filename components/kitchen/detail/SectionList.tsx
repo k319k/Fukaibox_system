@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Spin } from "antd";
+import { Button, Card } from "antd";
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Icon } from "@iconify/react";
 import { Section, Project, UserRole } from "@/types/kitchen";
@@ -54,7 +54,7 @@ export default function SectionList(props: SectionListProps) {
     const {
         project, sections, userRole, editorFontSize,
         fullScript, onFullScriptChange, isCreatingSections, onCreateSections,
-        onAddSection, onDeleteSection
+        onAddSection
     } = props;
 
     // セクションがない場合：台本入力フォーム
@@ -71,6 +71,7 @@ export default function SectionList(props: SectionListProps) {
                             value={fullScript}
                             onChange={(e) => onFullScriptChange(e.target.value)}
                             className="w-full h-64 p-4 border rounded-lg focus:ring-2 focus:ring-[#73342b] focus:border-transparent outline-none bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)]"
+                            style={{ fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
                             placeholder={"ここに台本を貼り付けてください。\n\n空行を入れると、そこで新しいセクションとして分割されます。\n\n(例)\nシーン1のセリフ...\n\nシーン2のセリフ..."}
                         />
                         <CharacterCountDisplay text={fullScript} showSectionPreview={true} />
