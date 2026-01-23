@@ -1,6 +1,7 @@
-
 import { Context, Next } from "hono";
 import { db } from "../db";
+import { apiKeys } from "../schema";
+import { eq } from "drizzle-orm";
 
 export const authMiddleware = async (c: Context, next: Next) => {
     const authHeader = c.req.header("Authorization");
@@ -11,20 +12,21 @@ export const authMiddleware = async (c: Context, next: Next) => {
     const token = authHeader.split(" ")[1];
 
     try {
-        const rs = await db.execute({
-            sql: "SELECT * FROM api_keys WHERE key = ?",
-            args: [token]
+        const keyRecord = await db.query.apiKeys.findFirst({
+            where: eq(apiKeys.key, token),
         });
 
-        if (rs.rows.length === 0) {
-            return c.json({ error: "Invalid API Key" }, 403);
+        if (!keyRecord) {
+            return c.json({ error: "Unauthorized: Invalid token" }, 401);
         }
 
-        // Optional: Check permissions or expiration here
+        // Pass permissions or ownerId to context if needed
+        c.set("permissions", keyRecord.permissions);
+        c.set("ownerId", keyRecord.ownerId);
 
         await next();
-    } catch (e) {
-        console.error("Auth Error:", e);
-        return c.json({ error: "Auth Check Failed" }, 500);
+    } catch (error) {
+        console.error("Auth Error:", error);
+        return c.json({ error: "Internal Server Error" }, 500);
     }
 };

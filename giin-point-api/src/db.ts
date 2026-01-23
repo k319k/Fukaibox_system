@@ -1,11 +1,5 @@
+import { sql } from "@vercel/postgres";
+import { drizzle } from "drizzle-orm/vercel-postgres";
+import * as schema from "./schema";
 
-import { createClient } from "@libsql/client";
-import "dotenv/config";
-
-const url = process.env.TURSO_DATABASE_URL!;
-const authToken = process.env.TURSO_AUTH_TOKEN!;
-
-export const db = createClient({
-    url,
-    authToken,
-});
+export const db = drizzle(sql, { schema });

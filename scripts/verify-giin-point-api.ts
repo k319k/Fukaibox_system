@@ -1,85 +1,106 @@
+import { describe, it, before, after } from "node:test";
+import assert from "node:assert";
+import dotenv from "dotenv";
+import path from "path";
 
-import "dotenv/config";
-import { db } from "../lib/db";
-import { sql } from "drizzle-orm";
+// Load environment variables from giin-point-api/.env
+dotenv.config({ path: path.resolve(__dirname, "../giin-point-api/.env") });
 
-const TEST_KEY = "test_key_verification_" + Date.now();
-const USER_ID = "test_user_verification";
+import { db } from "../giin-point-api/src/db";
+import { apiKeys, userPoints, pointHistory } from "../giin-point-api/src/schema";
+import { eq } from "drizzle-orm";
+
+// Base URL of the running API (ensure your dev server is running on this port)
 const API_URL = "http://localhost:3001";
+const USER_ID = "test-user-verification";
+let API_KEY = "";
 
-async function verify() {
-    console.log("Starting Phase 7 Verification...");
+// Helper to fetch
+const fetchApi = async (path: string, options: RequestInit = {}) => {
+    const headers = {
+        ...options.headers,
+        Authorization: `Bearer ${API_KEY}`,
+        "Content-Type": "application/json",
+    };
+    return fetch(`${API_URL}${path}`, { ...options, headers });
+};
 
-    // 0. Insert Dummy User
-    try {
-        await db.run(sql`
-            INSERT INTO users (id, name, email, created_at, updated_at)
-            VALUES (${USER_ID}, 'Test User', 'test@example.com', ${Date.now()}, ${Date.now()})
-        `);
-        console.log("Dummy user inserted.");
-    } catch (e) {
-        console.error("Failed to insert dummy user:", e);
-        return;
-    }
+describe("Giin Point API (Standalone)", () => {
 
-    // 1. Insert Test Key
-    try {
-        await db.run(sql`
-            INSERT INTO api_keys (id, key, owner_id, name, permissions, created_at)
-            VALUES (${TEST_KEY}, ${TEST_KEY}, ${USER_ID}, 'Test Key', 'all', ${Date.now()})
-        `);
-        console.log("Test key inserted.");
-    } catch (e) {
-        console.error("Failed to insert test key:", e);
-        return;
-    }
+    before(async () => {
+        console.log("Setting up test environment...");
+        // Create a temporary API key in the DB
+        API_KEY = "test-verification-key-" + Date.now();
 
-    try {
-        // Wait for server to start
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        // Health
         try {
-            const health = await fetch(`${API_URL}/health`).then(r => r.json());
-            console.log("Health Check:", health);
+            await db.insert(apiKeys).values({
+                key: API_KEY,
+                ownerId: "system-test",
+                name: "Verification Script",
+                permissions: "all",
+            });
+            console.log("API Key created in DB");
+
+            // Clean up any previous test data for this user
+            await db.delete(userPoints).where(eq(userPoints.userId, USER_ID));
+            await db.delete(pointHistory).where(eq(pointHistory.userId, USER_ID));
+            console.log("Cleaned up old test data");
         } catch (e) {
-            console.error("Health check failed. Is server running?");
-            throw e;
+            console.error("Setup failed. Check database connection:", e);
+            process.exit(1);
         }
+    });
 
-        // Add Points
-        const addRes = await fetch(`${API_URL}/points/add`, {
+    after(async () => {
+        console.log("Tearing down test environment...");
+        try {
+            await db.delete(apiKeys).where(eq(apiKeys.key, API_KEY));
+            await db.delete(userPoints).where(eq(userPoints.userId, USER_ID));
+            await db.delete(pointHistory).where(eq(pointHistory.userId, USER_ID));
+            console.log("Cleanup complete");
+        } catch (e) {
+            console.error("Teardown failed:", e);
+        }
+    });
+
+    it("GET /health should return status ok", async () => {
+        const res = await fetch(`${API_URL}/health`);
+        assert.strictEqual(res.status, 200, "Health check failed");
+        const data = await res.json();
+        assert.strictEqual(data.status, "ok");
+    });
+
+    it("GET /points/:userId should return 0 for new user", async () => {
+        const res = await fetchApi(`/points/${USER_ID}`);
+        assert.strictEqual(res.status, 200, await res.text());
+        const data = await res.json();
+        assert.strictEqual(data.points, 0);
+    });
+
+    it("POST /points/add should add points", async () => {
+        const res = await fetchApi("/points/add", {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${TEST_KEY}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ userId: USER_ID, amount: 100, reason: "Test Points" })
+            body: JSON.stringify({
+                userId: USER_ID,
+                amount: 100,
+                reason: "Test points"
+            })
         });
-        console.log("Add Points:", await addRes.json());
+        assert.strictEqual(res.status, 200, await res.text());
+        const data = await res.json();
+        assert.strictEqual(data.success, true);
+    });
 
-        // Get Points
-        const getRes = await fetch(`${API_URL}/points/${USER_ID}`, {
-            headers: { "Authorization": `Bearer ${TEST_KEY}` }
-        });
-        console.log("Get Points:", await getRes.json());
+    it("GET /points/:userId should return updated points", async () => {
+        const res = await fetchApi(`/points/${USER_ID}`);
+        const data = await res.json();
+        assert.strictEqual(data.points, 100);
+    });
 
-        // Get Rank
-        const rankRes = await fetch(`${API_URL}/rank/user/${USER_ID}`, {
-            headers: { "Authorization": `Bearer ${TEST_KEY}` }
-        });
-        console.log("Get Rank:", await rankRes.json());
-
-    } catch (e) {
-        console.error("Verification failed:", e);
-    } finally {
-        // Cleanup
-        await db.run(sql`DELETE FROM api_keys WHERE key = ${TEST_KEY}`);
-        await db.run(sql`DELETE FROM point_history WHERE user_id = ${USER_ID}`);
-        await db.run(sql`DELETE FROM user_points WHERE user_id = ${USER_ID}`);
-        await db.run(sql`DELETE FROM users WHERE id = ${USER_ID}`);
-        console.log("Cleanup done.");
-    }
-}
-
-verify();
+    it("GET /rank/user/:userId should return rank", async () => {
+        const res = await fetchApi(`/rank/user/${USER_ID}`);
+        const data = await res.json();
+        assert.ok(data.rank >= 1, "Rank should be >= 1");
+        assert.strictEqual(data.points, 100);
+    });
+});

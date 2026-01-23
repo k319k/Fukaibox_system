@@ -128,13 +128,16 @@
 
 ## Phase 7: 儀員点数API
 
-- [x] Hono または FastAPI プロジェクト作成
-- [x] 認証実装
-- [x] エンドポイント実装
+- [x] 議員ポイントAPIの実装 (Hono)
+  - [x] プロジェクト初期化 (Hono + TypeScript)
+- [x] ポイントDBの作成 (Vercel Postgres)
+  - [x] スキーマ設計 (api_keys, user_points, point_history)
+  - [x] Drizzle ORM 設定 & Migration
+- [x] エンドポイント実装 (Vercel Postgres)
   - [x] ヘルスチェック
   - [x] 点数取得
-  - [x] 順位取得
-  - [x] 点数増減
+  - [x] 順位取得 (Simple Count Method)
+  - [x] 点数増減 (Transaction)
 
 ---
 
