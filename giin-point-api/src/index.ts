@@ -103,15 +103,18 @@ app.get("/rank/user/:userId", authMiddleware, async (c) => {
     }
 });
 
+import { handle } from "hono/vercel";
+
 const port = 3001;
-console.log(`Server is running on port ${port}`);
 
-serve({
-    fetch: app.fetch,
-    port
-});
+// Only run serve if directly executing this file (local dev)
+// Check if running in Vercel environment
+if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') {
+    console.log(`Server is running on port ${port}`);
+    serve({
+        fetch: app.fetch,
+        port
+    });
+}
 
-export default {
-    port,
-    fetch: app.fetch,
-};
+export default handle(app);
