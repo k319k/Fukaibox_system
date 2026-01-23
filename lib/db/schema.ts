@@ -72,6 +72,16 @@ export const userRoles = sqliteTable("user_roles", {
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
 
+export const apiKeys = sqliteTable("api_keys", {
+    id: text("id").primaryKey(),
+    key: text("key").notNull().unique(),
+    ownerId: text("owner_id").notNull(),
+    name: text("name").notNull(),
+    permissions: text("permissions").notNull(),
+    expiresAt: integer("expires_at", { mode: "timestamp" }),
+    createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+});
+
 export const userPoints = sqliteTable("user_points", {
     id: text("id").primaryKey(),
     userId: text("user_id")

@@ -1,0 +1,19 @@
+{
+    "name": "giin-point-api",
+    "version": "1.0.0",
+    "scripts": {
+        "dev": "tsx watch src/index.ts",
+        "build": "tsc"
+    },
+    "dependencies": {
+        "@hono/node-server": "^1.19.9",
+        "@libsql/client": "^0.14.0",
+        "dotenv": "^16.0.0",
+        "hono": "^4.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.0",
+        "tsx": "^4.7.0",
+        "typescript": "^5.3.0"
+    }
+}
