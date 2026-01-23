@@ -103,18 +103,25 @@ app.get("/rank/user/:userId", authMiddleware, async (c) => {
     }
 });
 
-import { handle } from "hono/vercel";
+// Local development server entry point
+// This part is only executed when running `npm run dev` (tsx watch src/index.ts)
+// In production (Vercel), this file is imported by api/index.ts
+
+import { serve } from "@hono/node-server";
+
+// Check if this module is the main module (i.e., running directly)
+// In ES modules with tsx, we can check import.meta.url or similar, 
+// but checking environment/runtime context is safer for now.
 
 const port = 3001;
 
-// Only run serve if directly executing this file (local dev)
-// Check if running in Vercel environment
-if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') {
-    console.log(`Server is running on port ${port}`);
+// Only run serve if NOT in Vercel and likely local
+if (process.env.VERCEL !== '1') {
+    console.log(`Server is running on port ${port} (Local Mode)`);
     serve({
         fetch: app.fetch,
         port
     });
 }
 
-export default handle(app);
+export default app;
