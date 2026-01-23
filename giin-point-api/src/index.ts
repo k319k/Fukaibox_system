@@ -93,7 +93,6 @@ app.get("/rank/user/:userId", authMiddleware, async (c) => {
             sql`SELECT COUNT(*) as count FROM ${userPoints} WHERE ${userPoints.points} > ${currentUser.points}`
         );
 
-        // @ts-expect-error
         const higherRankCount = Number(result.rows[0].count);
         return c.json({ rank: higherRankCount + 1, points: currentUser.points });
 
