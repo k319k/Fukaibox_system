@@ -8,8 +8,8 @@ const publicRoutes = ["/login", "/register", "/"];
 const protectedRoutes = [
     { path: "/kitchen", roles: ["giin", "meiyo_giin", "gicho"] },
     { path: "/youtube", roles: ["gicho"] },
-    // { path: "/dev-studio", roles: ["gicho"] }, // Debug: Allow access to debug page
-    // { path: "/admin", roles: ["gicho"] }, // Debug: Allow access to debug page
+    { path: "/dev-studio", roles: ["gicho"] },
+    { path: "/admin", roles: ["gicho"] },
 ];
 
 export async function proxy(request: NextRequest) {
