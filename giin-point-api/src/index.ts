@@ -93,7 +93,7 @@ app.get("/rank/user/:userId", authMiddleware, async (c) => {
             sql`SELECT COUNT(*) as count FROM ${userPoints} WHERE ${userPoints.points} > ${currentUser.points}`
         );
 
-        // @ts-ignore
+        // @ts-expect-error
         const higherRankCount = Number(result.rows[0].count);
         return c.json({ rank: higherRankCount + 1, points: currentUser.points });
 
@@ -106,8 +106,6 @@ app.get("/rank/user/:userId", authMiddleware, async (c) => {
 // Local development server entry point
 // This part is only executed when running `npm run dev` (tsx watch src/index.ts)
 // In production (Vercel), this file is imported by api/index.ts
-
-import { serve } from "@hono/node-server";
 
 // Check if this module is the main module (i.e., running directly)
 // In ES modules with tsx, we can check import.meta.url or similar, 
