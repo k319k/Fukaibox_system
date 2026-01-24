@@ -129,9 +129,16 @@ export function useDownloads(projectId: string, projectTitle: string) {
             const root = zip.folder(projectTitle);
 
             // 1. Script
-            const script = await getProjectScript(projectId);
+            const [script, scriptBodyOnly] = await Promise.all([
+                getProjectScript(projectId),
+                getProjectScriptBodyOnly(projectId)
+            ]);
+
             if (script) {
-                root?.file("台本.txt", script);
+                root?.file(`${projectTitle}_台本_詳細版.txt`, script);
+            }
+            if (scriptBodyOnly) {
+                root?.file(`${projectTitle}_台本_本文のみ.txt`, scriptBodyOnly);
             }
 
             // 2. Images

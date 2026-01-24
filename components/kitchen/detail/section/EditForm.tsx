@@ -31,7 +31,7 @@ export default function EditForm({
             <textarea
                 value={content}
                 onChange={(e) => onContentChange(e.target.value)}
-                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-[#73342b] focus:border-transparent outline-none bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)]"
+                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-[#73342b] focus:border-transparent outline-none bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)] resize-y"
                 style={{ minHeight: "120px", fontSize: `${fontSize}px`, lineHeight: 1.6 }}
                 placeholder="台本を入力..."
                 autoFocus

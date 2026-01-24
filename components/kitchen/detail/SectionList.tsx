@@ -70,7 +70,7 @@ export default function SectionList(props: SectionListProps) {
                         <textarea
                             value={fullScript}
                             onChange={(e) => onFullScriptChange(e.target.value)}
-                            className="w-full h-64 p-4 border rounded-lg focus:ring-2 focus:ring-[#73342b] focus:border-transparent outline-none bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)]"
+                            className="w-full h-64 p-4 border rounded-lg focus:ring-2 focus:ring-[#73342b] focus:border-transparent outline-none bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)] resize-y"
                             style={{ fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
                             placeholder={"ここに台本を貼り付けてください。\n\n空行を入れると、そこで新しいセクションとして分割されます。\n\n(例)\nシーン1のセリフ...\n\nシーン2のセリフ..."}
                         />

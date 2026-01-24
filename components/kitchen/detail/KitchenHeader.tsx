@@ -48,7 +48,7 @@ export default function KitchenHeader({
                     size="small"
                     type="text"
                     icon={<ArrowLeftOutlined />}
-                    onClick={() => router.push('/kitchen')}
+                    onClick={() => router.push('/cooking')}
                     className="mb-2 text-[var(--md-sys-color-primary)]"
                 >
                     一覧に戻る

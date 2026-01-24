@@ -27,6 +27,24 @@ export default async function KitchenDetailPage({ params }: PageProps) {
 
     const userRole = (user?.role || "anonymous") as RoleType;
 
+    // アクセス制御: 画像UP段階(image_collection等)に進むまでは、儀長以外アクセス不可
+    // statusが "cooking" または "draft" の場合
+    const restrictedStatuses = ["cooking", "draft"];
+    if (restrictedStatuses.includes(project.status) && userRole !== "gicho") {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+                <div className="text-6xl">🔒</div>
+                <h1 className="text-2xl font-bold text-[var(--md-sys-color-on-surface)]">
+                    準備中
+                </h1>
+                <p className="text-[var(--md-sys-color-on-surface-variant)]">
+                    このプロジェクトは現在、儀長による調理（執筆）中です。<br />
+                    画像募集が開始されるまでお待ちください。
+                </p>
+            </div>
+        );
+    }
+
     return (
         <KitchenDetailClient
             project={project}

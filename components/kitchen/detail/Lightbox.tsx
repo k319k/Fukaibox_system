@@ -48,9 +48,9 @@ export default function Lightbox({
                     type="text"
                     shape="circle"
                     size="large"
-                    className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-white/20 hover:bg-white/40 border-none"
+                    className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-50 bg-black/40 hover:bg-black/60 border-none text-white w-12 h-12 flex items-center justify-center"
                     onClick={goToPrevImage}
-                    icon={<LeftOutlined className="text-[#f5f5f5]" />}
+                    icon={<LeftOutlined className="text-xl" />}
                 />
 
                 {/* 画像 */}
@@ -58,7 +58,7 @@ export default function Lightbox({
                 <img
                     src={currentImage?.imageUrl}
                     alt="拡大画像"
-                    className="max-h-[90vh] max-w-[90vw] object-contain select-none"
+                    className="max-h-[85vh] max-w-[95vw] object-contain select-none"
                 />
 
                 {/* 次へボタン */}
@@ -66,9 +66,9 @@ export default function Lightbox({
                     type="text"
                     shape="circle"
                     size="large"
-                    className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-white/20 hover:bg-white/40 border-none"
+                    className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-50 bg-black/40 hover:bg-black/60 border-none text-white w-12 h-12 flex items-center justify-center"
                     onClick={goToNextImage}
-                    icon={<RightOutlined className="text-[#f5f5f5]" />}
+                    icon={<RightOutlined className="text-xl" />}
                 />
 
                 {/* 閉じるボタン */}
@@ -76,9 +76,9 @@ export default function Lightbox({
                     type="text"
                     shape="circle"
                     size="large"
-                    className="absolute top-4 right-4 z-50 bg-white/20 hover:bg-white/40 border-none"
+                    className="absolute top-4 right-4 z-50 bg-black/40 hover:bg-black/60 border-none text-white w-12 h-12 flex items-center justify-center"
                     onClick={onClose}
-                    icon={<CloseOutlined className="text-[#f5f5f5]" />}
+                    icon={<CloseOutlined className="text-xl" />}
                 />
 
                 {/* 画像情報 */}

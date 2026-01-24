@@ -60,39 +60,47 @@ export default function ImageUploadTab({
                                 ...images.map(i => i.uploadedBy)
                             ]);
 
-                            return Array.from(allUserIds).map(userId => {
+                            const sortedUsers = Array.from(allUserIds).map(userId => {
                                 const userImages = images.filter(img => img.uploadedBy === userId);
                                 const isActive = activeUsers.some(u => u.userId === userId);
                                 const user = activeUsers.find(u => u.userId === userId);
                                 const userName = uploaderNames[userId] || user?.userName || "Guest";
                                 const userImage = user?.userImage;
 
-                                let statusColor = "bg-gray-100 text-gray-500";
-                                let statusText = "未提出";
-                                if (userImages.length > 0) {
-                                    statusColor = "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]";
-                                    statusText = `${userImages.length}枚提出`;
-                                }
-                                if (isActive && userImages.length === 0) {
-                                    statusColor = "bg-green-100 text-green-700";
-                                    statusText = "収集中...";
-                                }
-
-                                return (
-                                    <div key={userId} className="flex items-center gap-2 pr-4 min-w-max border-r last:border-0 border-[var(--md-sys-color-outline-variant)]">
-                                        <div className="relative">
-                                            <Avatar src={userImage} icon={<Icon icon="mdi:account" />} size="small" />
-                                            {isActive && <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-white" />}
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-xs font-bold text-[var(--md-sys-color-on-surface)]">{userName}</span>
-                                            <span className={`text-[10px] px-1.5 rounded-full w-fit ${statusColor}`}>
-                                                {statusText}
-                                            </span>
-                                        </div>
-                                    </div>
-                                );
+                                return {
+                                    userId,
+                                    userName,
+                                    userImage,
+                                    isActive,
+                                    uploadCount: userImages.length,
+                                    statusText: userImages.length > 0 ? `${userImages.length}枚提出` : (isActive ? "収集中..." : "未提出"),
+                                    statusColor: userImages.length > 0
+                                        ? "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
+                                        : (isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500")
+                                };
+                            }).sort((a, b) => {
+                                // 1. 提出枚数が多い順
+                                if (b.uploadCount !== a.uploadCount) return b.uploadCount - a.uploadCount;
+                                // 2. アクティブな人優先
+                                if (b.isActive !== a.isActive) return b.isActive ? 1 : -1;
+                                // 3. 名前順
+                                return a.userName.localeCompare(b.userName);
                             });
+
+                            return sortedUsers.map(user => (
+                                <div key={user.userId} className="flex items-center gap-2 pr-4 min-w-max border-r last:border-0 border-[var(--md-sys-color-outline-variant)]">
+                                    <div className="relative">
+                                        <Avatar src={user.userImage} icon={<Icon icon="mdi:account" />} size="small" />
+                                        {user.isActive && <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-white" />}
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-xs font-bold text-[var(--md-sys-color-on-surface)]">{user.userName}</span>
+                                        <span className={`text-[10px] px-1.5 rounded-full w-fit ${user.statusColor}`}>
+                                            {user.statusText}
+                                        </span>
+                                    </div>
+                                </div>
+                            ));
                         })()}
                     </div>
 
