@@ -45,4 +45,9 @@ export interface KitchenDetailClientProps {
     project: Project;
     initialSections: Section[];
     userRole?: UserRole;
+    currentUser?: {
+        id: string;
+        name: string;
+        image: string | null;
+    } | null;
 }

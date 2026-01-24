@@ -18,26 +18,27 @@ import Lightbox from "./detail/Lightbox";
 export default function KitchenDetailClient({
     project,
     initialSections,
-    userRole = "guest"
+    userRole = "guest",
+    currentUser
 }: KitchenDetailClientProps) {
     const router = useRouter();
     const store = useKitchenDetail(project, initialSections, userRole);
-    const { activeUsers } = usePresence(project.id);
+    const { activeUsers, updateStatus } = usePresence(project.id); // Destructure updateStatus
 
     const handleDeleteProject = async () => {
         if (!confirm("プロジェクトを削除しますか？\nこの操作は取り消せません。")) return;
         try {
             await deleteCookingProject(project.id);
-            router.push('/kitchen');
+            router.push('/cooking');
         } catch (error) {
             console.error("Failed to delete project:", error);
             alert("プロジェクトの削除に失敗しました。");
         }
     };
 
-    const handleStatusChange = async (status: any) => {
+    const handleStatusChange = async (status: string) => { // Fix any type
         try {
-            await updateCookingProjectStatus(project.id, status);
+            await updateCookingProjectStatus(project.id, status as any); // cast for db logic if needed, or update import type
             router.refresh();
         } catch (error) {
             console.error("Failed to update status:", error);
@@ -77,6 +78,8 @@ export default function KitchenDetailClient({
                     sections={store.sections} images={store.images} editorFontSize={store.editorFontSize}
                     uploadingSectionId={store.uploadingSectionId} uploadProgress={store.uploadProgress} uploaderNames={store.userNames}
                     projectTitle={project.title} projectId={project.id} activeUsers={activeUsers}
+                    currentUser={currentUser}
+                    onStatusUpdate={updateStatus}
                     onTabChange={store.setSelectedTab}
                     onAddSection={store.handleAddSection} onDeleteSection={store.handleDeleteSection}
                     onImageUpload={store.handleImageUpload} onDeleteImage={store.handleDeleteImage} onOpenLightbox={store.openLightbox}
@@ -108,7 +111,7 @@ export default function KitchenDetailClient({
 
     return (
         <motion.div
-            className="container mx-auto py-8 px-4 max-w-6xl"
+            className="container mx-auto py-8 px-4 max-w-full"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}

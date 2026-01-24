@@ -50,6 +50,11 @@ export default async function KitchenDetailPage({ params }: PageProps) {
             project={project}
             initialSections={sections}
             userRole={userRole}
+            currentUser={user ? {
+                id: user.id,
+                name: user.name,
+                image: user.image
+            } : null}
         />
     );
 }

@@ -181,6 +181,7 @@ export const kitchenPresence = sqliteTable("kitchen_presence", {
     userId: text("user_id")
         .notNull()
         .references(() => users.id, { onDelete: "cascade" }),
+    status: text("status").$type<"not_participating" | "participating" | "completed">().default("not_participating").notNull(),
     lastSeenAt: integer("last_seen_at", { mode: "timestamp" }).notNull(),
 });
 

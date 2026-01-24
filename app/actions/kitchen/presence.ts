@@ -6,9 +6,9 @@ import { eq, and, gt } from "drizzle-orm";
 import { getSession } from "../auth";
 
 /**
- * プレゼンス（最終アクセス日時）を更新
+ * プレゼンス（最終アクセス日時・ステータス）を更新
  */
-export async function updatePresence(projectId: string) {
+export async function updatePresenceStatus(projectId: string, status?: "not_participating" | "participating" | "completed") {
     const session = await getSession();
     if (!session?.user?.id) {
         return;
@@ -30,9 +30,16 @@ export async function updatePresence(projectId: string) {
 
     if (existing.length > 0) {
         // 更新
+        const updateData: Partial<typeof kitchenPresence.$inferInsert> = {
+            lastSeenAt: now,
+        };
+        if (status) {
+            updateData.status = status;
+        }
+
         await db
             .update(kitchenPresence)
-            .set({ lastSeenAt: now })
+            .set(updateData)
             .where(eq(kitchenPresence.id, existing[0].id));
     } else {
         // 新規作成
@@ -41,6 +48,7 @@ export async function updatePresence(projectId: string) {
             projectId,
             userId,
             lastSeenAt: now,
+            status: status || "not_participating",
         });
     }
 }
@@ -57,6 +65,7 @@ export async function getProjectPresence(projectId: string) {
         .select({
             userId: kitchenPresence.userId,
             lastSeenAt: kitchenPresence.lastSeenAt,
+            status: kitchenPresence.status,
             userName: users.name,
             userImage: users.image,
         })

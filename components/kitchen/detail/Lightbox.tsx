@@ -42,14 +42,17 @@ export default function Lightbox({
                 content: { backgroundColor: "transparent", boxShadow: "none" },
             }}
         >
-            <div className="flex items-center justify-center relative w-full h-[90vh]">
+            <div
+                className="flex items-center justify-center relative w-full h-[90vh]"
+                onClick={onClose} // クリックで閉じる
+            >
                 {/* 前へボタン */}
                 <Button
                     type="text"
                     shape="circle"
                     size="large"
                     className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-50 bg-black/40 hover:bg-black/60 border-none text-white w-12 h-12 flex items-center justify-center"
-                    onClick={goToPrevImage}
+                    onClick={(e) => { e.stopPropagation(); goToPrevImage(); }}
                     icon={<LeftOutlined className="text-xl" />}
                 />
 
@@ -59,6 +62,7 @@ export default function Lightbox({
                     src={currentImage?.imageUrl}
                     alt="拡大画像"
                     className="max-h-[85vh] max-w-[95vw] object-contain select-none"
+                    onClick={(e) => e.stopPropagation()} // 画像クリックでは閉じない
                 />
 
                 {/* 次へボタン */}
@@ -67,7 +71,7 @@ export default function Lightbox({
                     shape="circle"
                     size="large"
                     className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-50 bg-black/40 hover:bg-black/60 border-none text-white w-12 h-12 flex items-center justify-center"
-                    onClick={goToNextImage}
+                    onClick={(e) => { e.stopPropagation(); goToNextImage(); }}
                     icon={<RightOutlined className="text-xl" />}
                 />
 
@@ -77,12 +81,15 @@ export default function Lightbox({
                     shape="circle"
                     size="large"
                     className="absolute top-4 right-4 z-50 bg-black/40 hover:bg-black/60 border-none text-white w-12 h-12 flex items-center justify-center"
-                    onClick={onClose}
+                    onClick={(e) => { e.stopPropagation(); onClose(); }}
                     icon={<CloseOutlined className="text-xl" />}
                 />
 
                 {/* 画像情報 */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 px-4 py-2 rounded-lg z-50">
+                <div
+                    className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 px-4 py-2 rounded-lg z-50"
+                    onClick={(e) => e.stopPropagation()} // ここも閉じない
+                >
                     <p className="text-[#f5f5f5] text-sm">
                         {currentIndex + 1} / {images.length}
                         {currentImage?.uploadedBy && uploaderNames[currentImage.uploadedBy] && (
