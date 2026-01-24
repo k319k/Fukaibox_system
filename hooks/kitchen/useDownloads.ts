@@ -79,7 +79,9 @@ export function useDownloads(projectId: string, projectTitle: string) {
 
             await Promise.all(images.map(async (img) => {
                 try {
-                    const response = await fetch(img.imageUrl, { mode: 'cors' });
+                    // プロキシ経由で画像を取得 (CORS回避)
+                    const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(img.imageUrl)}`;
+                    const response = await fetch(proxyUrl);
                     if (!response.ok) throw new Error(`Fetch failed: ${response.statusText}`);
 
                     const blob = await response.blob();
@@ -138,7 +140,9 @@ export function useDownloads(projectId: string, projectTitle: string) {
                 const imgFolder = root?.folder("images");
                 await Promise.all(images.map(async (img) => {
                     try {
-                        const response = await fetch(img.imageUrl, { mode: 'cors' });
+                        // プロキシ経由で画像を取得 (CORS回避)
+                        const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(img.imageUrl)}`;
+                        const response = await fetch(proxyUrl);
                         if (!response.ok) throw new Error(`Fetch failed: ${response.statusText}`);
 
                         const blob = await response.blob();
