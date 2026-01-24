@@ -43,7 +43,7 @@ export default function Lightbox({
             }}
         >
             <div
-                className="flex items-center justify-center relative w-full h-[90vh]"
+                className="flex items-center justify-center relative w-full h-full"
                 onClick={onClose} // クリックで閉じる
             >
                 {/* 前へボタン */}
@@ -51,9 +51,9 @@ export default function Lightbox({
                     type="text"
                     shape="circle"
                     size="large"
-                    className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-50 bg-black/40 hover:bg-black/60 border-none text-white w-12 h-12 flex items-center justify-center"
+                    className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-50 bg-black/60 hover:bg-black/80 border-none text-white w-14 h-14 flex items-center justify-center !rounded-full"
                     onClick={(e) => { e.stopPropagation(); goToPrevImage(); }}
-                    icon={<LeftOutlined className="text-xl" />}
+                    icon={<LeftOutlined className="text-2xl" />}
                 />
 
                 {/* 画像 */}
@@ -61,7 +61,7 @@ export default function Lightbox({
                 <img
                     src={currentImage?.imageUrl}
                     alt="拡大画像"
-                    className="max-h-[85vh] max-w-[95vw] object-contain select-none"
+                    className="max-h-[90vh] max-w-[95vw] object-contain select-none"
                     onClick={(e) => e.stopPropagation()} // 画像クリックでは閉じない
                 />
 
@@ -70,9 +70,9 @@ export default function Lightbox({
                     type="text"
                     shape="circle"
                     size="large"
-                    className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-50 bg-black/40 hover:bg-black/60 border-none text-white w-12 h-12 flex items-center justify-center"
+                    className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-50 bg-black/60 hover:bg-black/80 border-none text-white w-14 h-14 flex items-center justify-center !rounded-full"
                     onClick={(e) => { e.stopPropagation(); goToNextImage(); }}
-                    icon={<RightOutlined className="text-xl" />}
+                    icon={<RightOutlined className="text-2xl" />}
                 />
 
                 {/* 閉じるボタン */}
@@ -80,7 +80,7 @@ export default function Lightbox({
                     type="text"
                     shape="circle"
                     size="large"
-                    className="absolute top-4 right-4 z-50 bg-black/40 hover:bg-black/60 border-none text-white w-12 h-12 flex items-center justify-center"
+                    className="absolute top-4 right-4 z-50 bg-black/60 hover:bg-black/80 border-none text-white w-12 h-12 flex items-center justify-center !rounded-full"
                     onClick={(e) => { e.stopPropagation(); onClose(); }}
                     icon={<CloseOutlined className="text-xl" />}
                 />
