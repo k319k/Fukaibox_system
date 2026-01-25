@@ -1,8 +1,10 @@
 "use client";
 
-import { Modal, Button } from "antd";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { LeftOutlined, RightOutlined, CloseOutlined } from "@ant-design/icons";
 import { UploadedImage } from "@/types/kitchen";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface LightboxProps {
     isOpen: boolean;
@@ -16,90 +18,122 @@ interface LightboxProps {
 export default function Lightbox({
     isOpen, onClose, images, currentIndex, onIndexChange, uploaderNames
 }: LightboxProps) {
-    if (!isOpen || images.length === 0) return null;
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
+
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden"; // Scroll lock
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") onClose();
+            if (e.key === "ArrowLeft") goToPrevImage();
+            if (e.key === "ArrowRight") goToNextImage();
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [isOpen, currentIndex, images.length]);
 
     const goToPrevImage = () => {
+        if (images.length <= 1) return;
         onIndexChange((currentIndex - 1 + images.length) % images.length);
     };
 
     const goToNextImage = () => {
+        if (images.length <= 1) return;
         onIndexChange((currentIndex + 1) % images.length);
     };
 
+    if (!mounted || images.length === 0) return null;
+
     const currentImage = images[currentIndex];
 
-    return (
-        <Modal
-            open={isOpen}
-            onCancel={onClose}
-            footer={null}
-            width="100%"
-            centered
-            closable={false}
-            className="lightbox-modal"
-            styles={{
-                mask: { backgroundColor: "rgba(0,0,0,0.95)" },
-                content: { backgroundColor: "transparent", boxShadow: "none" },
-            }}
-        >
-            <div
-                className="flex items-center justify-center relative w-full h-full"
-                onClick={onClose} // クリックで閉じる
-            >
-                {/* 前へボタン */}
-                <Button
-                    type="text"
-                    shape="circle"
-                    size="large"
-                    className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-50 bg-black/60 hover:bg-black/80 border-none text-white w-14 h-14 flex items-center justify-center !rounded-full"
-                    onClick={(e) => { e.stopPropagation(); goToPrevImage(); }}
-                    icon={<LeftOutlined className="text-2xl" />}
-                />
-
-                {/* 画像 */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                    src={currentImage?.imageUrl}
-                    alt="拡大画像"
-                    className="max-h-[90vh] max-w-[95vw] object-contain select-none"
-                    onClick={(e) => e.stopPropagation()} // 画像クリックでは閉じない
-                />
-
-                {/* 次へボタン */}
-                <Button
-                    type="text"
-                    shape="circle"
-                    size="large"
-                    className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-50 bg-black/60 hover:bg-black/80 border-none text-white w-14 h-14 flex items-center justify-center !rounded-full"
-                    onClick={(e) => { e.stopPropagation(); goToNextImage(); }}
-                    icon={<RightOutlined className="text-2xl" />}
-                />
-
-                {/* 閉じるボタン */}
-                <Button
-                    type="text"
-                    shape="circle"
-                    size="large"
-                    className="absolute top-4 right-4 z-50 bg-black/60 hover:bg-black/80 border-none text-white w-12 h-12 flex items-center justify-center !rounded-full"
-                    onClick={(e) => { e.stopPropagation(); onClose(); }}
-                    icon={<CloseOutlined className="text-xl" />}
-                />
-
-                {/* 画像情報 */}
-                <div
-                    className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 px-4 py-2 rounded-lg z-50"
-                    onClick={(e) => e.stopPropagation()} // ここも閉じない
+    return createPortal(
+        <AnimatePresence>
+            {isOpen && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center select-none"
+                    onClick={onClose}
                 >
-                    <p className="text-[#f5f5f5] text-sm">
-                        {currentIndex + 1} / {images.length}
-                        {currentImage?.uploadedBy && uploaderNames[currentImage.uploadedBy] && (
-                            <span className="ml-2 text-[#f5f5f5]/70">
-                                by {uploaderNames[currentImage.uploadedBy]}
-                            </span>
-                        )}
-                    </p>
-                </div>
-            </div>
-        </Modal>
+                    {/* Close Button */}
+                    <button
+                        className="absolute top-4 right-4 z-50 p-4 text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/10"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onClose();
+                        }}
+                    >
+                        <CloseOutlined className="text-3xl" />
+                    </button>
+
+                    {/* Navigation Buttons (Only if > 1 image) */}
+                    {images.length > 1 && (
+                        <>
+                            <button
+                                className="absolute left-4 z-50 p-4 text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/10"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    goToPrevImage();
+                                }}
+                            >
+                                <LeftOutlined className="text-4xl" />
+                            </button>
+                            <button
+                                className="absolute right-4 z-50 p-4 text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/10"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    goToNextImage();
+                                }}
+                            >
+                                <RightOutlined className="text-4xl" />
+                            </button>
+                        </>
+                    )}
+
+                    {/* Image Container */}
+                    <div
+                        className="relative max-w-[90vw] max-h-[90vh]"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={currentImage?.imageUrl}
+                            alt="Preview"
+                            className="max-w-full max-h-[90vh] object-contain"
+                        />
+
+                        {/* Image Info Overlay */}
+                        <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-white/90 text-sm whitespace-nowrap bg-black/50 px-3 py-1 rounded-full">
+                            <span>{currentIndex + 1} / {images.length}</span>
+                            {currentImage?.uploadedBy && uploaderNames[currentImage.uploadedBy] && (
+                                <span className="ml-3 text-white/60">
+                                    by {uploaderNames[currentImage.uploadedBy]}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>,
+        document.body
     );
 }
