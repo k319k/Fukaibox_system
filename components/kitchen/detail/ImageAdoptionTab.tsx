@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, Tag, Checkbox } from "antd";
-import { Icon } from "@iconify/react";
 import { Section, UploadedImage } from "@/types/kitchen";
 
 interface ImageAdoptionTabProps {
@@ -10,10 +9,11 @@ interface ImageAdoptionTabProps {
     uploaderNames: Record<string, string>;
     onImageSelection: (imageId: string, isSelected: boolean, sectionId: string) => void;
     onOpenLightbox: (images: UploadedImage[], index: number) => void;
+    isReadOnly?: boolean;
 }
 
 export default function ImageAdoptionTab({
-    sections, images, uploaderNames, onImageSelection, onOpenLightbox
+    sections, images, uploaderNames, onImageSelection, onOpenLightbox, isReadOnly = false
 }: ImageAdoptionTabProps) {
     if (sections.length === 0) {
         return (
@@ -53,12 +53,15 @@ export default function ImageAdoptionTab({
                                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                                         <img src={img.imageUrl} alt="candidate" className="w-full h-full object-cover" />
                                                     </div>
-                                                    <div className="absolute top-2 right-2 z-10 bg-[var(--md-sys-color-surface-container-lowest)]/80 backdrop-blur-sm rounded-full p-1 shadow-sm">
-                                                        <Checkbox
-                                                            checked={img.isSelected || false}
-                                                            onChange={(e) => onImageSelection(img.id, e.target.checked, section.id)}
-                                                        />
-                                                    </div>
+                                                    {!isReadOnly && (
+                                                        <div className="absolute top-2 right-2 z-10 bg-[var(--md-sys-color-surface-container-lowest)]/80 backdrop-blur-sm rounded-full p-1 shadow-sm">
+                                                            <Checkbox
+                                                                checked={img.isSelected || false}
+                                                                onChange={(e) => onImageSelection(img.id, e.target.checked, section.id)}
+                                                            />
+                                                        </div>
+                                                    )}
+
                                                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none bg-black/10"></div>
                                                 </div>
                                                 <div className="mt-1 flex justify-between items-center px-1">
