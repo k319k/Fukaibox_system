@@ -60,7 +60,7 @@ export default function SectionList(props: SectionListProps) {
     // セクションがない場合：台本入力フォーム
     if (sections.length === 0) {
         return (
-            <div className="max-w-2xl mx-auto space-y-6 py-8">
+            <div className="w-full max-w-7xl mx-auto space-y-6 py-8">
                 <Card className="card-elevated">
                     <div className="flex items-center gap-2 mb-4">
                         <Icon icon="mdi:script-text-outline" className="text-xl" />
@@ -70,7 +70,7 @@ export default function SectionList(props: SectionListProps) {
                         <textarea
                             value={fullScript}
                             onChange={(e) => onFullScriptChange(e.target.value)}
-                            className="w-full h-64 p-4 border rounded-lg focus:ring-2 focus:ring-[#73342b] focus:border-transparent outline-none bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)] resize-y"
+                            className="w-full h-[60vh] p-6 border rounded-lg focus:ring-2 focus:ring-[#73342b] focus:border-transparent outline-none bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)] resize-y"
                             style={{ fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
                             placeholder={"ここに台本を貼り付けてください。\n\n空行を入れると、そこで新しいセクションとして分割されます。\n\n(例)\nシーン1のセリフ...\n\nシーン2のセリフ..."}
                         />
