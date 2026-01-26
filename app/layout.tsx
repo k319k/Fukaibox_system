@@ -12,6 +12,9 @@ const notoSansJP = Noto_Sans_JP({
 export const metadata: Metadata = {
   title: "封解Box",
   description: "封解公儀のための統合プラットフォーム",
+  icons: {
+    icon: "/icon.avif",
+  },
 };
 
 export default function RootLayout({

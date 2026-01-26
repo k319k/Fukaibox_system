@@ -33,8 +33,8 @@ function SidebarLogo({ isCollapsed, onClose, onToggleCollapse }: {
                 "flex items-center gap-4",
                 isCollapsed && "justify-center"
             )}>
-                <div className="w-12 h-12 bg-[#ffdad5] rounded-[16px] flex items-center justify-center shrink-0">
-                    <span className="text-xl font-extrabold text-[#73342b] tracking-tight">封</span>
+                <div className="w-12 h-12 flex items-center justify-center shrink-0">
+                    <img src="/icon.avif" alt="Logo" className="w-full h-full object-contain rounded-[12px]" />
                 </div>
                 <AnimatePresence>
                     {!isCollapsed && (
