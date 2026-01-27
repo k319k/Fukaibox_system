@@ -46,7 +46,8 @@
 - **実行環境**:
   - **モーダル実行**: 通常のアプリ利用モード。
   - **右サイドバー実行**: 作業しながらの利用（例：計算機、メモなど）に対応。
-  - **セキュア実行 (Backend)**: Pythonなどのバックエンド処理やデータ分析が必要なアプリは、**E2B (Code Interpreter)** 上のサンドボックス環境で安全に実行される。
+- **リアルタイム連携**:
+  - **Supabase Realtime** を使用し、Tools工房でのチャット・コード同期や、アプリ間のリアルタイム通信（マルチプレイヤーゲーム等）を実現。
 - **評価機能**:
   - 高評価 / 低評価
   - コメント投稿機能
@@ -66,6 +67,6 @@ Tools機能は、App生成時の大量のファイルやリアルタイム性を
 
 - **Frontend**: Next.js, HeroUI, Lucide React
 - **Editor/Preview**: CodeMirror / @monaco-editor/react, Sandpack
-- **Backend DB**: Supabase (PostgreSQL)
+- **Backend DB**: Supabase (PostgreSQL) + Supabase Realtime
 - **AI**: OpenRouter API
-- **Sandbox/Runtime**: E2B (Code Interpreter)
+- **Sandbox**: Sandpack (Browser-based)

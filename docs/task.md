@@ -115,7 +115,7 @@
 - [ ] Gallery & Runtime
   - [ ] カテゴリ表示
   - [ ] App実行 (Frontend Sandbox)
-  - [ ] E2B連携 (Backend Secure Runtime)
+  - [ ] Supabase Realtime連携 (Chat/Sync)
   - [ ] 評価・コメント
 
 ---
