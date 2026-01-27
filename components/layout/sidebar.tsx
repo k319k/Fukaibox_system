@@ -26,12 +26,35 @@ function SidebarLogo({ isCollapsed, onClose, onToggleCollapse }: {
 }) {
     return (
         <div className={cn(
-            "p-6 flex items-center gap-4",
-            isCollapsed ? "justify-center" : "justify-between"
+            "p-6 flex items-center",
+            // Mobile: justify-between (Logo ... Close)
+            // Desktop Expanded: justify-start (Toggle ... Logo)
+            // Desktop Collapsed: justify-center (Toggle)
+            isCollapsed ? "justify-center" : "justify-between md:justify-start md:gap-4"
         )}>
+            {/* Desktop collapse toggle - First on Desktop */}
+            {onToggleCollapse && (
+                <motion.div whileTap={{ scale: 0.95 }} className="hidden md:block">
+                    <Tooltip title={isCollapsed ? "展開" : "折りたたむ"} placement="right">
+                        <Button
+                            type="text"
+                            shape="circle"
+                            className="flex items-center justify-center"
+                            onClick={onToggleCollapse}
+                            icon={isCollapsed ? (
+                                <Icon icon="material-symbols:keyboard-double-arrow-right" className="w-5 h-5" />
+                            ) : (
+                                <Icon icon="material-symbols:keyboard-double-arrow-left" className="w-5 h-5" />
+                            )}
+                        />
+                    </Tooltip>
+                </motion.div>
+            )}
+
             <div className={cn(
                 "flex items-center gap-4",
-                isCollapsed && "justify-center"
+                // Hide logo group on desktop when collapsed
+                isCollapsed && "md:hidden"
             )}>
                 <div className="w-12 h-12 flex items-center justify-center shrink-0">
                     <img src="/icon.avif" alt="Logo" className="w-full h-full object-contain rounded-[12px]" />
@@ -50,7 +73,7 @@ function SidebarLogo({ isCollapsed, onClose, onToggleCollapse }: {
                 </AnimatePresence>
             </div>
 
-            {/* Mobile close button */}
+            {/* Mobile close button - Last on Mobile */}
             {onClose && !isCollapsed && (
                 <motion.div whileTap={{ scale: 0.95 }}>
                     <Button
@@ -60,25 +83,6 @@ function SidebarLogo({ isCollapsed, onClose, onToggleCollapse }: {
                         onClick={onClose}
                         icon={<Icon icon="material-symbols:close" className="w-5 h-5" />}
                     />
-                </motion.div>
-            )}
-
-            {/* Desktop collapse toggle */}
-            {onToggleCollapse && (
-                <motion.div whileTap={{ scale: 0.95 }} className="hidden md:block">
-                    <Tooltip title={isCollapsed ? "展開" : "折りたたむ"} placement="right">
-                        <Button
-                            type="text"
-                            shape="circle"
-                            className="flex items-center justify-center"
-                            onClick={onToggleCollapse}
-                            icon={isCollapsed ? (
-                                <Icon icon="material-symbols:keyboard-double-arrow-right" className="w-5 h-5" />
-                            ) : (
-                                <Icon icon="material-symbols:keyboard-double-arrow-left" className="w-5 h-5" />
-                            )}
-                        />
-                    </Tooltip>
                 </motion.div>
             )}
         </div>
