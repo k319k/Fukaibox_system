@@ -107,13 +107,15 @@
 
 ## Phase 5: Tools
 
+- [x] 仕様策定 (docs/封解Box Tools機能仕様書.md)
 - [ ] App登録機能
-- [ ] Tools工房
-  - [ ] AIによるApp作成(左にAIチャット、右にコードエディタとファイル構造)
+- [ ] Tools工房 (App Studio)
+  - [ ] AIによるApp作成(左:AIチャット, 右:プレビュー/エディタ)
   - [ ] クレジット管理
-- [ ] Gallery
+- [ ] Gallery & Runtime
   - [ ] カテゴリ表示
-  - [ ] App実行
+  - [ ] App実行 (Frontend Sandbox)
+  - [ ] E2B連携 (Backend Secure Runtime)
   - [ ] 評価・コメント
 
 ---
