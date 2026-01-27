@@ -46,6 +46,7 @@
 - **実行環境**:
   - **モーダル実行**: 通常のアプリ利用モード。
   - **右サイドバー実行**: 作業しながらの利用（例：計算機、メモなど）に対応。
+  - **セキュア実行 (Backend)**: Pythonなどのバックエンド処理やデータ分析が必要なアプリは、**E2B (Code Interpreter)** 上のサンドボックス環境で安全に実行される。
 - **評価機能**:
   - 高評価 / 低評価
   - コメント投稿機能
@@ -67,3 +68,4 @@ Tools機能は、App生成時の大量のファイルやリアルタイム性を
 - **Editor/Preview**: CodeMirror / @monaco-editor/react, Sandpack
 - **Backend DB**: Supabase (PostgreSQL)
 - **AI**: OpenRouter API
+- **Sandbox/Runtime**: E2B (Code Interpreter)
