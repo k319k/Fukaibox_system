@@ -29,13 +29,16 @@
 - **UIレイアウト**:
   - **左パネル**: AIチャットインターフェース（OpenRouter経由）。
   - **右パネル**: プレビュー画面 / コードエディタ（タブ切り替え）。
-  - **ファイルツリー**: 複数ファイル（React/HTML）の管理に対応。
+  - **対応言語/フレームワーク**:
+    - **React**: TypeScript (`tsx`) / JavaScript (`jsx`)
+    - **Vanilla JS**: HTML/CSS/JS (`html`)
+    - **Python**: Pyodideによるブラウザ実行 (`py`)
 
 - **生成プロセス**:
   1. **クレジット確認**: AI生成機能の使用前に所持クレジットを確認。
   2. **プロンプト入力**: ユーザーが作りたいアプリを説明。
-  3. **AI生成**: AI がコードを生成。
-  4. **プレビュー**: 生成されたコードを即座にレンダリング。
+  3. **AI生成**: 指定された言語（React-TS/React-JS/Vanilla/Python）でコードを生成。
+  4. **プレビュー**: Sandpack (JS系) または Pyodide (Python) で即座に実行。
   5. **保存・公開**: 作成したアプリをToolsに保存し、公開設定を行う。
 
 ### **3.2 Tools Gallery & Runtime**
@@ -58,7 +61,8 @@ Tools機能は、App生成時の大量のファイルやリアルタイム性を
 
 ### **Tables**
 
-- `tools_apps`: Appのメタデータ（タイトル、説明、作者、公開設定、カテゴリ）。
+- `tools_apps`: Appのメタデータ。
+  - `type`: アプリの種類。`react-ts` | `react-js` | `vanilla-js` | `python` | `link` | `embed`
 - `tools_files`: Appを構成するソースコード（バージョン管理含む）。
 - `tools_ratings`: ユーザーによる評価（High/Low）とコメント。
 - `tools_credits`: ユーザーの残りクレジット残高。
