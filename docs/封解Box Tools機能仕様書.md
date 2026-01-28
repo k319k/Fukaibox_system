@@ -7,7 +7,7 @@
 ## **1. 概要**
 
 「封解Box Tools」は、封解公儀の儀員が利用できる**AI主導型アプリケーションプラットフォーム**である。
-ユーザーは「Tools工房」にてAI（Qwen3/GLM-4）と対話しながら、React/HTMLベースのマイクロアプリ（App）を即座に生成・公開できる。
+ユーザーは「Tools工房」にてAI（Qwen3-coder/GLM-4.7/DeepSeek-V3.2等）と対話しながら、React/HTMLベースのマイクロアプリ（App）を即座に生成・公開できる。
 公開されたAppは「App Gallery」に並び、他の儀員が実行・評価することができる。
 
 ## **2. ユーザーロールと権限**
@@ -48,7 +48,7 @@
 - **一覧表示**: カテゴリ別、新着順、人気順などで表示。
 - **実行環境**:
   - **モーダル実行**: 通常のアプリ利用モード。
-  - **右サイドバー実行**: 作業しながらの利用（例：計算機、メモなど）に対応。
+  - **右サイドバー実行**: 作業しながらの利用。（例：計算機、メモなど）に対応。炊事場やホームでも利用可能。
 - **リアルタイム連携**:
   - **Supabase Realtime (Broadcast)**:
     - **用途**: IOゲーム等の位置同期、チャット。DBを経由しないメモリオンリーの高速通信（WebSocket）。
@@ -86,7 +86,29 @@
   - `data`: JSONB
   - `is_public`: Boolean
 
-## **5. 技術スタック**
+## **5. Tools API (SDK)**
+
+アプリ内から利用可能なJavaScript SDK (`window.fukai`) を提供する。
+
+### **5.1 User Info**
+
+- `fukai.getUser()`: 現在のユーザー情報を取得。
+
+  ```json
+  {
+    "id": "user_123",
+    "name": "K319K",
+    "role": "gicho"
+  }
+  ```
+
+### **5.2 Database (K-V Store)**
+
+- `fukai.db.get(collection, key)`
+- `fukai.db.set(collection, key, value)`
+- `fukai.db.query(collection, filter)`
+
+## **6. 技術スタック**
 
 - **Frontend**: Next.js, HeroUI, Lucide React
 - **System DB**: Turso (LibSQL) - コード・メタデータ
@@ -94,7 +116,7 @@
 - **AI**: OpenRouter API
 - **Sandbox**: Sandpack (Browser-based)
 
-## **6. DB制限 (App Backend Quotas)**
+## **7. DB制限 (App Backend Quotas)**
 
 Supabase側のアプリデータ保存に関する制限。
 
