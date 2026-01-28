@@ -50,55 +50,56 @@
   - **モーダル実行**: 通常のアプリ利用モード。
   - **右サイドバー実行**: 作業しながらの利用（例：計算機、メモなど）に対応。
 - **リアルタイム連携**:
-  - **Supabase Realtime** を使用し、Tools工房でのチャット・コード同期や、アプリ間のリアルタイム通信（マルチプレイヤーゲーム等）を実現。
+  - **Supabase Realtime (Broadcast)**:
+    - **用途**: IOゲーム等の位置同期、チャット。DBを経由しないメモリオンリーの高速通信（WebSocket）。
+    - **アーキテクチャ**: ホスト（部屋主）のブラウザがゲームロジック（敵AI等）を計算し、Broadcastで座標を配信する「ホスト依存方式」。
+    - **補間**: 受信側はパケット間隔（例: 10fps）の間をフロントエンドで補間し、60fpsの滑らかな動作を実現する。
+
 - **評価機能**:
   - 高評価 / 低評価
   - コメント投稿機能
 
-## **4. データ構造 (Supabase)**
+## **4. データ構造 (DB Architecture)**
 
-Tools機能は、App生成時の大量のファイルやリアルタイム性を考慮し、メインのTursoとは別に**Supabase**を使用する。
-**Appのメタデータ、ソースコード、およびアプリ内データは全てSupabaseに保存する。**
+システムデータ（コード等）とアプリデータ（ゲームセーブ等）を **Turso** と **Supabase** に最適配置する。
 
-### **Tables**
+### **4.1 System DB: Turso (LibSQL)**
+
+**用途**: 封解Box Toolsのプラットフォーム自体の管理。大量のテキストデータ（コード）を安価に保存。
 
 - `tools_apps`: Appのメタデータ。
-  - `type`: アプリの種類。`react-ts` | `react-js` | `vanilla-js` | `python` | `link` | `embed`
-- `tools_files`: Appを構成するソースコード（バージョン管理含む）。
-- `tools_ratings`: ユーザーによる評価（High/Low）とコメント。
-- `tools_credits`: ユーザーの残りクレジット残高。
+  - `type`: `react-ts` | `react-js` | `vanilla-js` | `python` | `link` | `embed`
+- `tools_files`: Appのソースコード（バージョン管理含む）。
+- `tools_ratings`: 評価・コメント。
+- `tools_credits`: クレジット残高。
+
+### **4.2 App Backend: Supabase (PostgreSQL + Realtime)**
+
+**用途**: ユーザー作成アプリのためのバックエンド。Realtime機能とアプリ内データ保存。
+
+- **Realtime**: Presence (オンライン管理), Broadcast (ゲーム通信).
+- **Database**: `tools_app_data` (JSON KV Store)
+  - `id`: UUID (PK)
+  - `app_id`: FK
+  - `user_id`: FK
+  - `collection`: String
+  - `data`: JSONB
+  - `is_public`: Boolean
 
 ## **5. 技術スタック**
 
 - **Frontend**: Next.js, HeroUI, Lucide React
-- **Editor/Preview**: CodeMirror / @monaco-editor/react, Sandpack
+- **System DB**: Turso (LibSQL) - コード・メタデータ
+- **App Backend**: Supabase (PostgreSQL + Realtime) - ゲームデータ・通信
+- **AI**: OpenRouter API
 - **Sandbox**: Sandpack (Browser-based)
 
-## **6. DB制限とストレージ (Storage & Constraints)**
+## **6. DB制限 (App Backend Quotas)**
 
-作成されたAppは、安全性と管理の観点から**直接のSQL実行権限を持たない**。
-代わりに、提供されるSDKを通じて**Key-Value形式 (JSON)** でデータを保存する。
-
-### **6.1 データ保存モデル**
-
-- **種類**: JSON Document Store (`tools_app_data` テーブル)
-- **スコープ**: `app_id` と `user_id` で分離。RLS (Row Level Security) により他Appのデータへのアクセスを遮断。
-
-### **6.2 制限 (Quotas)**
+Supabase側のアプリデータ保存に関する制限。
 
 | 項目 | 制限内容 | 備考 |
 | :--- | :--- | :--- |
-| **ストレージ容量** | **50MB** / App | テキスト・設定データ用。画像はR2(別枠)利用を推奨。 |
-| **レコード数** | **1,000** 件 / User / App | 1ユーザーが1つのアプリで保存できるレコード数。 |
-| **Read/Write** | SupabaseのRate Limitに準拠 | 過度なリクエストはブロック。 |
-| **テーブル作成** | **不可** | ユーザーによる任意の CREATE TABLE は禁止。 |
-
-### **追加テーブル (Schema)**
-
-- `tools_app_data`:
-  - `id`: UUID (PK)
-  - `app_id`: App ID (FK)
-  - `user_id`: User ID (FK) - 所有者
-  - `collection`: String (任意のコレクション名/キー)
-  - `data`: JSONB (実データ)
-  - `is_public`: Boolean (公開データかどうか)
+| **ストレージ容量** | **50MB** / App | `tools_app_data` の容量制限。 |
+| **レコード数** | **1,000** 件 / User / App | 1ユーザーあたり。 |
+| **Read/Write** | Supabase Rate Limit | |
