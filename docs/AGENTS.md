@@ -225,7 +225,7 @@ export default function MyComponent() {
    - `any`型の使用を避ける
 
 5. **UIを統一**
-   - Design definition documentを厳守し、Ant Designコンポーネントを使用すること。
+   - M3を厳守し、Ant Designコンポーネントを使用すること。
 
 6. **状態管理の適切な使い分け**
    - グローバル状態: Zustand

@@ -21,7 +21,7 @@
 
 ## **3. 機能要件詳細**
 
-### **3.1 Tools工房 (App Studio)**
+### **3.1 Tools工房**
 
 **コンセプト**: "Prompt to App" - 自然言語で欲しいツールを説明するだけで、動くアプリが生成される。
 
@@ -95,7 +95,7 @@
   - 封解Box本体（Tursoユーザー）がSupabaseへアクセスするため、バックエンドで **Custom JWT** を署名（Mint）して発行する。
   - アプリには `SUPABASE_ANON_KEY` と共にこの署名済みトークンを渡し、RLS (Row Level Security) を機能させる。
 
-### **5.2 Tools API (SDK)**
+### **5.2 Tools SDK**
 
 アプリ内にはラッパーライブラリを注入し、非同期 (`Promise`) で親ウィンドウと通信する。
 

@@ -15,6 +15,11 @@ const serverSchema = z.object({
     ),
     TURSO_AUTH_TOKEN: z.string().min(1),
 
+    // Supabase (Tools用DB)
+    NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+    SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+
     // 認証 (better-auth)
     BETTER_AUTH_SECRET: z.string().min(1),
     BETTER_AUTH_URL: z.string().url(),
@@ -41,6 +46,9 @@ const processEnv = {
     NODE_ENV: process.env.NODE_ENV,
     TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL, // 互換性のため
     TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN || process.env.DATABASE_AUTH_TOKEN, // 互換性のため
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
@@ -59,9 +67,6 @@ const parsedClient = clientSchema.safeParse(processEnv);
 
 if (!parsedServer.success) {
     console.error("❌ Invalid environment variables:", parsedServer.error.flatten().fieldErrors);
-    // 本番環境ではエラーを投げて停止させるのが望ましいが、
-    // ビルドプロセス中に環境変数が全て揃っていない場合もあるため、警告にとどめる場合もある。
-    // 今回はユーザー要望により「完璧」を目指すため、エラーを投げる。
     if (process.env.NODE_ENV !== 'test') {
         throw new Error("Invalid environment variables");
     }

@@ -108,18 +108,23 @@
 ## Phase 5: Tools
 
 - [x] 仕様策定 (docs/封解Box Tools機能仕様書.md)
-- [ ] Data Architecture Setup
-  - [ ] Supabase Project Setup (RLS, Realtime)
-  - [ ] JWT Minting Logic (Next.js API -> Supabase)
-  - [ ] DB Schema Definition (`tools_app_data` + GIN Index)
-- [ ] Tools API (SDK) Development
-  - [ ] `fukai-sdk` (postMessage Wrapper)
-  - [ ] Parent Window Message Handler
-- [ ] Tools工房 (App Studio)
-  - [ ] AI Generation System Prompt (Responsive/Tailwind)
-  - [ ] Sandpack Integration
+- [x] Data Architecture Setup
+  - [x] Supabase Project Setup (RLS, Realtime)
+  - [x] JWT Minting Logic (Next.js API -> Supabase)
+  - [x] DB Schema Definition (`tools_app_data` + GIN Index)
+- [x] Tools API (SDK) Development
+  - [x] `fukai-sdk` (postMessage Wrapper)
+  - [x] Parent Window Message Handler
+  - [x] TypeScript Definitions (`types/tools.ts`)
+- [x] Tools工房 (Editor)
+- [x] Tools工房
+  - [x] UI Layout (Resizable Panels)
+  - [x] AI Generation System Prompt (Responsive/Tailwind)
+  - [x] Sandpack Integration
 - [ ] Gallery & Runtime
-  - [ ] App実行 (Sandpack via SDK)
+  - [x] App実行 (Sandpack via SDK)
+  - [x] App保存機能 (Turso)
+  - [x] Gallery UI (Ant Design)
   - [ ] Supabase Realtime (Broadcast/Host Logic)
   - [ ] 評価・コメント
 
