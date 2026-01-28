@@ -71,6 +71,33 @@ Tools機能は、App生成時の大量のファイルやリアルタイム性を
 
 - **Frontend**: Next.js, HeroUI, Lucide React
 - **Editor/Preview**: CodeMirror / @monaco-editor/react, Sandpack
-- **Backend DB**: Supabase (PostgreSQL) + Supabase Realtime
-- **AI**: OpenRouter API
 - **Sandbox**: Sandpack (Browser-based)
+
+## **6. DB制限とストレージ (Storage & Constraints)**
+
+作成されたAppは、安全性と管理の観点から**直接のSQL実行権限を持たない**。
+代わりに、提供されるSDKを通じて**Key-Value形式 (JSON)** でデータを保存する。
+
+### **6.1 データ保存モデル**
+
+- **種類**: JSON Document Store (`tools_app_data` テーブル)
+- **スコープ**: `app_id` と `user_id` で分離。RLS (Row Level Security) により他Appのデータへのアクセスを遮断。
+
+### **6.2 制限 (Quotas)**
+
+| 項目 | 制限内容 | 備考 |
+| :--- | :--- | :--- |
+| **ストレージ容量** | **50MB** / App | テキスト・設定データ用。画像はR2(別枠)利用を推奨。 |
+| **レコード数** | **1,000** 件 / User / App | 1ユーザーが1つのアプリで保存できるレコード数。 |
+| **Read/Write** | SupabaseのRate Limitに準拠 | 過度なリクエストはブロック。 |
+| **テーブル作成** | **不可** | ユーザーによる任意の CREATE TABLE は禁止。 |
+
+### **追加テーブル (Schema)**
+
+- `tools_app_data`:
+  - `id`: UUID (PK)
+  - `app_id`: App ID (FK)
+  - `user_id`: User ID (FK) - 所有者
+  - `collection`: String (任意のコレクション名/キー)
+  - `data`: JSONB (実データ)
+  - `is_public`: Boolean (公開データかどうか)
