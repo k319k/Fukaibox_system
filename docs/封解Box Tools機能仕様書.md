@@ -86,27 +86,36 @@
   - `data`: JSONB
   - `is_public`: Boolean
 
-## **5. Tools API (SDK)**
+## **5. アーキテクチャ詳細 (Architecture Details)**
 
-アプリ内から利用可能なJavaScript SDK (`window.fukai`) を提供する。
+### **5.1 セキュリティと認証 (Security & Auth)**
 
-### **5.1 User Info**
+- **サンドボックス分離**: アプリは `iframe` (Sandpack) 内で実行される。親ウィンドウとは **`postMessage`** でのみ通信し、DOMアクセスやCookieへの直接アクセスは行わせない。
+- **Supabase認証 (JWT Minting)**:
+  - 封解Box本体（Tursoユーザー）がSupabaseへアクセスするため、バックエンドで **Custom JWT** を署名（Mint）して発行する。
+  - アプリには `SUPABASE_ANON_KEY` と共にこの署名済みトークンを渡し、RLS (Row Level Security) を機能させる。
 
-- `fukai.getUser()`: 現在のユーザー情報を取得。
+### **5.2 Tools API (SDK)**
 
-  ```json
-  {
-    "id": "user_123",
-    "name": "K319K",
-    "role": "gicho"
-  }
-  ```
+アプリ内にはラッパーライブラリを注入し、非同期 (`Promise`) で親ウィンドウと通信する。
 
-### **5.2 Database (K-V Store)**
+- `await fukai.getUser()`: ユーザー情報取得。
+- `await fukai.db.get/set/query(...)`: K-Vストア操作。
 
-- `fukai.db.get(collection, key)`
-- `fukai.db.set(collection, key, value)`
-- `fukai.db.query(collection, filter)`
+### **5.3 Python (Pyodide) の制限**
+
+- **初期ロード**: ランタイムDLのため起動に時間がかかる旨をUI表示する。
+- **機能制限**: データ分析・計算専用とし、**Realtime機能は非対応**（または制限付き）とする。
+
+### **5.4 IOゲーム (Broadcast)**
+
+- **ホスト依存**: ホスト（部屋主）がゲームロジックを計算。ホスト可視化UIを実装。
+- **途中参加**: `RequestState` イベントでホストから最新状態を取得するロジックを実装。
+
+### **5.5 UI/レスポンシブ**
+
+- **システムプロンプト**: AIに対し「Tailwind CSS等を使い、コンテナ幅に応じたレスポンシブ対応」を強制する。
+- **Zoom機能**: `iframe` の `scale` 縮小表示機能をUIに搭載。
 
 ## **6. 技術スタック**
 
@@ -119,6 +128,8 @@
 ## **7. DB制限 (App Backend Quotas)**
 
 Supabase側のアプリデータ保存に関する制限。
+
+- **パフォーマンス最適化**: `tools_app_data` の `data` (JSONB) カラムには **GINインデックス** を作成し、フィルタリングを高速化する。
 
 | 項目 | 制限内容 | 備考 |
 | :--- | :--- | :--- |

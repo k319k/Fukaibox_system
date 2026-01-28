@@ -108,14 +108,19 @@
 ## Phase 5: Tools
 
 - [x] 仕様策定 (docs/封解Box Tools機能仕様書.md)
-- [ ] App登録機能
+- [ ] Data Architecture Setup
+  - [ ] Supabase Project Setup (RLS, Realtime)
+  - [ ] JWT Minting Logic (Next.js API -> Supabase)
+  - [ ] DB Schema Definition (`tools_app_data` + GIN Index)
+- [ ] Tools API (SDK) Development
+  - [ ] `fukai-sdk` (postMessage Wrapper)
+  - [ ] Parent Window Message Handler
 - [ ] Tools工房 (App Studio)
-  - [ ] AIによるApp作成(左:AIチャット, 右:プレビュー/エディタ)
-  - [ ] クレジット管理
+  - [ ] AI Generation System Prompt (Responsive/Tailwind)
+  - [ ] Sandpack Integration
 - [ ] Gallery & Runtime
-  - [ ] カテゴリ表示
-  - [ ] App実行 (Frontend Sandbox)
-  - [ ] Supabase Realtime連携 (Chat/Sync)
+  - [ ] App実行 (Sandpack via SDK)
+  - [ ] Supabase Realtime (Broadcast/Host Logic)
   - [ ] 評価・コメント
 
 ---
