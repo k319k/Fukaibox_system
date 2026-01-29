@@ -1,6 +1,8 @@
 import { getLatestStreams, getLatestShorts } from "@/app/actions/youtube";
 import { HomeContent } from "@/components/home/home-content";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
     // 並列でデータ取得
     const [streams, shorts] = await Promise.all([

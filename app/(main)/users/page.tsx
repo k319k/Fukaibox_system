@@ -1,7 +1,7 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { getAllUsersWithStatus } from "@/app/actions/user";
+
+export const dynamic = "force-dynamic";
 import { Card, Avatar, Tag, Spin } from "antd";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";

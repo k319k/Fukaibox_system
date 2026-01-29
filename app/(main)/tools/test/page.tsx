@@ -1,9 +1,7 @@
-"use client";
-
 import { useToolsMessageHandler } from "@/components/tools/runtime/use-tools-message-handler";
 import { FUKAI_SDK_SOURCE } from "@/lib/tools/sdk-source";
 import { useState, useRef, useEffect } from "react";
-import { redirect } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 export const dynamic = "force-dynamic";
 
