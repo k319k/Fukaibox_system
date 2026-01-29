@@ -64,7 +64,6 @@ export function ToolsStudioClient() {
     };
 
     return (
-    return (
         <div className="h-[calc(100vh-64px)] w-full bg-[var(--md-sys-color-surface)] overflow-hidden text-[var(--md-sys-color-on-surface)]">
             <PanelGroup direction="horizontal">
                 <Panel defaultSize={30} minSize={20}>
