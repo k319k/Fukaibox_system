@@ -93,7 +93,7 @@ export default function Lightbox({
 
     if (!mounted || images.length === 0) return null;
 
-    const currentImage = images[currentIndex];
+
 
     return createPortal(
         <AnimatePresence>

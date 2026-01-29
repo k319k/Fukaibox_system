@@ -2,7 +2,7 @@
 
 import { ChatPanel } from "@/components/tools/studio/chat-panel";
 import { SandpackClient } from "@/components/tools/studio/sandpack-client";
-import { Panel, PanelGroup, Separator as PanelResizeHandle } from "react-resizable-panels";
+import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from "react-resizable-panels";
 import { useState } from "react";
 import { useToolsMessageHandler } from "@/components/tools/runtime/use-tools-message-handler";
 import { Button, Modal, Input, message } from "antd";
