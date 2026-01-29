@@ -6,12 +6,30 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ToolApp } from "@/app/actions/tools";
+// import type { ToolApp } from "@/app/actions/tools"; // Fix: Use local definition or correct path
 import type { ToolRating } from "@/app/actions/tools-ratings";
 import { rateApp, deleteRating } from "@/app/actions/tools-ratings";
-import { deleteApp } from "@/app/actions/tools";
+import { deleteToolsApp } from "@/app/actions/tools-data"; // Fix: Correct function and path
 
 const { TextArea } = Input;
+
+export interface ToolApp {
+    id: string;
+    name: string;
+    description: string | null;
+    category: string | null;
+    type: "embed" | "link" | "react" | "html";
+    embedUrl: string | null;
+    isPublic: boolean | null;
+    viewCount: number | null;
+    playCount: number | null;
+    createdBy: string;
+    createdAt: Date;
+    updatedAt: Date;
+    creatorName?: string | null;
+    creatorImage?: string | null;
+    files?: Record<string, string>;
+}
 
 interface ToolDetailClientProps {
     app: ToolApp;
@@ -66,7 +84,7 @@ export function ToolDetailClient({ app, ratings, currentUserId, currentUserRole 
     const handleDelete = async () => {
         if (!confirm("このツールを削除しますか？")) return;
         setIsDeleting(true);
-        const result = await deleteApp(app.id);
+        const result = await deleteToolsApp(app.id);
         if (result.success) {
             router.push("/tools");
         } else {

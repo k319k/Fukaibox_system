@@ -1,16 +1,15 @@
 "use client";
 
-import { Button, Card, Input, Alert } from "antd";
+import { Button, Card, Alert } from "antd";
 import { useState } from "react";
 import { signIn } from "@/lib/auth-client";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
+import { createGuestUser } from "@/app/actions/auth";
 
 export default function LoginPage() {
     const [isGuestMode, setIsGuestMode] = useState(false);
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -27,17 +26,26 @@ export default function LoginPage() {
     };
 
     const handleGuestLogin = async () => {
-        if (!username || !password) {
-            setError("ユーザー名とパスワードを入力してください");
-            return;
-        }
         setIsLoading(true);
         setError("");
         try {
-            await signIn.email({ email: username, password });
+            // ゲストアカウントを自動生成
+            const result = await createGuestUser();
+
+            if (!result.success || !result.email || !result.password) {
+                throw new Error(result.error || "ゲスト作成に失敗しました");
+            }
+
+            // 自動生成された認証情報でログイン
+            await signIn.email({
+                email: result.email,
+                password: result.password
+            });
+
             window.location.href = "/";
-        } catch {
-            setError("ログインに失敗しました。認証情報を確認してください。");
+        } catch (err: any) {
+            console.error(err);
+            setError(err.message || "ログインに失敗しました。");
         } finally {
             setIsLoading(false);
         }
@@ -123,27 +131,6 @@ export default function LoginPage() {
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            <div>
-                                <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">ユーザー名 / メールアドレス</label>
-                                <Input
-                                    size="large"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    disabled={isLoading}
-                                    className="rounded-[16px]"
-                                />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">パスワード</label>
-                                <Input.Password
-                                    size="large"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    disabled={isLoading}
-                                    className="rounded-[16px]"
-                                />
-                            </div>
-
                             <motion.div whileTap={{ scale: 0.95 }}>
                                 <Button
                                     type="primary"
@@ -154,9 +141,13 @@ export default function LoginPage() {
                                     loading={isLoading}
                                     icon={!isLoading && <Icon icon="material-symbols:login" className="w-5 h-5" />}
                                 >
-                                    ログイン
+                                    ゲストとしてすぐにはじめる
                                 </Button>
                             </motion.div>
+
+                            <p className="text-sm text-center text-[var(--md-sys-color-on-surface-variant)]">
+                                ※ゲストアカウントが自動作成されます
+                            </p>
 
                             <motion.div whileTap={{ scale: 0.95 }}>
                                 <Button
@@ -171,7 +162,8 @@ export default function LoginPage() {
                                 </Button>
                             </motion.div>
                         </div>
-                    )}
+                    )
+                    }
 
                     <div className="text-center pt-2 md:pt-4">
                         <Link href="/register" className="text-sm font-semibold text-[#73342b] hover:underline transition-colors">
@@ -182,8 +174,8 @@ export default function LoginPage() {
                     <p className="text-sm text-center text-[var(--md-sys-color-on-surface-variant)] leading-relaxed">
                         ログインすることで、利用規約とプライバシーポリシーに同意したものとみなされます。
                     </p>
-                </div>
-            </Card>
-        </div>
+                </div >
+            </Card >
+        </div >
     );
 }

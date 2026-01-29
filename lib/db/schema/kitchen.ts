@@ -54,6 +54,7 @@ export const cookingImages = sqliteTable("cooking_images", {
     imageUrl: text("image_url").notNull(),
     isSelected: integer("is_selected", { mode: "boolean" }).default(false),
     isFinalSelected: integer("is_final_selected", { mode: "boolean" }).default(false),
+    comment: text("comment"), // 投稿者コメント
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
 

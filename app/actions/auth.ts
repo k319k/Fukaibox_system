@@ -133,6 +133,29 @@ export async function registerGuest(email: string, password: string, name: strin
 }
 
 /**
+ * ゲストユーザーを自動生成して登録（ワンクリックログイン用）
+ */
+export async function createGuestUser() {
+    try {
+        const randomId = crypto.randomUUID().slice(0, 8);
+        const email = `guest-${randomId}@example.com`;
+        const password = `guest-${crypto.randomUUID()}`; // Secure random password
+        const name = `Guest-${randomId}`;
+
+        const result = await registerGuest(email, password, name);
+
+        if (result.success && result.user) {
+            return { success: true, email, password };
+        } else {
+            return { success: false, error: result.error };
+        }
+    } catch (error) {
+        console.error("Auto guest creation error:", error);
+        return { success: false, error: "ゲストアカウントの作成に失敗しました" };
+    }
+}
+
+/**
  * 現在のユーザー情報とロールを取得
  */
 export async function getCurrentUserWithRole() {

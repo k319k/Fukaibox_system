@@ -21,15 +21,17 @@ interface ImageUploadTabProps {
     onTabChange?: (key: string) => void;
     onAddSection: (index: number) => void;
     onDeleteSection: (id: string) => void;
-    onImageUpload: (sectionId: string, file: File) => void;
+    onImageUpload: (sectionId: string, files: File[]) => void;
     onDeleteImage: (imageId: string) => void;
     onOpenLightbox: (images: UploadedImage[], index: number) => void;
+    userRole?: string;
 }
 
 export default function ImageUploadTab({
     sections, images, editorFontSize, uploadingSectionId, uploadProgress, uploaderNames, projectTitle,
-    activeUsers = [], currentUser, onStatusUpdate, onTabChange,
-    onAddSection, onDeleteSection, onImageUpload, onDeleteImage, onOpenLightbox
+    projectId: _projectId, activeUsers = [], currentUser, onStatusUpdate, onTabChange,
+    onAddSection, onDeleteSection, onImageUpload, onDeleteImage, onOpenLightbox,
+    userRole = "guest"
 }: ImageUploadTabProps) {
     const [isScriptViewerOpen, setIsScriptViewerOpen] = useState(false);
 
@@ -218,7 +220,22 @@ export default function ImageUploadTab({
 
                                     {section.referenceImageUrl && (
                                         <div className="bg-[var(--md-sys-color-surface-container)] p-3 rounded-xl">
-                                            <p className="text-label-large text-[var(--md-sys-color-on-surface-variant)] mb-2">参考画像</p>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <p className="text-label-large text-[var(--md-sys-color-on-surface-variant)]">参考画像</p>
+                                                {/* ゲスト以外（儀員以上）ならダウンロード可能 */}
+                                                {userRole !== "guest" && (
+                                                    <a
+                                                        href={section.referenceImageUrl}
+                                                        download={`reference_${section.id}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-primary hover:text-primary-active flex items-center gap-1 text-sm font-medium"
+                                                    >
+                                                        <Icon icon="material-symbols:download" />
+                                                        DL
+                                                    </a>
+                                                )}
+                                            </div>
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img src={section.referenceImageUrl} alt="参考画像" className="max-h-60 max-w-full rounded-lg border border-[var(--md-sys-color-outline-variant)] object-contain mx-auto" />
                                         </div>
@@ -229,8 +246,15 @@ export default function ImageUploadTab({
                                     <div>
                                         <input
                                             type="file"
+                                            multiple
                                             accept="image/*"
-                                            onChange={(e) => { const file = e.target.files?.[0]; if (file) onImageUpload(section.id, file); e.target.value = ''; }}
+                                            onChange={(e) => {
+                                                const files = e.target.files ? Array.from(e.target.files) : [];
+                                                if (files.length > 0) {
+                                                    onImageUpload(section.id, files);
+                                                }
+                                                e.target.value = '';
+                                            }}
                                             className="hidden"
                                             id={`file-input-${section.id}`}
                                         />

@@ -100,6 +100,48 @@ export async function updateImageSelection(
 }
 
 /**
+ * 画像のコメントを更新
+ */
+export async function updateCookingImageComment(
+    imageId: string,
+    comment: string
+) {
+    const session = await getSession();
+    if (!session?.user) {
+        throw new Error("Unauthorized");
+    }
+
+    const image = await db.query.cookingImages.findFirst({
+        where: eq(cookingImages.id, imageId),
+    });
+
+    if (!image) {
+        throw new Error("Image not found");
+    }
+
+    // 権限チェック: 自分の画像、または議長/名誉儀員のみ編集可能
+    const userRoleRecord = await db.query.userRoles.findFirst({
+        where: eq(userRoles.userId, session.user.id),
+        columns: { role: true }
+    });
+
+    const isAuthorized = image.uploadedBy === session.user.id ||
+        userRoleRecord?.role === "gicho" ||
+        userRoleRecord?.role === "meiyo_giin";
+
+    if (!isAuthorized) {
+        throw new Error("Forbidden");
+    }
+
+    await db
+        .update(cookingImages)
+        .set({
+            comment,
+        })
+        .where(eq(cookingImages.id, imageId));
+}
+
+/**
  * プロジェクトの選択済み画像を取得
  */
 export async function getSelectedImages(projectId: string) {

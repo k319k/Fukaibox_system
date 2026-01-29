@@ -7,7 +7,8 @@ import {
     confirmImageUpload,
     deleteCookingImage,
     updateImageSelection,
-    getCookingImages
+    getCookingImages,
+    updateCookingImageComment
 } from "@/app/actions/kitchen";
 
 export function useImages(
@@ -33,10 +34,10 @@ export function useImages(
                     // Simple comparison to avoid re-renders if length is same (optimization could be deeper)
                     setImages(prev => {
                         if (prev.length !== latestImages.length) return latestImages;
-                        // Check if any ID changed (simple content check)
-                        const prevIds = prev.map(p => p.id).sort().join(',');
-                        const newIds = latestImages.map(p => p.id).sort().join(',');
-                        return prevIds !== newIds ? latestImages : prev;
+                        // Check if any ID changed or any comment changed
+                        const prevStr = JSON.stringify(prev.map(p => ({ id: p.id, comment: p.comment })));
+                        const newStr = JSON.stringify(latestImages.map(p => ({ id: p.id, comment: p.comment })));
+                        return prevStr !== newStr ? latestImages : prev;
                     });
                 } catch (e) {
                     console.error("Failed to poll images", e);
@@ -46,43 +47,54 @@ export function useImages(
         return () => clearInterval(interval);
     }, [projectId, uploadingSectionId, setImages]);
 
-    const handleImageUpload = async (sectionId: string, file: File) => {
-        if (!file.type.startsWith("image/")) {
-            alert("画像ファイルを選択してください。");
-            return;
-        }
-        if (file.size > 5 * 1024 * 1024) {
-            alert("5MB以下の画像を選択してください。");
-            return;
+    const handleImageUpload = async (sectionId: string, files: File[]) => {
+        if (files.length === 0) return;
+
+        // Validation for all files
+        for (const file of files) {
+            if (!file.type.startsWith("image/")) {
+                alert("画像ファイルのみアップロード可能です。");
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                alert(`ファイルサイズは5MB以下にしてください: ${file.name}`);
+                return;
+            }
         }
 
         setUploadingSectionId(sectionId);
         setUploadProgress(0);
 
         try {
-            const { url: uploadUrl, key } = await getUploadUrl(file.name, file.type, projectId);
+            let processed = 0;
+            const total = files.length;
 
-            await new Promise<void>((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                xhr.open("PUT", uploadUrl, true);
-                xhr.setRequestHeader("Content-Type", file.type);
+            for (const file of files) {
+                const { url: uploadUrl, key } = await getUploadUrl(file.name, file.type, projectId);
 
-                xhr.upload.onprogress = (e) => {
-                    if (e.lengthComputable) {
-                        const percentComplete = (e.loaded / e.total) * 100;
-                        setUploadProgress(percentComplete);
-                    }
-                };
+                await new Promise<void>((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open("PUT", uploadUrl, true);
+                    xhr.setRequestHeader("Content-Type", file.type);
 
-                xhr.onload = () => {
-                    if (xhr.status === 200) resolve();
-                    else reject(new Error("Upload failed"));
-                };
-                xhr.onerror = () => reject(new Error("Network Error"));
-                xhr.send(file);
-            });
+                    xhr.upload.onprogress = (e) => {
+                        // Individual file progress calculation could be confusing with multiple files
+                        // So we might just show overall progress or infinite spin
+                        // For simplicity, let's just use the current file's progress scaled
+                    };
 
-            await confirmImageUpload(projectId, key, sectionId);
+                    xhr.onload = () => {
+                        if (xhr.status === 200) resolve();
+                        else reject(new Error("Upload failed"));
+                    };
+                    xhr.onerror = () => reject(new Error("Network Error"));
+                    xhr.send(file);
+                });
+
+                await confirmImageUpload(projectId, key, sectionId);
+                processed++;
+                setUploadProgress((processed / total) * 100);
+            }
 
             const newImages = await getCookingImages(projectId);
             setImages(newImages);
@@ -101,6 +113,11 @@ export function useImages(
         try {
             await deleteCookingImage(imageId);
             setImages(prev => prev.filter(img => img.id !== imageId));
+
+            // If deleting current lightbox image, close or move
+            if (isLightboxOpen) {
+                setIsLightboxOpen(false);
+            }
         } catch (error) {
             console.error("Delete image error:", error);
             alert("画像の削除に失敗しました。");
@@ -118,6 +135,23 @@ export function useImages(
         }
     };
 
+    const handleUpdateImageComment = async (imageId: string, comment: string) => {
+        try {
+            await updateCookingImageComment(imageId, comment);
+            // Optimistic update
+            setImages(prev => prev.map(img =>
+                img.id === imageId ? { ...img, comment } : img
+            ));
+            // Also update lightbox images if open
+            setLightboxImages(prev => prev.map(img =>
+                img.id === imageId ? { ...img, comment } : img
+            ));
+        } catch (error) {
+            console.error("Update comment error:", error);
+            alert("コメントの更新に失敗しました。");
+        }
+    };
+
     const openLightbox = (imgs: UploadedImage[], index: number) => {
         setLightboxImages(imgs);
         setLightboxImageIndex(index);
@@ -130,6 +164,7 @@ export function useImages(
         handleImageUpload,
         handleDeleteImage,
         handleImageSelection,
+        handleUpdateImageComment,
 
         isLightboxOpen, setIsLightboxOpen,
         lightboxImages,

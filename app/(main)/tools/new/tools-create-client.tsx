@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createApp } from "@/app/actions/tools";
+import { saveToolsApp } from "@/app/actions/tools-data";
 
 const { TextArea } = Input;
 
@@ -53,13 +53,12 @@ export function ToolsCreateClient({ user }: ToolsCreateClientProps) {
         setIsSubmitting(true);
         setError(null);
 
-        const result = await createApp({
-            name: name.trim(),
+        const result = await saveToolsApp(null, {
+            title: name.trim(),
             description: description.trim() || undefined,
-            category: category.trim() || undefined,
+            // category: category.trim() || undefined,
+            files: {},
             type,
-            embedUrl: embedUrl.trim() || null,
-            isPublic,
         });
 
         if (result.success && result.appId) {

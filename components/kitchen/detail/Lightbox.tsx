@@ -1,10 +1,10 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { LeftOutlined, RightOutlined, CloseOutlined } from "@ant-design/icons";
 import { UploadedImage } from "@/types/kitchen";
 import { motion, AnimatePresence } from "framer-motion";
+import { Input, Button } from "antd";
+import { Icon } from "@iconify/react";
 
 interface LightboxProps {
     isOpen: boolean;
@@ -13,12 +13,19 @@ interface LightboxProps {
     currentIndex: number;
     onIndexChange: (index: number) => void;
     uploaderNames: Record<string, string>;
+    onUpdateComment?: (imageId: string, comment: string) => Promise<void>;
 }
 
 export default function Lightbox({
-    isOpen, onClose, images, currentIndex, onIndexChange, uploaderNames
+    isOpen, onClose, images, currentIndex, onIndexChange, uploaderNames, onUpdateComment
 }: LightboxProps) {
     const [mounted, setMounted] = useState(false);
+    const [isEditingComment, setIsEditingComment] = useState(false);
+    const [editingComment, setEditingComment] = useState("");
+    const inputRef = useRef<any>(null);
+
+    // Current image reference for easier access
+    const currentImage = images[currentIndex];
 
     useEffect(() => {
         setMounted(true);
@@ -36,10 +43,27 @@ export default function Lightbox({
         };
     }, [isOpen]);
 
+    // Navigation functions (hoisted for useEffect)
+    const goToPrevImage = useCallback(() => {
+        if (images.length <= 1) return;
+        onIndexChange((currentIndex - 1 + images.length) % images.length);
+    }, [images.length, currentIndex, onIndexChange]);
+
+    const goToNextImage = useCallback(() => {
+        if (images.length <= 1) return;
+        onIndexChange((currentIndex + 1) % images.length);
+    }, [images.length, currentIndex, onIndexChange]);
+
     useEffect(() => {
         if (!isOpen) return;
 
         const handleKeyDown = (e: KeyboardEvent) => {
+            // Disable nav keys if editing text
+            if (isEditingComment) {
+                if (e.key === "Escape") setIsEditingComment(false);
+                return;
+            }
+
             if (e.key === "Escape") onClose();
             if (e.key === "ArrowLeft") goToPrevImage();
             if (e.key === "ArrowRight") goToNextImage();
@@ -47,16 +71,24 @@ export default function Lightbox({
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [isOpen, currentIndex, images.length]);
+    }, [isOpen, isEditingComment, onClose, goToPrevImage, goToNextImage]);
 
-    const goToPrevImage = () => {
-        if (images.length <= 1) return;
-        onIndexChange((currentIndex - 1 + images.length) % images.length);
+    // Reset editing state when image changes
+    useEffect(() => {
+        setIsEditingComment(false);
+        setEditingComment("");
+    }, [currentIndex]);
+
+    const handleSaveComment = async () => {
+        if (!currentImage || !onUpdateComment) return;
+        await onUpdateComment(currentImage.id, editingComment);
+        setIsEditingComment(false);
     };
 
-    const goToNextImage = () => {
-        if (images.length <= 1) return;
-        onIndexChange((currentIndex + 1) % images.length);
+    const startEditing = () => {
+        setEditingComment(currentImage.comment || "");
+        setIsEditingComment(true);
+        setTimeout(() => inputRef.current?.focus(), 100);
     };
 
     if (!mounted || images.length === 0) return null;
@@ -111,23 +143,59 @@ export default function Lightbox({
 
                     {/* Image Container */}
                     <div
-                        className="relative max-w-[90vw] max-h-[90vh]"
+                        className="relative max-w-[90vw] max-h-[90vh] flex flex-col items-center"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src={currentImage?.imageUrl}
                             alt="Preview"
-                            className="max-w-full max-h-[90vh] object-contain"
+                            className="max-w-full max-h-[80vh] object-contain"
                         />
 
-                        {/* Image Info Overlay */}
-                        <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-white/90 text-sm whitespace-nowrap bg-black/50 px-3 py-1 rounded-full">
-                            <span>{currentIndex + 1} / {images.length}</span>
-                            {currentImage?.uploadedBy && uploaderNames[currentImage.uploadedBy] && (
-                                <span className="ml-3 text-white/60">
-                                    by {uploaderNames[currentImage.uploadedBy]}
-                                </span>
+                        {/* Image Info Overlay & Comment */}
+                        <div className="mt-4 w-full max-w-2xl bg-black/50 backdrop-blur-sm p-4 rounded-xl text-white/90">
+                            <div className="flex justify-between items-center mb-2">
+                                <div className="text-sm">
+                                    <span>{currentIndex + 1} / {images.length}</span>
+                                    {currentImage?.uploadedBy && uploaderNames[currentImage.uploadedBy] && (
+                                        <span className="ml-3 text-white/60">
+                                            by {uploaderNames[currentImage.uploadedBy]}
+                                        </span>
+                                    )}
+                                </div>
+                                {onUpdateComment && !isEditingComment && (
+                                    <Button type="text" size="small" className="text-white hover:text-primary" onClick={startEditing}>
+                                        <Icon icon="material-symbols:edit" className="mr-1" /> コメント編集
+                                    </Button>
+                                )}
+                            </div>
+
+                            {isEditingComment ? (
+                                <div className="flex gap-2">
+                                    <Input.TextArea
+                                        ref={inputRef}
+                                        value={editingComment}
+                                        onChange={(e) => setEditingComment(e.target.value)}
+                                        autoSize={{ minRows: 1, maxRows: 3 }}
+                                        className="bg-white/10 text-white border-white/20"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault();
+                                                handleSaveComment();
+                                            }
+                                        }}
+                                        onClick={(e) => e.stopPropagation()}
+                                    />
+                                    <div className="flex flex-col gap-1 justify-center">
+                                        <Button type="primary" size="small" onClick={handleSaveComment}>保存</Button>
+                                        <Button size="small" onClick={() => setIsEditingComment(false)}>取消</Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <p className="text-body-medium whitespace-pre-wrap min-h-[1.5em]" onClick={() => onUpdateComment && startEditing()}>
+                                    {currentImage.comment || <span className="text-white/40 italic">コメントなし</span>}
+                                </p>
                             )}
                         </div>
                     </div>

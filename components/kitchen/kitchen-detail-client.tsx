@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { KitchenDetailClientProps } from "@/types/kitchen";
 import { useKitchenDetail } from "@/hooks/kitchen/useKitchenDetail";
-import { deleteCookingProject, updateCookingProjectStatus } from "@/app/actions/kitchen";
+import { deleteCookingProject, updateCookingProjectStatus } from "@/app/actions/kitchen/projects";
 import { usePresence } from "@/hooks/kitchen/usePresence";
 import KitchenHeader from "./detail/KitchenHeader";
 import SectionList from "./detail/SectionList";
@@ -94,6 +94,7 @@ export default function KitchenDetailClient({
                         uploadingSectionId={store.uploadingSectionId} uploadProgress={store.uploadProgress} uploaderNames={store.userNames}
                         projectTitle={project.title} projectId={project.id} activeUsers={activeUsers}
                         currentUser={currentUser}
+                        // Status Update logic...
                         onStatusUpdate={updateStatus}
                         onTabChange={store.setSelectedTab}
                         onAddSection={store.handleAddSection} onDeleteSection={store.handleDeleteSection}
@@ -170,7 +171,7 @@ export default function KitchenDetailClient({
             <KitchenWorkflowStepper
                 currentStatus={project.status}
                 canNavigate={isGicho}
-                onStepClick={(status) => handleStatusChange(status)}
+                onStepClick={(status) => handleStatusChange(status as string)} // Ensure string compatibility
             />
 
             <KitchenHeader
@@ -218,6 +219,7 @@ export default function KitchenDetailClient({
             <Lightbox isOpen={store.isLightboxOpen} onClose={() => store.setIsLightboxOpen(false)}
                 images={store.lightboxImages} currentIndex={store.lightboxImageIndex}
                 onIndexChange={store.setLightboxImageIndex} uploaderNames={store.userNames}
+                onUpdateComment={store.handleUpdateImageComment}
             />
         </motion.div>
     );

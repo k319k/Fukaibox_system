@@ -78,6 +78,16 @@
 - [ ] 情報反映機能 (Phase 3へ移行可)
 - [ ] 投稿予約機能 (Phase 6へ統合可)
 
+### Phase 2-E: Bug Fixes & Improvements (New)
+
+- [x] **Guest Login Repair** <!-- id: 4 -->
+  - [x] Investigate `registerGuest` and login page.
+  - [x] Fix the issue or implement "Simple Guest Login" (auto-create).
+- [x] **Reference Image Download (Giin+)** <!-- id: 5 -->
+  - [x] Update `ImageUploadTab` to allow download for non-guest roles.
+- [x] Multiple Image Upload (Nice to have)
+- [x] Comment on uploaded images (Nice to have)
+
 ---
 
 ## Phase 3: ホーム・設定

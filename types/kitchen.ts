@@ -36,6 +36,7 @@ export interface UploadedImage {
     uploadedBy: string;
     imageUrl: string;
     isSelected: boolean | null;
+    comment: string | null;
     createdAt: Date;
 }
 

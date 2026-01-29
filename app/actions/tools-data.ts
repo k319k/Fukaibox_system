@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { toolsApps, toolsFiles } from "@/lib/db/schema";
+import { toolsApps, toolsFiles, users } from "@/lib/db/schema";
 import { auth } from "@/lib/auth"; // BetterAuth session
 import { eq, desc, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -12,8 +12,29 @@ import jwt from "jsonwebtoken";
 export type SaveToolsAppData = {
     title: string;
     description?: string;
+    category?: string;
     files: Record<string, string>; // filename -> content
-    type?: "react-ts" | "react" | "vanilla-ts" | "vanilla";
+    type?: "react-ts" | "react" | "vanilla-ts" | "vanilla" | "embed" | "link" | "html";
+    embedUrl?: string | null;
+    isPublic?: boolean;
+};
+
+export type ToolApp = {
+    id: string;
+    name: string;
+    description: string | null;
+    category: string | null;
+    type: "embed" | "link" | "react" | "html";
+    embedUrl: string | null;
+    isPublic: boolean | null;
+    viewCount: number | null;
+    playCount: number | null;
+    createdBy: string;
+    createdAt: Date;
+    updatedAt: Date;
+    creatorName?: string | null;
+    creatorImage?: string | null;
+    files?: Record<string, string>;
 };
 
 // --- Save App ---
@@ -28,7 +49,7 @@ export async function saveToolsApp(appId: string | null, data: SaveToolsAppData)
 
     try {
         let savedAppId = appId;
-        const type = "react"; // Schema expects "react" | "link" | "html" | "embed"
+        const appType = (data.type as "embed" | "link" | "react" | "html") || "react";
 
         // 1. Create or Update App Metadata
         if (!appId) {
@@ -37,9 +58,11 @@ export async function saveToolsApp(appId: string | null, data: SaveToolsAppData)
                 id: crypto.randomUUID(),
                 name: data.title, // Schema uses 'name'
                 description: data.description || "",
-                type: type,
+                category: data.category || null,
+                type: appType,
+                embedUrl: data.embedUrl || null,
                 createdBy: session.user.id,
-                isPublic: false,
+                isPublic: data.isPublic ?? false,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             }).returning();
@@ -57,7 +80,10 @@ export async function saveToolsApp(appId: string | null, data: SaveToolsAppData)
             await db.update(toolsApps).set({
                 name: data.title,
                 description: data.description || "",
-                // type: type, // Usually type doesn't change
+                category: data.category || null,
+                type: appType,
+                embedUrl: data.embedUrl || null,
+                isPublic: data.isPublic ?? existing.isPublic,
                 updatedAt: new Date(),
             }).where(eq(toolsApps.id, appId));
         }
@@ -121,6 +147,31 @@ export async function publishToolsApp(appId: string, isPublic: boolean) {
     }
 }
 
+// --- Delete App ---
+
+export async function deleteToolsApp(appId: string) {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+    if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
+    try {
+        const existing = await db.query.toolsApps.findFirst({
+            where: eq(toolsApps.id, appId)
+        });
+        if (!existing || existing.createdBy !== session.user.id) {
+            return { success: false, error: "Not authorized" };
+        }
+
+        await db.delete(toolsApps).where(eq(toolsApps.id, appId));
+
+        revalidatePath("/tools");
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    }
+}
+
 // --- Get Apps ---
 
 export async function getToolsApps(filter: 'all' | 'mine' | 'public' = 'public') {
@@ -159,23 +210,26 @@ export async function getToolsApps(filter: 'all' | 'mine' | 'public' = 'public')
     }
 }
 
-export async function getToolsAppById(id: string) {
+// Return type promise ToolApp | null manually constructed
+export async function getToolsAppById(id: string): Promise<ToolApp | null> {
     try {
-        const app = await db.query.toolsApps.findFirst({
-            where: eq(toolsApps.id, id),
-            with: {
-                // files: true // fetching files via relations might fail if not defined in schema relations, so separate query
-            }
-        });
+        // Left Join to get Creator info
+        const result = await db
+            .select({
+                app: toolsApps,
+                creatorName: users.name,
+                creatorImage: users.image,
+            })
+            .from(toolsApps)
+            .leftJoin(users, eq(toolsApps.createdBy, users.id))
+            .where(eq(toolsApps.id, id))
+            .limit(1);
 
-        if (!app) return null;
+        if (result.length === 0) return null;
 
-        // Fetch files manually or via relation if defined.
-        // I didn't verify relation definition in schema split step, assuming standard definition might be missing explicit relations API.
-        // Safer to just query files separately or use relation if I defined it.
-        // I defined foreign keys in schema, but `relations` construct is needed for `with`.
-        // Let's query normally.
+        const { app, creatorName, creatorImage } = result[0];
 
+        // Fetch files
         const files = await db.select().from(toolsFiles).where(eq(toolsFiles.appId, id));
 
         // Convert to Record<string, string>
@@ -184,11 +238,16 @@ export async function getToolsAppById(id: string) {
             filesRecord[f.filename] = f.content;
         });
 
-        return { ...app, files: filesRecord };
+        return {
+            ...app,
+            creatorName,
+            creatorImage,
+            files: filesRecord
+        };
 
     } catch (e) {
         console.error(e);
-        return null;
+        return null; // Return null on error
     }
 }
 
