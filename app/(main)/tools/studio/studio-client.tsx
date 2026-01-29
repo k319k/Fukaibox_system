@@ -3,7 +3,7 @@
 import { ChatPanel } from "@/components/tools/studio/chat-panel";
 import { SandpackClient } from "@/components/tools/studio/sandpack-client";
 import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from "react-resizable-panels";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToolsMessageHandler } from "@/components/tools/runtime/use-tools-message-handler";
 import { Button, Modal, Input, message } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
@@ -11,7 +11,11 @@ import { saveToolsApp } from "@/app/actions/tools-data";
 
 export function ToolsStudioClient() {
     const [files, setFiles] = useState<Record<string, string>>({});
-    const [draftId] = useState(() => `draft-${crypto.randomUUID()}`);
+    const [draftId, setDraftId] = useState("");
+
+    useEffect(() => {
+        setDraftId(`draft-${crypto.randomUUID()}`);
+    }, []);
 
     // Save State
     const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
