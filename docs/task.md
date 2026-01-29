@@ -125,7 +125,7 @@
   - [x] App実行 (Sandpack via SDK)
   - [x] App保存機能 (Turso)
   - [x] Gallery UI (Ant Design)
-  - [ ] Supabase Realtime (Broadcast/Host Logic)
+  - [x] Supabase Realtime (Broadcast/Host Logic)
   - [ ] 評価・コメント
 
 ---

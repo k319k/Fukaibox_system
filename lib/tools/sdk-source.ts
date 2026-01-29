@@ -61,6 +61,39 @@ export const FUKAI_SDK_SOURCE = `
             query: async (collection, filter) => {
                 return client.request('DB_QUERY', { collection, filter });
             }
+        },
+
+        realtime: {
+            /**
+             * Subscribe to a channel
+             * @param {string} channelId 
+             * @param {(event: any) => void} callback 
+             */
+            subscribe: async (channelId, callback) => {
+                // Register callback locally
+                // Note: In this simple implementation, we support one callback per channel for simplicity.
+                // Or we can just use window.addEventListener('message') logic inside the client to dispatch events.
+                
+                // We'll use a custom event listener for realtime events from parent
+                if (!window._fukaiRealtimeListeners) {
+                    window._fukaiRealtimeListeners = new Map();
+                    window.addEventListener('message', (event) => {
+                         const { type, channelId: msgChannel, payload } = event.data;
+                         if (type === 'REALTIME_EVENT' && window._fukaiRealtimeListeners.has(msgChannel)) {
+                             window._fukaiRealtimeListeners.get(msgChannel)(payload);
+                         }
+                    });
+                }
+                window._fukaiRealtimeListeners.set(channelId, callback);
+
+                return client.request('REALTIME_SUBSCRIBE', { channelId });
+            },
+            broadcast: async (channelId, event, payload) => {
+                return client.request('REALTIME_BROADCAST', { channelId, event, payload });
+            },
+            track: async (channelId, state) => {
+                return client.request('REALTIME_TRACK', { channelId, state });
+            }
         }
     };
     

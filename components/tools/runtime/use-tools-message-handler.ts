@@ -1,16 +1,54 @@
-import { useEffect } from "react";
-import { useSession } from "@/lib/auth-client"; // Better-Auth hook
-import { ToolsMessage, ToolsResponse, ToolsUser } from "@/types/tools";
+import { useEffect, useRef } from "react";
+import { useSession } from "@/lib/auth-client";
+import { ToolsMessage, ToolsResponse } from "@/types/tools";
 import { handleToolsDbAction, getToolsUserInfo } from "@/app/actions/tools";
+import { mintSupabaseToken } from "@/app/actions/tools-data";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { RealtimeChannel, SupabaseClient } from "@supabase/supabase-js";
 
 export function useToolsMessageHandler(appId: string) {
     const { data: session } = useSession();
+    const supabaseRef = useRef<SupabaseClient | null>(null);
+    const channelsRef = useRef<Map<string, RealtimeChannel>>(new Map());
+
+    // Initialize Supabase with Custom JWT
+    useEffect(() => {
+        let mounted = true;
+
+        const initSupabase = async () => {
+            // 1. Get Minted Token
+            let token: string | null = null;
+            if (session?.user) {
+                token = await mintSupabaseToken();
+            }
+
+            if (!mounted) return;
+
+            // 2. Create Client
+            const client = createSupabaseBrowserClient(token || undefined);
+            supabaseRef.current = client;
+            console.log("[Tools Runtime] Supabase Client Initialized", { authenticated: !!token });
+        };
+
+        if (session !== undefined) { // Wait for session load (undefined check)
+            initSupabase();
+        }
+
+        return () => {
+            mounted = false;
+            // Cleanup channels
+            channelsRef.current.forEach(channel => channel.unsubscribe());
+            channelsRef.current.clear();
+        };
+    }, [session, appId]);
+
 
     useEffect(() => {
-        if (!appId || !session) return;
+        if (!appId) return;
 
         const handleMessage = async (event: MessageEvent) => {
-            // Origin check: For now allow * but rely on iframe source check implicit in mechanism
+            // Origin Check: We should ideally enforce this, but for now rely on Sandpack isolation.
+            // If we knew the sandbox domain, we would check it here.
 
             const message = event.data as ToolsMessage;
             if (!message || !message.requestId || !message.action) return;
@@ -62,8 +100,75 @@ export function useToolsMessageHandler(appId: string) {
                         }
                         break;
 
+                    // --- Realtime ---
+
+                    case 'REALTIME_SUBSCRIBE':
+                        const { channelId } = message.payload;
+                        if (!supabaseRef.current) {
+                            throw new Error("Supabase client not initialized");
+                        }
+
+                        if (channelsRef.current.has(channelId)) {
+                            response.success = true; // Already subscribed
+                            break;
+                        }
+
+                        const channel = supabaseRef.current.channel(channelId);
+
+                        // Setup listeners to relay to iframe
+                        channel
+                            .on('broadcast', { event: '*' }, (payload) => {
+                                if (event.source) {
+                                    (event.source as WindowProxy).postMessage({
+                                        type: 'REALTIME_EVENT',
+                                        channelId,
+                                        payload: payload // { event, payload, type: 'broadcast' }
+                                    }, { targetOrigin: event.origin });
+                                }
+                            })
+                            .on('presence', { event: '*' }, (payload) => {
+                                if (event.source) {
+                                    (event.source as WindowProxy).postMessage({
+                                        type: 'REALTIME_EVENT',
+                                        channelId,
+                                        payload // presence event
+                                    }, { targetOrigin: event.origin });
+                                }
+                            })
+                            .subscribe((status) => {
+                                if (status === 'SUBSCRIBED') {
+                                    // confirm subscription? The Promise handles the initial request return.
+                                }
+                            });
+
+                        channelsRef.current.set(channelId, channel);
+                        response.success = true;
+                        break;
+
+                    case 'REALTIME_BROADCAST':
+                        const { channelId: bcChannelId, event: bcEvent, payload: bcPayload } = message.payload;
+                        const bcChannel = channelsRef.current.get(bcChannelId);
+                        if (!bcChannel) throw new Error("Channel not subscribed");
+
+                        await bcChannel.send({
+                            type: 'broadcast',
+                            event: bcEvent,
+                            payload: bcPayload
+                        });
+                        response.success = true;
+                        break;
+
+                    case 'REALTIME_TRACK':
+                        const { channelId: trChannelId, state } = message.payload;
+                        const trChannel = channelsRef.current.get(trChannelId);
+                        if (!trChannel) throw new Error("Channel not subscribed");
+
+                        await trChannel.track(state);
+                        response.success = true;
+                        break;
+
                     default:
-                        response.error = "Unknown action";
+                        response.error = "Unknown action: " + message.action;
                 }
             } catch (e: any) {
                 console.error("Tools SDK Error:", e);
@@ -71,7 +176,6 @@ export function useToolsMessageHandler(appId: string) {
             }
 
             // Send response back
-            // event.source is the window that sent the message (the iframe)
             if (event.source) {
                 (event.source as WindowProxy).postMessage(response, { targetOrigin: event.origin });
             }
@@ -79,5 +183,5 @@ export function useToolsMessageHandler(appId: string) {
 
         window.addEventListener('message', handleMessage);
         return () => window.removeEventListener('message', handleMessage);
-    }, [appId, session]);
+    }, [appId, session]); // Re-run if session changes (re-init Supabase)
 }

@@ -5,6 +5,9 @@ import { toolsApps, toolsFiles } from "@/lib/db/schema";
 import { auth } from "@/lib/auth"; // BetterAuth session
 import { eq, desc, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { env } from "@/lib/env";
+import { headers } from "next/headers";
+import jwt from "jsonwebtoken";
 
 export type SaveToolsAppData = {
     title: string;
@@ -16,7 +19,9 @@ export type SaveToolsAppData = {
 // --- Save App ---
 
 export async function saveToolsApp(appId: string | null, data: SaveToolsAppData) {
-    const session = await auth();
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
     if (!session?.user?.id) {
         return { success: false, error: "Unauthorized" };
     }
@@ -90,7 +95,9 @@ export async function saveToolsApp(appId: string | null, data: SaveToolsAppData)
 // --- Publish App ---
 
 export async function publishToolsApp(appId: string, isPublic: boolean) {
-    const session = await auth();
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
     if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
     try {
@@ -125,7 +132,9 @@ export async function getToolsApps(filter: 'all' | 'mine' | 'public' = 'public')
         if (filter === 'public') {
             conditions.push(eq(toolsApps.isPublic, true));
         } else if (filter === 'mine') {
-            const session = await auth();
+            const session = await auth.api.getSession({
+                headers: await headers()
+            });
             if (!session?.user?.id) return [];
             conditions.push(eq(toolsApps.createdBy, session.user.id));
         } else {
@@ -181,4 +190,42 @@ export async function getToolsAppById(id: string) {
         console.error(e);
         return null;
     }
+}
+
+// --- Auth / Token ---
+
+export async function mintSupabaseToken() {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+
+    if (!session?.user) {
+        return null;
+    }
+
+    const secret = env.SUPABASE_JWT_SECRET;
+
+    if (!secret) {
+        console.warn("SUPABASE_JWT_SECRET is not set. Authenticated Realtime features will fall back to anon/unavailable.");
+        return null;
+    }
+
+    // Creating a custom JWT that Supabase Auth (GoTrue) will verify
+    const payload = {
+        aud: "authenticated",
+        role: "authenticated",
+        sub: session.user.id,
+        email: session.user.email,
+        app_metadata: {
+            provider: "fukai_box",
+            providers: ["fukai_box"]
+        },
+        user_metadata: {
+            name: session.user.name,
+            image: session.user.image,
+        },
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // 24 hours
+    };
+
+    return jwt.sign(payload, secret);
 }

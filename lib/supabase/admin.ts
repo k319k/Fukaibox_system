@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
  * サーバーサイド（API Routes/Server Actions）でのみ使用すること。
  */
 export const supabaseAdmin = createClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_URL!,
     env.SUPABASE_SERVICE_ROLE_KEY,
     {
         auth: {
@@ -77,9 +77,12 @@ export async function mintToolsToken(
     // もし設定されていなければ機能しない。
     // ここでは `process.env.SUPABASE_JWT_SECRET` を参照し、なければエラーにする。
 
-    const secret = process.env.SUPABASE_JWT_SECRET;
+    // 修正: envから取得する
+    const secret = env.SUPABASE_JWT_SECRET;
     if (!secret) {
-        throw new Error("SUPABASE_JWT_SECRET is not set. Please add it to .env");
+        console.warn("SUPABASE_JWT_SECRET is not set. Looking for process.env.SUPABASE_JWT_SECRET as fallback...");
+        // Fallback or throw
+        throw new Error("SUPABASE_JWT_SECRET is not set in env setup.");
     }
 
     return jwt.sign(payload, secret);
