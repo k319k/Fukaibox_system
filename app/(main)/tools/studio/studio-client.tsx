@@ -64,20 +64,21 @@ export function ToolsStudioClient() {
     };
 
     return (
-        <div className="h-[calc(100vh-64px)] w-full bg-zinc-950 overflow-hidden text-zinc-100">
+    return (
+        <div className="h-[calc(100vh-64px)] w-full bg-[var(--md-sys-color-surface)] overflow-hidden text-[var(--md-sys-color-on-surface)]">
             <PanelGroup direction="horizontal">
                 <Panel defaultSize={30} minSize={20}>
                     <ChatPanel onCodeGenerated={handleCodeGenerated} />
                 </Panel>
 
-                <PanelResizeHandle className="w-1 bg-zinc-800 hover:bg-blue-500 transition-colors" />
+                <PanelResizeHandle className="w-1 bg-[var(--md-sys-color-outline-variant)] hover:bg-[var(--md-sys-color-primary)] transition-colors" />
 
                 <Panel defaultSize={70} minSize={30}>
                     <div className="h-full w-full flex flex-col">
                         {/* Toolbar */}
-                        <div className="h-12 border-b border-zinc-800 bg-zinc-900 flex items-center px-4 justify-between">
+                        <div className="h-12 border-b border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] flex items-center px-4 justify-between">
                             <div className="flex items-center gap-2">
-                                <span className="text-xs text-zinc-500 font-mono">
+                                <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] font-mono">
                                     {savedAppId ? `App ID: ${savedAppId.slice(0, 8)}...` : `Draft ID: ${draftId.slice(0, 8)}...`}
                                 </span>
                             </div>
@@ -88,6 +89,7 @@ export function ToolsStudioClient() {
                                     onClick={() => setIsSaveModalOpen(true)}
                                     disabled={Object.keys(files).length === 0}
                                     size="small"
+                                    className="bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] hover:bg-[var(--md-sys-color-primary-container)] hover:text-[var(--md-sys-color-on-primary-container)] border-none"
                                 >
                                     保存
                                 </Button>
@@ -113,7 +115,7 @@ export function ToolsStudioClient() {
             >
                 <div className="flex flex-col gap-4 py-4">
                     <div>
-                        <label className="block text-sm font-medium mb-1 text-slate-700">タイトル</label>
+                        <label className="block text-sm font-medium mb-1 text-[var(--md-sys-color-on-surface)]">タイトル</label>
                         <Input
                             value={appTitle}
                             onChange={e => setAppTitle(e.target.value)}
@@ -121,7 +123,7 @@ export function ToolsStudioClient() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-1 text-slate-700">説明</label>
+                        <label className="block text-sm font-medium mb-1 text-[var(--md-sys-color-on-surface)]">説明</label>
                         <Input.TextArea
                             value={appDesc}
                             onChange={e => setAppDesc(e.target.value)}

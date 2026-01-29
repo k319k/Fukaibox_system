@@ -42,11 +42,11 @@ export function ChatPanel({ onCodeGenerated }: ChatPanelProps) {
     };
 
     return (
-        <div className="flex flex-col h-full bg-zinc-900 text-white border-r border-zinc-800">
+        <div className="flex flex-col h-full bg-[var(--md-sys-color-surface-container-low)] text-[var(--md-sys-color-on-surface)] border-r border-[var(--md-sys-color-outline-variant)]">
             {/* Header */}
-            <div className="p-4 border-b border-zinc-800">
-                <h2 className="font-bold text-lg">Tools Studio (AI)</h2>
-                <p className="text-xs text-zinc-400">Powered by OpenRouter</p>
+            <div className="p-4 border-b border-[var(--md-sys-color-outline-variant)]">
+                <h2 className="font-bold text-lg text-[var(--md-sys-color-on-surface)]">Tools工房 (AI)</h2>
+                <p className="text-xs text-[var(--md-sys-color-on-surface-variant)]">Powered by OpenRouter</p>
             </div>
 
             {/* Messages */}
@@ -54,8 +54,8 @@ export function ChatPanel({ onCodeGenerated }: ChatPanelProps) {
                 {messages.map((msg, i) => (
                     <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[85%] p-3 rounded-lg text-sm whitespace-pre-wrap ${msg.role === 'user'
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-zinc-800 text-zinc-200'
+                            ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]'
+                            : 'bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)]'
                             }`}>
                             {msg.content}
                         </div>
@@ -63,22 +63,22 @@ export function ChatPanel({ onCodeGenerated }: ChatPanelProps) {
                 ))}
                 {loading && (
                     <div className="flex justify-start">
-                        <div className="bg-zinc-800 p-3 rounded-lg flex items-center gap-2">
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            <span className="text-xs text-zinc-400">Generating...</span>
+                        <div className="bg-[var(--md-sys-color-surface-container-high)] p-3 rounded-lg flex items-center gap-2">
+                            <Loader2 className="w-4 h-4 animate-spin text-[var(--md-sys-color-primary)]" />
+                            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)]">Generating...</span>
                         </div>
                     </div>
                 )}
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t border-zinc-800">
+            <div className="p-4 border-t border-[var(--md-sys-color-outline-variant)]">
                 <form onSubmit={handleSubmit} className="flex gap-2">
                     <textarea
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="作りたいアプリを説明してください..."
-                        className="flex-1 bg-zinc-800 border-none rounded-md p-2 text-sm focus:ring-1 focus:ring-blue-500 resize-none h-20"
+                        className="flex-1 bg-[var(--md-sys-color-surface-container-high)] border-none rounded-md p-2 text-sm text-[var(--md-sys-color-on-surface)] focus:ring-1 focus:ring-[var(--md-sys-color-primary)] resize-none h-20 placeholder-[var(--md-sys-color-on-surface-variant)]"
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault();
@@ -89,7 +89,7 @@ export function ChatPanel({ onCodeGenerated }: ChatPanelProps) {
                     <button
                         type="submit"
                         disabled={loading || !input.trim()}
-                        className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white p-3 rounded-md flex items-center justify-center self-end"
+                        className="bg-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary-container)] hover:text-[var(--md-sys-color-on-primary-container)] disabled:opacity-50 text-[var(--md-sys-color-on-primary)] p-3 rounded-md flex items-center justify-center self-end transition-colors"
                     >
                         <Send className="w-4 h-4" />
                     </button>
