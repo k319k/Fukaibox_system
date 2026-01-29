@@ -1,4 +1,4 @@
-import { getAppById } from "@/app/actions/tools";
+import { getToolsAppById } from "@/app/actions/tools-data";
 import { getAppRatings } from "@/app/actions/tools-ratings";
 import { getCurrentUserWithRole } from "@/app/actions/auth";
 import { notFound } from "next/navigation";
@@ -11,7 +11,7 @@ interface ToolDetailPageProps {
 export default async function ToolDetailPage({ params }: ToolDetailPageProps) {
     const { id } = await params;
     const [app, user, ratings] = await Promise.all([
-        getAppById(id),
+        getToolsAppById(id),
         getCurrentUserWithRole(),
         getAppRatings(id),
     ]);
