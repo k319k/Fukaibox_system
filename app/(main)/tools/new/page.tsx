@@ -2,6 +2,8 @@ import { getCurrentUserWithRole } from "@/app/actions/auth";
 import { redirect } from "next/navigation";
 import { ToolsCreateClient } from "./tools-create-client";
 
+export const dynamic = "force-dynamic";
+
 export default async function ToolsNewPage() {
     const user = await getCurrentUserWithRole();
 
