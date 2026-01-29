@@ -119,7 +119,7 @@
 
 ## **6. 技術スタック**
 
-- **Frontend**: Next.js, HeroUI, Lucide React
+- **Frontend**: Next.js, Ant Design, Lucide React
 - **System DB**: Turso (LibSQL) - コード・メタデータ
 - **App Backend**: Supabase (PostgreSQL + Realtime) - ゲームデータ・通信
 - **AI**: OpenRouter API
