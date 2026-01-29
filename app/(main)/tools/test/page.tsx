@@ -3,7 +3,9 @@
 import { useToolsMessageHandler } from "@/components/tools/runtime/use-tools-message-handler";
 import { FUKAI_SDK_SOURCE } from "@/lib/tools/sdk-source";
 import { useState, useRef, useEffect } from "react";
-import { useSession } from "@/lib/auth-client";
+import { redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 export default function ToolsTestPage() {
     const appId = "test-app-001"; // Dummy App ID
