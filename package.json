@@ -33,7 +33,7 @@
     "next": "16.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-resizable-panels": "^4.5.2",
+    "react-resizable-panels": "^4.5.4",
     "tailwind-merge": "^3.4.0",
     "undici": "^7.18.2",
     "zod": "^4.3.5"
