@@ -11,6 +11,12 @@ import { generateUploadUrl, getPublicUrl } from "@/lib/r2";
  */
 export async function getUploadUrl(filename: string, contentType: string, projectId: string) {
     try {
+        // R2 Check
+        if (!process.env.R2_BUCKET_NAME) {
+            console.error("[getUploadUrl] R2_BUCKET_NAME is not set");
+            return { success: false, error: "サーバー設定エラー: R2_BUCKET_NAMEが設定されていません。" };
+        }
+
         const session = await getSession();
 
         // 詳細なデバッグログ
@@ -25,7 +31,7 @@ export async function getUploadUrl(filename: string, contentType: string, projec
 
         if (!session?.user) {
             console.error("[getUploadUrl] No session or user found");
-            throw new Error("認証が必要です。ログインしてください。");
+            return { success: false, error: "認証が必要です。ログインしてください。" };
         }
 
         // 正しい拡張子を取得
@@ -37,10 +43,10 @@ export async function getUploadUrl(filename: string, contentType: string, projec
         const url = await generateUploadUrl(key, contentType);
         console.log("[getUploadUrl] Success");
 
-        return { url, key, publicUrl: getPublicUrl(key) };
+        return { success: true, url, key, publicUrl: getPublicUrl(key) };
     } catch (error) {
         console.error("[getUploadUrl] Error:", error);
-        throw error;
+        return { success: false, error: error instanceof Error ? error.message : "予期せぬエラーが発生しました" };
     }
 }
 
