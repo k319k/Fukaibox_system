@@ -47,10 +47,28 @@ export function useImages(
         return () => clearInterval(interval);
     }, [projectId, uploadingSectionId, setImages]);
 
+    // Helper: Upload a single file to R2
+    const uploadFile = async (file: File, folder: string = "images"): Promise<{ key: string, publicUrl: string }> => {
+        const { url: uploadUrl, key, publicUrl } = await getUploadUrl(file.name, file.type, projectId);
+
+        await new Promise<void>((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open("PUT", uploadUrl, true);
+            xhr.setRequestHeader("Content-Type", file.type);
+            xhr.onload = () => {
+                if (xhr.status === 200) resolve();
+                else reject(new Error(`Upload failed with status ${xhr.status}`));
+            };
+            xhr.onerror = () => reject(new Error("Network Error"));
+            xhr.send(file);
+        });
+
+        return { key, publicUrl };
+    };
+
     const handleImageUpload = async (sectionId: string, files: File[]) => {
         if (files.length === 0) return;
-
-        // Validation for all files
+        // Validation... (same as before)
         for (const file of files) {
             if (!file.type.startsWith("image/")) {
                 alert("画像ファイルのみアップロード可能です。");
@@ -70,27 +88,7 @@ export function useImages(
             const total = files.length;
 
             for (const file of files) {
-                const { url: uploadUrl, key } = await getUploadUrl(file.name, file.type, projectId);
-
-                await new Promise<void>((resolve, reject) => {
-                    const xhr = new XMLHttpRequest();
-                    xhr.open("PUT", uploadUrl, true);
-                    xhr.setRequestHeader("Content-Type", file.type);
-
-                    xhr.upload.onprogress = (e) => {
-                        // Individual file progress calculation could be confusing with multiple files
-                        // So we might just show overall progress or infinite spin
-                        // For simplicity, let's just use the current file's progress scaled
-                    };
-
-                    xhr.onload = () => {
-                        if (xhr.status === 200) resolve();
-                        else reject(new Error("Upload failed"));
-                    };
-                    xhr.onerror = () => reject(new Error("Network Error"));
-                    xhr.send(file);
-                });
-
+                const { key } = await uploadFile(file);
                 await confirmImageUpload(projectId, key, sectionId);
                 processed++;
                 setUploadProgress((processed / total) * 100);
@@ -107,6 +105,24 @@ export function useImages(
             setUploadProgress(0);
         }
     };
+
+    const uploadReferenceImage = async (file: File): Promise<string | null> => {
+        try {
+            if (!file.type.startsWith("image/")) throw new Error("Not an image");
+
+            // Re-use logic: for reference, maybe we don't track it in DB cookingImages?
+            // Yes, just return URL.
+            // But we need the Public URL.
+            // I'll update `getUploadUrl` action to return `publicUrl` (derived from key).
+            const { publicUrl } = await uploadFile(file);
+            return publicUrl;
+        } catch (error) {
+            console.error("Ref upload error:", error);
+            alert("参考画像のアップロードに失敗しました");
+            return null;
+        }
+    };
+
 
     const handleDeleteImage = async (imageId: string) => {
         if (!confirm("画像を削除しますか？")) return;
@@ -169,6 +185,7 @@ export function useImages(
         isLightboxOpen, setIsLightboxOpen,
         lightboxImages,
         lightboxImageIndex, setLightboxImageIndex,
-        openLightbox
+        openLightbox,
+        uploadReferenceImage
     };
 }

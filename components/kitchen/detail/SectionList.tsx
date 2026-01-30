@@ -48,6 +48,7 @@ interface SectionListProps {
     onProposalCancel: () => void;
     onProposalSubmit: () => void;
     onProposalContentChange: (val: string) => void;
+    onUploadReferenceImage: (file: File) => Promise<string | null>;
 }
 
 export default function SectionList(props: SectionListProps) {
@@ -149,6 +150,7 @@ export default function SectionList(props: SectionListProps) {
                             onEditReferenceImageUrlChange={props.onEditReferenceImageUrlChange}
                             onEditAllowSubmissionChange={props.onEditAllowSubmissionChange}
                             onProposalContentChange={props.onProposalContentChange}
+                            onUploadReferenceImage={props.onUploadReferenceImage}
                         />
 
                         {/* 末尾追加ボタン (儀長のみ) */}

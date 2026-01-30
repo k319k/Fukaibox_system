@@ -1,6 +1,6 @@
-"use client";
-
-import { Input, Checkbox } from "antd";
+import { useState } from "react";
+import { Input, Checkbox, Button, message } from "antd";
+import { Icon } from "@iconify/react"; // Assuming Icon is available here, otherwise import
 import CharacterCountDisplay from "./CharacterCountDisplay";
 
 interface EditFormProps {
@@ -13,6 +13,7 @@ interface EditFormProps {
     onImageInstructionChange: (val: string) => void;
     onReferenceImageUrlChange: (val: string) => void;
     onAllowSubmissionChange: (val: boolean) => void;
+    onUploadReferenceImage: (file: File) => Promise<string | null>;
 }
 
 export default function EditForm({
@@ -24,8 +25,36 @@ export default function EditForm({
     onContentChange,
     onImageInstructionChange,
     onReferenceImageUrlChange,
-    onAllowSubmissionChange
+    onAllowSubmissionChange,
+    onUploadReferenceImage
 }: EditFormProps) {
+    const [isUploading, setIsUploading] = useState(false);
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+            message.error("ファイルサイズは5MB以下にしてください");
+            return;
+        }
+
+        setIsUploading(true);
+        try {
+            const url = await onUploadReferenceImage(file);
+            if (url) {
+                onReferenceImageUrlChange(url);
+                message.success("画像をアップロードしました");
+            }
+        } catch (error) {
+            console.error("Upload failed", error);
+            message.error("アップロードに失敗しました");
+        } finally {
+            setIsUploading(false);
+            e.target.value = ""; // Reset input
+        }
+    };
+
     return (
         <div className="space-y-4">
             <textarea
@@ -50,12 +79,39 @@ export default function EditForm({
 
             <div className="space-y-2">
                 <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)]">参考画像URL</label>
-                <Input
-                    placeholder="https://..."
-                    value={referenceImageUrl}
-                    onChange={(e) => onReferenceImageUrlChange(e.target.value)}
-                    size="middle"
-                />
+                <div className="flex gap-2">
+                    <Input
+                        placeholder="https://..."
+                        value={referenceImageUrl}
+                        onChange={(e) => onReferenceImageUrlChange(e.target.value)}
+                        size="middle"
+                        className="flex-1"
+                    />
+                    <div className="relative">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
+                            id="ref-image-upload"
+                            disabled={isUploading}
+                        />
+                        <label htmlFor="ref-image-upload">
+                            <Button
+                                icon={<Icon icon="mdi:upload" />}
+                                loading={isUploading}
+                                disabled={isUploading}
+                                className="flex items-center"
+                                // Button as label trigger might need `as="span"` or `component="span"` to be valid HTML but AntD Button onclick might interfere.
+                                // Better: Button with onClick triggering document.getElementById... No, label wrapping works usually if pointer-events allow.
+                                // Safest: onClick triggering ref.
+                                onClick={() => document.getElementById("ref-image-upload")?.click()}
+                            >
+                                UP
+                            </Button>
+                        </label>
+                    </div>
+                </div>
                 {referenceImageUrl && (
                     <div className="mt-2 p-2 bg-[var(--md-sys-color-surface-container)] rounded border border-[var(--md-sys-color-outline-variant)] inline-block">
                         {/* eslint-disable-next-line @next/next/no-img-element */}

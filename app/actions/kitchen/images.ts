@@ -37,7 +37,7 @@ export async function getUploadUrl(filename: string, contentType: string, projec
         const url = await generateUploadUrl(key, contentType);
         console.log("[getUploadUrl] Success");
 
-        return { url, key };
+        return { url, key, publicUrl: getPublicUrl(key) };
     } catch (error) {
         console.error("[getUploadUrl] Error:", error);
         throw error;

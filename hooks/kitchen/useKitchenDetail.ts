@@ -55,6 +55,7 @@ export function useKitchenDetail(
         ...downloadOps,
 
         // Expose setSections for optimistic updates if needed, though ops handle it
-        setSections
+        setSections,
+        uploadReferenceImage: imageOps.uploadReferenceImage
     };
 }

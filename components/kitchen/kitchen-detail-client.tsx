@@ -76,6 +76,9 @@ export default function KitchenDetailClient({
                             proposalSection={store.proposalSection} proposalContent={store.proposalContent}
                             onProposalOpen={store.handleProposalOpen} onProposalCancel={store.handleProposalCancel}
                             onProposalSubmit={store.handleProposalSubmit} onProposalContentChange={store.setProposalContent}
+                            onProposalOpen={store.handleProposalOpen} onProposalCancel={store.handleProposalCancel}
+                            onProposalSubmit={store.handleProposalSubmit} onProposalContentChange={store.setProposalContent}
+                            onUploadReferenceImage={store.uploadReferenceImage}
                         />
                     </div>
                 ),

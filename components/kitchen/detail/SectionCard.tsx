@@ -35,6 +35,7 @@ interface SectionCardProps {
     onEditReferenceImageUrlChange: (val: string) => void;
     onEditAllowSubmissionChange: (val: boolean) => void;
     onProposalContentChange: (val: string) => void;
+    onUploadReferenceImage: (file: File) => Promise<string | null>;
 }
 
 export default function SectionCard({
@@ -44,7 +45,7 @@ export default function SectionCard({
     onEditStart, onEditCancel, onEditSave, onDelete,
     onProposalOpen, onProposalCancel, onProposalSubmit,
     onEditContentChange, onEditImageInstructionChange, onEditReferenceImageUrlChange, onEditAllowSubmissionChange,
-    onProposalContentChange
+    onProposalContentChange, onUploadReferenceImage
 }: SectionCardProps) {
     const isGicho = userRole === 'gicho';
     // 推敲提案中はWarning Container色で包む
@@ -85,6 +86,7 @@ export default function SectionCard({
                             referenceImageUrl={editReferenceImageUrl} allowImageSubmission={editAllowSubmission} fontSize={fontSize}
                             onContentChange={onEditContentChange} onImageInstructionChange={onEditImageInstructionChange}
                             onReferenceImageUrlChange={onEditReferenceImageUrlChange} onAllowSubmissionChange={onEditAllowSubmissionChange}
+                            onUploadReferenceImage={onUploadReferenceImage}
                         />
                     ) : isProposing ? (
                         <ProposalForm content={proposalContent} fontSize={fontSize} onContentChange={onProposalContentChange} />
