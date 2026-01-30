@@ -8,7 +8,7 @@ import { useToolsMessageHandler } from "@/components/tools/runtime/use-tools-mes
 import { Button, Modal, Input, message, Tabs, Select, theme } from "antd";
 import { SaveOutlined, CodeOutlined, EyeOutlined } from "@ant-design/icons";
 import { saveToolsApp } from "@/app/actions/tools-data";
-import { SandpackProvider, SandpackPreview, useSandpack } from "@codesandbox/sandpack-react";
+import { SandpackProvider, SandpackPreview, useSandpack, SandpackFileExplorer } from "@codesandbox/sandpack-react";
 import { FUKAI_SDK_SOURCE } from "@/lib/tools/sdk-source";
 
 // --- SDK Injection Logic ---
@@ -105,8 +105,7 @@ function StudioToolbar({
                     options={[
                         { value: 'react-ts', label: 'React TS' },
                         { value: 'react', label: 'React JS' },
-                        { value: 'vanilla-ts', label: 'Vanilla TS' },
-                        { value: 'vanilla', label: 'Vanilla JS' },
+                        { value: 'html', label: 'HTML/CSS/JS' },
                         { value: 'python', label: 'Python (Pyodide)' },
                     ]}
                     style={{ width: 150 }}
@@ -199,6 +198,7 @@ export function ToolsStudioClient() {
     // We strictly map to valid Sandpack templates or fallback to vanilla for unknown.
     const getSandpackTemplate = (lang: string) => {
         if (lang === 'python') return 'vanilla'; // Placeholder for Python
+        if (lang === 'html') return 'static';
         return lang as any;
     };
 
@@ -269,8 +269,13 @@ export function ToolsStudioClient() {
                                             key: 'code',
                                             label: <span><CodeOutlined /> コード</span>,
                                             children: (
-                                                <div className="h-full w-full" style={{ height: 'calc(100vh - 180px)' }}>
-                                                    <MonacoEditorClient />
+                                                <div className="flex h-full w-full" style={{ height: 'calc(100vh - 180px)' }}>
+                                                    <div className="w-[200px] h-full border-r shrink-0 overflow-hidden" style={{ borderColor: token.colorBorder }}>
+                                                        <SandpackFileExplorer />
+                                                    </div>
+                                                    <div className="flex-1 h-full min-w-0">
+                                                        <MonacoEditorClient />
+                                                    </div>
                                                 </div>
                                             )
                                         }

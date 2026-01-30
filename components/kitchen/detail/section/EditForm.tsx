@@ -34,10 +34,7 @@ export default function EditForm({
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (file.size > 5 * 1024 * 1024) {
-            message.error("ファイルサイズは5MB以下にしてください");
-            return;
-        }
+
 
         setIsUploading(true);
         try {

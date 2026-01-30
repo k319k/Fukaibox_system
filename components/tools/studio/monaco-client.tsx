@@ -1,6 +1,6 @@
 "use strict";
 import React, { useEffect } from "react";
-import { useActiveCode } from "@codesandbox/sandpack-react";
+import { useActiveCode, useSandpack } from "@codesandbox/sandpack-react";
 import Editor, { useMonaco } from "@monaco-editor/react";
 
 interface MonacoEditorClientProps {
@@ -9,7 +9,18 @@ interface MonacoEditorClientProps {
 
 export function MonacoEditorClient({ readOnly = false }: MonacoEditorClientProps) {
     const { code, updateCode } = useActiveCode();
+    const { sandpack } = useSandpack();
     const monaco = useMonaco();
+
+    const getLanguage = (filePath: string) => {
+        if (filePath.endsWith(".ts") || filePath.endsWith(".tsx")) return "typescript";
+        if (filePath.endsWith(".js") || filePath.endsWith(".jsx")) return "javascript";
+        if (filePath.endsWith(".css")) return "css";
+        if (filePath.endsWith(".html")) return "html";
+        if (filePath.endsWith(".py")) return "python";
+        if (filePath.endsWith(".json")) return "json";
+        return "typescript";
+    };
 
     useEffect(() => {
         if (monaco) {
@@ -43,7 +54,8 @@ export function MonacoEditorClient({ readOnly = false }: MonacoEditorClientProps
         }}>
             <Editor
                 height="100%"
-                language="typescript" // Should ideally be dynamic based on active file
+                language={getLanguage(sandpack.activeFile)}
+                path={sandpack.activeFile} // Helper for Monaco to understand context
                 theme="m3-dark"
                 value={code}
                 onChange={(value) => updateCode(value || "")}
