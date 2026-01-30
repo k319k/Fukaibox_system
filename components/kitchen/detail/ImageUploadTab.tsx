@@ -254,61 +254,10 @@ export default function ImageUploadTab({
                                             type="file"
                                             multiple
                                             accept="image/*"
-                                            onChange={async (e) => {
+                                            onChange={(e) => {
                                                 const files = e.target.files ? Array.from(e.target.files) : [];
-                                                if (files.length === 0) return;
-
-                                                const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-                                                const processedFiles: File[] = [];
-
-                                                for (const file of files) {
-                                                    if (file.size > MAX_SIZE) {
-                                                        try {
-                                                            await new Promise<void>((resolve, reject) => {
-                                                                Modal.confirm({
-                                                                    title: "画像サイズが大きすぎます",
-                                                                    content: `${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB) は5MBを超えています。AVIF形式に圧縮してアップロードしますか？`,
-                                                                    okText: "圧縮してアップロード",
-                                                                    cancelText: "キャンセル",
-                                                                    onOk: async () => {
-                                                                        try {
-                                                                            message.loading({ content: "圧縮中...", key: "compress" });
-                                                                            const options = {
-                                                                                maxSizeMB: 4.8, // 5MB以下を目指す
-                                                                                maxWidthOrHeight: 1920,
-                                                                                useWebWorker: true,
-                                                                                fileType: "image/avif"
-                                                                            };
-                                                                            const compressedBlob = await imageCompression(file, options);
-                                                                            const compressedFile = new File([compressedBlob], file.name.replace(/\.[^/.]+$/, ".avif"), {
-                                                                                type: "image/avif",
-                                                                                lastModified: Date.now()
-                                                                            });
-                                                                            processedFiles.push(compressedFile);
-                                                                            message.success({ content: "圧縮完了", key: "compress" });
-                                                                            resolve();
-                                                                        } catch (error) {
-                                                                            console.error("Compression failed:", error);
-                                                                            message.error({ content: "圧縮に失敗しました", key: "compress" });
-                                                                            reject();
-                                                                        }
-                                                                    },
-                                                                    onCancel: () => {
-                                                                        message.info("アップロードをキャンセルしました");
-                                                                        reject(); // Skip this file
-                                                                    }
-                                                                });
-                                                            });
-                                                        } catch (e) {
-                                                            // Rejected (Cancelled or Failed), do not add to processedFiles
-                                                        }
-                                                    } else {
-                                                        processedFiles.push(file);
-                                                    }
-                                                }
-
-                                                if (processedFiles.length > 0) {
-                                                    onImageUpload(section.id, processedFiles);
+                                                if (files.length > 0) {
+                                                    onImageUpload(section.id, files);
                                                 }
                                                 e.target.value = '';
                                             }}
