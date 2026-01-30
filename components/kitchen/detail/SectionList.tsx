@@ -57,6 +57,9 @@ export default function SectionList(props: SectionListProps) {
         onAddSection
     } = props;
 
+    // 儀長権限チェック (master or admin) -> 'gicho' role in types
+    const isGicho = userRole === 'gicho';
+
     // セクションがない場合：台本入力フォーム
     if (sections.length === 0) {
         return (
@@ -100,18 +103,20 @@ export default function SectionList(props: SectionListProps) {
 
                 return (
                     <div key={section.id} className="space-y-4">
-                        {/* 挿入ボタン */}
-                        <div className="flex justify-center opacity-0 hover:opacity-100 transition-opacity">
-                            <Button
-                                size="small"
-                                shape="round"
-                                icon={<PlusOutlined />}
-                                onClick={() => onAddSection(index)}
-                                className="bg-[#ffdad5] text-[#73342b] border-none"
-                            >
-                                ここにセクションを追加
-                            </Button>
-                        </div>
+                        {/* 挿入ボタン (儀長のみ) */}
+                        {isGicho && (
+                            <div className="flex justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                <Button
+                                    size="small"
+                                    shape="round"
+                                    icon={<PlusOutlined />}
+                                    onClick={() => onAddSection(index)}
+                                    className="bg-[#ffdad5] text-[#73342b] border-none"
+                                >
+                                    ここにセクションを追加
+                                </Button>
+                            </div>
+                        )}
 
                         <SectionCard
                             section={section}
@@ -146,8 +151,8 @@ export default function SectionList(props: SectionListProps) {
                             onProposalContentChange={props.onProposalContentChange}
                         />
 
-                        {/* 末尾追加ボタン */}
-                        {index === sections.length - 1 && (
+                        {/* 末尾追加ボタン (儀長のみ) */}
+                        {isGicho && index === sections.length - 1 && (
                             <div className="flex justify-center pt-4">
                                 <Button
                                     size="small"

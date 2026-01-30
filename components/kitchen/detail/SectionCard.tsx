@@ -1,6 +1,7 @@
 "use client";
 
-import { Card, Divider } from "antd";
+import { Card, Divider, Button } from "antd";
+import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import { Section, UserRole } from "@/types/kitchen";
 import SectionHeader from "./section/SectionHeader";
@@ -45,6 +46,7 @@ export default function SectionCard({
     onEditContentChange, onEditImageInstructionChange, onEditReferenceImageUrlChange, onEditAllowSubmissionChange,
     onProposalContentChange
 }: SectionCardProps) {
+    const isGicho = userRole === 'gicho';
     // 推敲提案中はWarning Container色で包む
     const cardBg = isProposing ? "bg-[#fbe7a6]" : "bg-[var(--md-sys-color-surface-container-lowest)]";
 
@@ -62,6 +64,19 @@ export default function SectionCard({
                     onDelete={() => onDelete(section.id)}
                     onProposalOpen={() => onProposalOpen(section)} onProposalCancel={onProposalCancel} onProposalSubmit={onProposalSubmit}
                 />
+                {/* Delete Button (Gicho Only) - Fixed Position within relative header */}
+                {isGicho && (
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2">
+                        <Button
+                            danger
+                            type="text"
+                            shape="circle"
+                            icon={<Icon icon="mdi:trash-can-outline" className="text-xl" />}
+                            onClick={() => onDelete(section.id)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        />
+                    </div>
+                )}
                 <Divider className="my-0 bg-[var(--md-sys-color-outline-variant)]/30" />
                 <div className="pt-4 p-6">
                     {isEditing ? (

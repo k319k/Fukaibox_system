@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Button, Tag, Divider, Progress, Spin, Avatar, Radio, Tooltip } from "antd";
+import { Button, Tag, Divider, Progress, Spin, Avatar, Radio, Tooltip, message, Modal } from "antd"; import imageCompression from "browser-image-compression";
 import { Icon } from "@iconify/react";
 import { Section, UploadedImage } from "@/types/kitchen";
 import { PresenceUser, PresenceStatus } from "@/hooks/kitchen/usePresence";
@@ -47,6 +47,8 @@ export default function ImageUploadTab({
         if (!currentUser) return 0;
         return images.filter(img => img.uploadedBy === currentUser.id).length;
     }, [images, currentUser]);
+
+    const isGicho = userRole === 'gicho';
 
     if (sections.length === 0 || !sections.some(s => s.allowImageSubmission ?? true)) {
         return (
@@ -164,17 +166,19 @@ export default function ImageUploadTab({
 
                     return (
                         <div key={section.id} className="space-y-4">
-                            <div className="flex justify-center opacity-0 hover:opacity-100 transition-opacity">
-                                <Button
-                                    size="small"
-                                    shape="round"
-                                    icon={<Icon icon="material-symbols:add" />}
-                                    onClick={() => onAddSection(originalIndex)}
-                                    className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-none shadow-none"
-                                >
-                                    ここにセクションを追加
-                                </Button>
-                            </div>
+                            {isGicho && (
+                                <div className="flex justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                    <Button
+                                        size="small"
+                                        shape="round"
+                                        icon={<Icon icon="material-symbols:add" />}
+                                        onClick={() => onAddSection(originalIndex)}
+                                        className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-none shadow-none"
+                                    >
+                                        ここにセクションを追加
+                                    </Button>
+                                </div>
+                            )}
 
                             <div className="m3-card-filled p-0 overflow-hidden shadow-sm">
                                 <div className="p-4 flex flex-wrap justify-between items-center gap-2 border-b border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)]">
@@ -192,13 +196,15 @@ export default function ImageUploadTab({
                                             {new Set(sectionImages.map(img => img.uploadedBy)).size}人参加
                                         </Tag>
                                     </div>
-                                    <Button
-                                        size="small"
-                                        danger
-                                        type="text"
-                                        icon={<Icon icon="material-symbols:delete-outline" className="text-lg" />}
-                                        onClick={() => onDeleteSection(section.id)}
-                                    />
+                                    {isGicho && (
+                                        <Button
+                                            size="small"
+                                            danger
+                                            type="text"
+                                            icon={<Icon icon="material-symbols:delete-outline" className="text-lg" />}
+                                            onClick={() => onDeleteSection(section.id)}
+                                        />
+                                    )}
                                 </div>
                                 <div className="p-4 space-y-4">
                                     <div
@@ -248,10 +254,61 @@ export default function ImageUploadTab({
                                             type="file"
                                             multiple
                                             accept="image/*"
-                                            onChange={(e) => {
+                                            onChange={async (e) => {
                                                 const files = e.target.files ? Array.from(e.target.files) : [];
-                                                if (files.length > 0) {
-                                                    onImageUpload(section.id, files);
+                                                if (files.length === 0) return;
+
+                                                const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+                                                const processedFiles: File[] = [];
+
+                                                for (const file of files) {
+                                                    if (file.size > MAX_SIZE) {
+                                                        try {
+                                                            await new Promise<void>((resolve, reject) => {
+                                                                Modal.confirm({
+                                                                    title: "画像サイズが大きすぎます",
+                                                                    content: `${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB) は5MBを超えています。AVIF形式に圧縮してアップロードしますか？`,
+                                                                    okText: "圧縮してアップロード",
+                                                                    cancelText: "キャンセル",
+                                                                    onOk: async () => {
+                                                                        try {
+                                                                            message.loading({ content: "圧縮中...", key: "compress" });
+                                                                            const options = {
+                                                                                maxSizeMB: 4.8, // 5MB以下を目指す
+                                                                                maxWidthOrHeight: 1920,
+                                                                                useWebWorker: true,
+                                                                                fileType: "image/avif"
+                                                                            };
+                                                                            const compressedBlob = await imageCompression(file, options);
+                                                                            const compressedFile = new File([compressedBlob], file.name.replace(/\.[^/.]+$/, ".avif"), {
+                                                                                type: "image/avif",
+                                                                                lastModified: Date.now()
+                                                                            });
+                                                                            processedFiles.push(compressedFile);
+                                                                            message.success({ content: "圧縮完了", key: "compress" });
+                                                                            resolve();
+                                                                        } catch (error) {
+                                                                            console.error("Compression failed:", error);
+                                                                            message.error({ content: "圧縮に失敗しました", key: "compress" });
+                                                                            reject();
+                                                                        }
+                                                                    },
+                                                                    onCancel: () => {
+                                                                        message.info("アップロードをキャンセルしました");
+                                                                        reject(); // Skip this file
+                                                                    }
+                                                                });
+                                                            });
+                                                        } catch (e) {
+                                                            // Rejected (Cancelled or Failed), do not add to processedFiles
+                                                        }
+                                                    } else {
+                                                        processedFiles.push(file);
+                                                    }
+                                                }
+
+                                                if (processedFiles.length > 0) {
+                                                    onImageUpload(section.id, processedFiles);
                                                 }
                                                 e.target.value = '';
                                             }}
@@ -334,7 +391,7 @@ export default function ImageUploadTab({
                                 </div>
                             </div>
 
-                            {originalIndex === sections.length - 1 && (
+                            {isGicho && originalIndex === sections.length - 1 && (
                                 <div className="flex justify-center pt-4">
                                     <Button
                                         size="small"

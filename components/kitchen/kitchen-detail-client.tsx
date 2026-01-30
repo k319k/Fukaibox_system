@@ -99,6 +99,7 @@ export default function KitchenDetailClient({
                         onTabChange={store.setSelectedTab}
                         onAddSection={store.handleAddSection} onDeleteSection={store.handleDeleteSection}
                         onImageUpload={store.handleImageUpload} onDeleteImage={store.handleDeleteImage} onOpenLightbox={store.openLightbox}
+                        userRole={userRole}
                     />
                 ),
             });
