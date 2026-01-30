@@ -81,10 +81,10 @@ export async function confirmImageUpload(
         }).returning();
 
         console.log("[confirmImageUpload] Success", newImage[0].id);
-        return newImage[0];
+        return { success: true, image: newImage[0] };
     } catch (error) {
         console.error("[confirmImageUpload] Error:", error);
-        throw error;
+        return { success: false, error: "データベースへの保存に失敗しました" };
     }
 }
 
