@@ -49,7 +49,13 @@ export function useImages(
 
     // Helper: Upload a single file to R2
     const uploadFile = async (file: File, folder: string = "images"): Promise<{ key: string, publicUrl: string }> => {
-        const { url: uploadUrl, key, publicUrl } = await getUploadUrl(file.name, file.type, projectId);
+        const response = await getUploadUrl(file.name, file.type, projectId);
+
+        if (!response.success || !response.url || !response.key) {
+            throw new Error(response.error || "アップロードURLの取得に失敗しました");
+        }
+
+        const { url: uploadUrl, key, publicUrl } = response;
 
         await new Promise<void>((resolve, reject) => {
             const xhr = new XMLHttpRequest();
@@ -63,7 +69,7 @@ export function useImages(
             xhr.send(file);
         });
 
-        return { key, publicUrl };
+        return { key, publicUrl: publicUrl || "" };
     };
 
     const handleImageUpload = async (sectionId: string, files: File[]) => {
