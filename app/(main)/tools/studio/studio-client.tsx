@@ -27,6 +27,7 @@ const DEFAULT_INDEX_HTML = `<!DOCTYPE html>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fukai App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
     <div id="root"></div>
@@ -208,7 +209,6 @@ export function ToolsStudioClient() {
                 template={getSandpackTemplate(language)}
                 files={finalFiles}
                 options={{
-                    externalResources: ["https://cdn.tailwindcss.com"],
                     classes: {
                         "sp-wrapper": "h-full w-full",
                         "sp-layout": "h-full w-full",
