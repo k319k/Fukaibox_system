@@ -95,7 +95,10 @@ export function useImages(
 
             for (const file of files) {
                 const { key } = await uploadFile(file);
-                await confirmImageUpload(projectId, key, sectionId);
+                const result = await confirmImageUpload(projectId, key, sectionId);
+                if (!result.success) {
+                    throw new Error(result.error || "画像の保存処理に失敗しました");
+                }
                 processed++;
                 setUploadProgress((processed / total) * 100);
             }
