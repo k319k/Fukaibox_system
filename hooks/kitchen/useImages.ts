@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { UploadedImage } from "@/types/kitchen";
+import imageCompression from "browser-image-compression";
 import {
     getUploadUrl,
     confirmImageUpload,
@@ -72,28 +73,58 @@ export function useImages(
         return { key, publicUrl: publicUrl || "" };
     };
 
+
+
+    // ... imports
+
     const handleImageUpload = async (sectionId: string, files: File[]) => {
         if (files.length === 0) return;
-        // Validation... (same as before)
+
+        // Process files (compress if needed)
+        const filesToUpload: File[] = [];
+
         for (const file of files) {
             if (!file.type.startsWith("image/")) {
-                alert("画像ファイルのみアップロード可能です。");
-                return;
+                alert(`画像ファイルではありません: ${file.name}`);
+                continue;
             }
+
+            let finalFile = file;
+
             if (file.size > 5 * 1024 * 1024) {
-                alert(`ファイルサイズは5MB以下にしてください: ${file.name}`);
-                return;
+                const doCompress = confirm(`画像 ${file.name} は5MBを超えています。AVIF形式に圧縮してアップロードしますか？\n（キャンセルするとスキップされます）`);
+                if (doCompress) {
+                    try {
+                        const options = {
+                            maxSizeMB: 4.5, // 5MBより少し余裕を持つ
+                            maxWidthOrHeight: 1920,
+                            fileType: "image/avif",
+                            useWebWorker: true
+                        };
+                        finalFile = await imageCompression(file, options);
+                        console.log(`Compressed ${file.name}: ${(file.size / 1024 / 1024).toFixed(2)}MB -> ${(finalFile.size / 1024 / 1024).toFixed(2)}MB`);
+                    } catch (error) {
+                        console.error("Compression error:", error);
+                        alert(`画像の圧縮に失敗しました: ${file.name}`);
+                        continue;
+                    }
+                } else {
+                    continue; // Skip
+                }
             }
+            filesToUpload.push(finalFile);
         }
+
+        if (filesToUpload.length === 0) return;
 
         setUploadingSectionId(sectionId);
         setUploadProgress(0);
 
         try {
             let processed = 0;
-            const total = files.length;
+            const total = filesToUpload.length;
 
-            for (const file of files) {
+            for (const file of filesToUpload) {
                 const { key } = await uploadFile(file);
                 const result = await confirmImageUpload(projectId, key, sectionId);
                 if (!result.success) {
@@ -108,7 +139,7 @@ export function useImages(
 
         } catch (error) {
             console.error("Image upload error:", error);
-            alert("画像のアップロードに失敗しました。");
+            alert(`画像のアップロードに失敗しました。\n${error instanceof Error ? error.message : ""}`);
         } finally {
             setUploadingSectionId(null);
             setUploadProgress(0);
@@ -119,11 +150,29 @@ export function useImages(
         try {
             if (!file.type.startsWith("image/")) throw new Error("Not an image");
 
-            // Re-use logic: for reference, maybe we don't track it in DB cookingImages?
-            // Yes, just return URL.
-            // But we need the Public URL.
-            // I'll update `getUploadUrl` action to return `publicUrl` (derived from key).
-            const { publicUrl } = await uploadFile(file);
+            let finalFile = file;
+            if (file.size > 5 * 1024 * 1024) {
+                const doCompress = confirm(`画像 ${file.name} は5MBを超えています。AVIF形式に圧縮してアップロードしますか？`);
+                if (doCompress) {
+                    try {
+                        const options = {
+                            maxSizeMB: 4.5,
+                            maxWidthOrHeight: 1920,
+                            fileType: "image/avif",
+                            useWebWorker: true
+                        };
+                        finalFile = await imageCompression(file, options);
+                    } catch (error) {
+                        console.error("Compression error:", error);
+                        alert("画像の圧縮に失敗しました");
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            }
+
+            const { publicUrl } = await uploadFile(finalFile);
             return publicUrl;
         } catch (error) {
             console.error("Ref upload error:", error);
