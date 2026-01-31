@@ -203,6 +203,8 @@ export function ToolsStudioClient() {
         return lang as any;
     };
 
+    console.log('SandpackFileExplorer type:', typeof SandpackFileExplorer, SandpackFileExplorer);
+
     return (
         <div className="h-[calc(100vh-64px)] w-full overflow-hidden" style={{ backgroundColor: token.colorBgLayout }}>
             <SandpackProvider
@@ -271,7 +273,7 @@ export function ToolsStudioClient() {
                                             children: (
                                                 <div className="flex h-full w-full" style={{ height: 'calc(100vh - 180px)' }}>
                                                     <div className="w-[200px] h-full border-r shrink-0 overflow-hidden" style={{ borderColor: token.colorBorder }}>
-                                                        <SandpackFileExplorer />
+                                                        {/* <SandpackFileExplorer /> */}
                                                     </div>
                                                     <div className="flex-1 h-full min-w-0">
                                                         <MonacoEditorClient />
