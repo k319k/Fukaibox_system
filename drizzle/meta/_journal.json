@@ -15,6 +15,13 @@
       "when": 1768597166471,
       "tag": "0001_brown_fixer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1769895069872,
+      "tag": "0002_naive_beast",
+      "breakpoints": true
     }
   ]
 }

@@ -131,12 +131,12 @@
   - [x] UI Layout (Resizable Panels)
   - [x] AI Generation System Prompt (Responsive/Tailwind)
   - [x] Sandpack Integration
-- [ ] Gallery & Runtime
-  - [x] App実行 (Sandpack via SDK)
-  - [x] App保存機能 (Turso)
-  - [x] Gallery UI (Ant Design)
-  - [x] Supabase Realtime (Broadcast/Host Logic)
-  - [ ] 評価・コメント
+  - [x] Gallery & Runtime
+    - [x] App実行 (Sandpack via SDK)
+    - [x] App保存機能 (Turso)
+    - [x] Gallery UI (Ant Design)
+    - [x] Supabase Realtime (Broadcast/Host Logic)
+    - [ ] 評価・コメント
 
 ---
 

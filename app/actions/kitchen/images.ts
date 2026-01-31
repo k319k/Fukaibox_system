@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { cookingImages, userRoles, cookingSections, users } from "@/lib/db/schema";
+import { cookingImages, userRoles, cookingSections, users, kitchenPresence } from "@/lib/db/schema";
 import { eq, desc, asc, and } from "drizzle-orm";
 import { getSession } from "../auth";
 import { generateUploadUrl, getPublicUrl } from "@/lib/r2";
@@ -79,6 +79,31 @@ export async function confirmImageUpload(
             imageUrl: publicUrl,
             createdAt: new Date(),
         }).returning();
+
+        // 自動参加ロジック: 参加していない場合は参加させる
+        if (userId !== "anonymous") {
+            const existingMember = await db.query.kitchenPresence.findFirst({
+                where: and(
+                    eq(kitchenPresence.projectId, projectId),
+                    eq(kitchenPresence.userId, userId)
+                )
+            });
+
+            if (!existingMember) {
+                console.log("[confirmImageUpload] Auto-joining user to project:", projectId);
+                await db.insert(kitchenPresence).values({
+                    id: crypto.randomUUID(),
+                    projectId,
+                    userId,
+                    status: "participating",
+                    lastSeenAt: new Date(),
+                });
+            } else if (existingMember.status === "not_participating") {
+                await db.update(kitchenPresence)
+                    .set({ status: "participating", lastSeenAt: new Date() })
+                    .where(eq(kitchenPresence.id, existingMember.id));
+            }
+        }
 
         console.log("[confirmImageUpload] Success", newImage[0].id);
         return { success: true, image: newImage[0] };

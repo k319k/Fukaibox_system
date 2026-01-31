@@ -1,11 +1,18 @@
-import { getToolsApps } from "@/app/actions/tools-data";
+import { getPublicApps, getMyApps } from "@/app/actions/tools-data";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { ToolsGalleryClient } from "./tools-gallery-client";
 
 export const dynamic = "force-dynamic";
 
 export default async function ToolsGalleryPage() {
-    // Ideally we fetch both public and "my" apps
-    const apps = await getToolsApps('public');
+    const publicApps = await getPublicApps();
 
-    return <ToolsGalleryClient apps={apps} />;
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+
+    const myApps = session?.user?.id ? await getMyApps() : [];
+
+    return <ToolsGalleryClient publicApps={publicApps} myApps={myApps} isLoggedIn={!!session?.user} />;
 }

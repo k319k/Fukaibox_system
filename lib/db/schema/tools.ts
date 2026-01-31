@@ -14,9 +14,13 @@ export const toolsApps = sqliteTable("tools_apps", {
     embedUrl: text("embed_url"),
     isPublic: integer("is_public", { mode: "boolean" }).default(false),
 
-    // New Columns for Analytics
+    // Analytics
     viewCount: integer("view_count").default(0),
     playCount: integer("play_count").default(0),
+    remixCount: integer("remix_count").default(0),
+
+    // Remix Tracking
+    remixFrom: text("remix_from").references(() => toolsApps.id),
 
     createdBy: text("created_by")
         .notNull()

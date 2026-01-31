@@ -14,7 +14,10 @@ export type ToolsAction =
     | 'GET_USER'
     | 'DB_GET'
     | 'DB_SET'
-    | 'DB_QUERY';
+    | 'DB_QUERY'
+    | 'REALTIME_SUBSCRIBE'
+    | 'REALTIME_BROADCAST'
+    | 'REALTIME_TRACK';
 
 /**
  * Message sent from Child (SDK) to Parent

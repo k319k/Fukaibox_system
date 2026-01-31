@@ -3,13 +3,14 @@
 import { ChatPanel } from "@/components/tools/studio/chat-panel";
 import { MonacoEditorClient } from "@/components/tools/studio/monaco-client";
 import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from "react-resizable-panels";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useToolsMessageHandler } from "@/components/tools/runtime/use-tools-message-handler";
-import { Button, Modal, Input, message, Tabs, Select, theme } from "antd";
+import { Button, Modal, Input, message, Tabs, Select } from "antd";
 import { SaveOutlined, CodeOutlined, EyeOutlined } from "@ant-design/icons";
 import { saveToolsApp } from "@/app/actions/tools-data";
-import { SandpackProvider, SandpackPreview, useSandpack, SandpackFileExplorer } from "@codesandbox/sandpack-react";
+import { SandpackProvider, SandpackPreview, useSandpack } from "@codesandbox/sandpack-react";
 import { FUKAI_SDK_SOURCE } from "@/lib/tools/sdk-source";
+import { CustomFileExplorer } from "@/components/tools/studio/file-explorer";
 
 // --- SDK Injection Logic ---
 const SDK_INJECTION_SCRIPT = `
@@ -37,6 +38,10 @@ const DEFAULT_INDEX_HTML = `<!DOCTYPE html>
 
 // --- Components ---
 
+import { M3Button } from "@/components/ui/m3-button";
+import { Slider } from "antd";
+import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
+
 function StudioToolbar({
     savedAppId,
     draftId,
@@ -46,7 +51,9 @@ function StudioToolbar({
     setAppDesc,
     setSavedAppId,
     language,
-    setLanguage
+    setLanguage,
+    zoom,
+    setZoom
 }: {
     savedAppId: string | null,
     draftId: string,
@@ -56,12 +63,19 @@ function StudioToolbar({
     setAppDesc: (v: string) => void,
     setSavedAppId: (id: string) => void,
     language: string,
-    setLanguage: (l: string) => void
+    setLanguage: (l: string) => void,
+    zoom: number,
+    setZoom: (z: number) => void
 }) {
     const { sandpack } = useSandpack();
     const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
-    const { token } = theme.useToken();
+
+    // Use M3 tokens directly via CSS variables for consistency
+    const containerStyle = {
+        borderColor: 'var(--md-sys-color-outline-variant)',
+        backgroundColor: 'var(--md-sys-color-surface-container)'
+    };
 
     const handleSave = async () => {
         if (!appTitle.trim()) {
@@ -71,11 +85,18 @@ function StudioToolbar({
 
         setSaving(true);
         try {
+            // Convert Sandpack files to simple Record<string, string>
+            const simpleFiles: Record<string, string> = {};
+            Object.entries(sandpack.files).forEach(([path, file]) => {
+                simpleFiles[path] = typeof file === 'string' ? file : file.code;
+            });
+
             const result = await saveToolsApp(savedAppId, {
                 title: appTitle,
                 description: appDesc,
-                files: sandpack.files, // Get current files from Sandpack
-                type: language === "python" ? "python" : "react-ts" // Simple mapping for now
+                files: simpleFiles,
+                type: language === "python" ? "python" : (language.includes("html") ? "html" : "react-ts"),
+                isPublic: false
             });
 
             if (result.success && result.appId) {
@@ -94,12 +115,19 @@ function StudioToolbar({
     };
 
     return (
-        <div className="h-14 border-b flex items-center px-4 justify-between"
-            style={{
-                borderColor: token.colorBorder,
-                backgroundColor: token.colorBgContainer
-            }}>
+        <div className="h-16 border-b flex items-center px-4 justify-between" style={containerStyle}>
+
+            {/* Left: Branding & Language */}
             <div className="flex items-center gap-4">
+                <div className="flex flex-col">
+                    <span className="font-bold text-lg leading-none" style={{ color: 'var(--md-sys-color-on-surface)' }}>Tools工房</span>
+                    <span className="text-[10px] font-mono opacity-60" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>
+                        {savedAppId ? `App ID: ${savedAppId.slice(0, 8)}...` : `Draft ID: ${draftId.slice(0, 8)}...`}
+                    </span>
+                </div>
+
+                <div className="h-8 w-px bg-[var(--md-sys-color-outline-variant)] mx-2" />
+
                 <Select
                     value={language}
                     onChange={setLanguage}
@@ -109,21 +137,43 @@ function StudioToolbar({
                         { value: 'html', label: 'HTML/CSS/JS' },
                         { value: 'python', label: 'Python (Pyodide)' },
                     ]}
-                    style={{ width: 150 }}
+                    style={{ width: 140 }}
+                    variant="borderless"
+                    className="bg-[var(--md-sys-color-surface-container-high)] rounded-full"
                 />
-                <span className="text-xs font-mono" style={{ color: token.colorTextTertiary }}>
-                    {savedAppId ? `App ID: ${savedAppId.slice(0, 8)}...` : `Draft ID: ${draftId.slice(0, 8)}...`}
-                </span>
             </div>
+
+            {/* Center: Zoom Control (M3) */}
+            <div className="hidden md:flex items-center gap-2 bg-[var(--md-sys-color-surface-container-high)] px-4 py-1 rounded-full">
+                <ZoomOutOutlined
+                    className="text-[var(--md-sys-color-on-surface-variant)] cursor-pointer hover:text-[var(--md-sys-color-primary)]"
+                    onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
+                />
+                <Slider
+                    min={0.5}
+                    max={1.5}
+                    step={0.1}
+                    value={zoom}
+                    onChange={setZoom}
+                    style={{ width: 100, margin: '0 8px' }}
+                    tooltip={{ formatter: (v) => `${Math.round((v || 1) * 100)}%` }}
+                />
+                <ZoomInOutlined
+                    className="text-[var(--md-sys-color-on-surface-variant)] cursor-pointer hover:text-[var(--md-sys-color-primary)]"
+                    onClick={() => setZoom(Math.min(1.5, zoom + 0.1))}
+                />
+            </div>
+
+            {/* Right: Actions */}
             <div className="flex gap-2">
-                <Button
-                    type="primary"
+                <M3Button
+                    variant="filled"
                     icon={<SaveOutlined />}
                     onClick={() => setIsSaveModalOpen(true)}
-                    loading={saving}
+                    disabled={saving}
                 >
                     保存
-                </Button>
+                </M3Button>
             </div>
 
             <Modal
@@ -135,9 +185,10 @@ function StudioToolbar({
                 okText="保存"
                 cancelText="キャンセル"
             >
+                {/* Modal content remains mostly same, just ensuring colors */}
                 <div className="flex flex-col gap-4 py-4">
                     <div>
-                        <label className="block text-sm font-medium mb-1" style={{ color: token.colorText }}>タイトル</label>
+                        <label className="block text-sm font-medium mb-1">タイトル</label>
                         <Input
                             value={appTitle}
                             onChange={e => setAppTitle(e.target.value)}
@@ -145,7 +196,7 @@ function StudioToolbar({
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-1" style={{ color: token.colorText }}>説明</label>
+                        <label className="block text-sm font-medium mb-1">説明</label>
                         <Input.TextArea
                             value={appDesc}
                             onChange={e => setAppDesc(e.target.value)}
@@ -153,6 +204,7 @@ function StudioToolbar({
                             rows={3}
                         />
                     </div>
+                    {/* Public Switch would go here (props need to be passed correctly) */}
                 </div>
             </Modal>
         </div>
@@ -162,19 +214,16 @@ function StudioToolbar({
 export function ToolsStudioClient() {
     // Initial State
     const [files, setFiles] = useState<Record<string, string>>({});
-    const [draftId, setDraftId] = useState("");
+    const [draftId] = useState(() => `draft-${crypto.randomUUID()}`);
     const [language, setLanguage] = useState("react-ts");
+
+    // UI State
+    const [zoom, setZoom] = useState(1.0);
 
     // Metadata State
     const [appTitle, setAppTitle] = useState("");
     const [appDesc, setAppDesc] = useState("");
     const [savedAppId, setSavedAppId] = useState<string | null>(null);
-
-    const { token } = theme.useToken();
-
-    useEffect(() => {
-        setDraftId(`draft-${crypto.randomUUID()}`);
-    }, []);
 
     useToolsMessageHandler(draftId);
 
@@ -194,19 +243,14 @@ export function ToolsStudioClient() {
         },
     };
 
-    // Sandpack Template Mapping
-    // Note: Python is not natively supported by Sandpack's standard templates in the same way.
-    // We strictly map to valid Sandpack templates or fallback to vanilla for unknown.
-    const getSandpackTemplate = (lang: string) => {
-        if (lang === 'python') return 'vanilla'; // Placeholder for Python
+    const getSandpackTemplate = (lang: string): "vanilla" | "react" | "react-ts" | "static" => {
+        if (lang === 'python') return 'vanilla';
         if (lang === 'html') return 'static';
-        return lang as any;
+        return lang as "vanilla" | "react" | "react-ts" | "static";
     };
 
-    console.log('SandpackFileExplorer type:', typeof SandpackFileExplorer, SandpackFileExplorer);
-
     return (
-        <div className="h-[calc(100vh-64px)] w-full overflow-hidden" style={{ backgroundColor: token.colorBgLayout }}>
+        <div className="h-[calc(100vh-64px)] w-full overflow-hidden" style={{ backgroundColor: 'var(--md-sys-color-surface)' }}>
             <SandpackProvider
                 template={getSandpackTemplate(language)}
                 files={finalFiles}
@@ -228,11 +272,11 @@ export function ToolsStudioClient() {
             >
                 <PanelGroup direction="horizontal">
                     {/* Left Panel: Chat */}
-                    <Panel defaultSize={30} minSize={20} className="flex flex-col border-r" style={{ borderColor: token.colorBorder }}>
+                    <Panel defaultSize={30} minSize={20} className="flex flex-col border-r" style={{ borderColor: 'var(--md-sys-color-outline-variant)' }}>
                         <ChatPanel onCodeGenerated={handleCodeGenerated} />
                     </Panel>
 
-                    <PanelResizeHandle className="w-1 transition-colors hover:bg-primary" style={{ backgroundColor: token.colorBorder }} />
+                    <PanelResizeHandle className="w-1 transition-colors hover:bg-[var(--md-sys-color-primary)]" style={{ backgroundColor: 'var(--md-sys-color-outline-variant)' }} />
 
                     {/* Right Panel: Studio (Toolbar + Content) */}
                     <Panel defaultSize={70} minSize={30}>
@@ -244,12 +288,16 @@ export function ToolsStudioClient() {
                                 setAppTitle={setAppTitle}
                                 appDesc={appDesc}
                                 setAppDesc={setAppDesc}
+                                isPublic={isPublic}
+                                setIsPublic={setIsPublic}
                                 setSavedAppId={setSavedAppId}
                                 language={language}
                                 setLanguage={setLanguage}
+                                zoom={zoom}
+                                setZoom={setZoom}
                             />
 
-                            <div className="flex-1 overflow-hidden p-4">
+                            <div className="flex-1 overflow-hidden p-4 bg-[var(--md-sys-color-surface-container-low)]">
                                 <Tabs
                                     defaultActiveKey="preview"
                                     items={[
@@ -257,13 +305,26 @@ export function ToolsStudioClient() {
                                             key: 'preview',
                                             label: <span><EyeOutlined /> プレビュー</span>,
                                             children: (
-                                                <div className="h-full w-full rounded-2xl overflow-hidden shadow-sm" style={{ height: 'calc(100vh - 180px)' }}>
-                                                    <SandpackPreview
-                                                        showNavigator={true}
-                                                        showRefreshButton={true}
-                                                        showOpenInCodeSandbox={false}
-                                                        style={{ height: '100%' }}
-                                                    />
+                                                <div
+                                                    className="h-full w-full rounded-[var(--radius-lg)] overflow-hidden shadow-sm border border-[var(--md-sys-color-outline-variant)] bg-white relative"
+                                                    style={{ height: 'calc(100vh - 180px)' }}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            width: `${100 / zoom}%`,
+                                                            height: `${100 / zoom}%`,
+                                                            transform: `scale(${zoom})`,
+                                                            transformOrigin: 'top left',
+                                                            transition: 'transform 0.2s ease, width 0.2s ease, height 0.2s ease'
+                                                        }}
+                                                    >
+                                                        <SandpackPreview
+                                                            showNavigator={true}
+                                                            showRefreshButton={true}
+                                                            showOpenInCodeSandbox={false}
+                                                            style={{ height: '100%' }}
+                                                        />
+                                                    </div>
                                                 </div>
                                             )
                                         },
@@ -271,9 +332,9 @@ export function ToolsStudioClient() {
                                             key: 'code',
                                             label: <span><CodeOutlined /> コード</span>,
                                             children: (
-                                                <div className="flex h-full w-full" style={{ height: 'calc(100vh - 180px)' }}>
-                                                    <div className="w-[200px] h-full border-r shrink-0 overflow-hidden" style={{ borderColor: token.colorBorder }}>
-                                                        {/* <SandpackFileExplorer /> */}
+                                                <div className="flex h-full w-full rounded-[var(--radius-lg)] overflow-hidden border border-[var(--md-sys-color-outline-variant)]" style={{ height: 'calc(100vh - 180px)' }}>
+                                                    <div className="w-[200px] h-full border-r shrink-0 overflow-hidden" style={{ borderColor: 'var(--md-sys-color-outline-variant)' }}>
+                                                        <CustomFileExplorer />
                                                     </div>
                                                     <div className="flex-1 h-full min-w-0">
                                                         <MonacoEditorClient />

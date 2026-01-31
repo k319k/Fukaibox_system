@@ -55,6 +55,12 @@ export default function SectionHeader({
                         <Icon icon="mdi:comment-edit" />推敲中
                     </Tag>
                 )}
+                {section.isGenerating && (
+                    <Tag className="rounded-full bg-blue-100 text-blue-700 border-none flex items-center gap-1 animate-pulse">
+                        <Icon icon="mdi:creation" className="animate-spin" />
+                        画像生成中
+                    </Tag>
+                )}
             </div>
 
             <div className="flex gap-2">

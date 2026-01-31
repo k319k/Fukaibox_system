@@ -5,6 +5,7 @@ export interface Section {
     content: string | null;
     imageInstruction: string | null;
     referenceImageUrl: string | null;
+    isGenerating: boolean | null;
     allowImageSubmission: boolean | null;
     createdAt: Date | null;
     updatedAt: Date | null;
