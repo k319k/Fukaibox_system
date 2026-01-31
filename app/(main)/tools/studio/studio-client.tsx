@@ -224,6 +224,7 @@ export function ToolsStudioClient() {
     const [appTitle, setAppTitle] = useState("");
     const [appDesc, setAppDesc] = useState("");
     const [savedAppId, setSavedAppId] = useState<string | null>(null);
+    const [isPublic, setIsPublic] = useState(false);
 
     useToolsMessageHandler(draftId);
 
