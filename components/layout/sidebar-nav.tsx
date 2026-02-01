@@ -18,7 +18,7 @@ const navigation: NavigationItem[] = [
     { name: "ホーム", href: "/", icon: "material-symbols:home-outline", activeIcon: "material-symbols:home" },
     { name: "儀員名簿", href: "/users", icon: "material-symbols:group-outline", activeIcon: "material-symbols:group" },
     { name: "炊事場", href: "/cooking", icon: "material-symbols:skillet-outline", activeIcon: "material-symbols:skillet" },
-    { name: "界域百科事典", href: "/dictionary", icon: "material-symbols:menu-book-outline", activeIcon: "material-symbols:menu-book" },
+    // { name: "界域百科事典", href: "/dictionary", icon: "material-symbols:menu-book-outline", activeIcon: "material-symbols:menu-book" },
     { name: "封解Box Tools", href: "/tools", icon: "material-symbols:build-outline", activeIcon: "material-symbols:build" },
 ];
 
@@ -27,6 +27,7 @@ const bottomNavigation: NavigationItem[] = [
 ];
 
 const gichoNavigation: NavigationItem[] = [
+    { name: "YouTube", href: "/youtube", icon: "material-symbols:play-circle-outline", activeIcon: "material-symbols:play-circle" },
     { name: "DevStudio", href: "/dev-studio", icon: "material-symbols:code", activeIcon: "material-symbols:code" },
     { name: "AdminPanel", href: "/admin", icon: "material-symbols:shield-outline", activeIcon: "material-symbols:shield" },
 ];

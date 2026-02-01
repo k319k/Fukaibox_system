@@ -98,5 +98,23 @@ export const FUKAI_SDK_SOURCE = `
     };
     
     console.log("[Fukai SDK] Initialized");
+
+    // Stub disallowed libraries to prevent runtime errors
+    const disallowed = [
+        'createClient', 'supabase', 'firebase', 'initializeApp',
+        'getFirestore', 'getAuth', 'getDatabase'
+    ];
+    
+    disallowed.forEach(fn => {
+        // @ts-ignore
+        if (typeof window[fn] === 'undefined') {
+            // @ts-ignore
+            window[fn] = () => {
+                console.error(\`[Security Violation] '\${fn}' is not allowed in this environment.\`);
+                throw new Error(\`Security Violation: '\${fn}' is forbidden.\`);
+            };
+        }
+    });
+
 })();
 `;

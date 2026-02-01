@@ -1,5 +1,6 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { users } from "./auth";
+import { relations } from "drizzle-orm";
 
 // =============================================
 // 封解Box Tools
@@ -20,7 +21,7 @@ export const toolsApps = sqliteTable("tools_apps", {
     remixCount: integer("remix_count").default(0),
 
     // Remix Tracking
-    remixFrom: text("remix_from").references(() => toolsApps.id),
+    remixFrom: text("remix_from"), // Removed self reference here to avoid circular ref issue in DDL if generic
 
     createdBy: text("created_by")
         .notNull()
@@ -28,6 +29,19 @@ export const toolsApps = sqliteTable("tools_apps", {
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
+
+export const toolsAppsRelations = relations(toolsApps, ({ one, many }) => ({
+    creator: one(users, {
+        fields: [toolsApps.createdBy],
+        references: [users.id],
+    }),
+    files: many(toolsFiles),
+    remixParent: one(toolsApps, {
+        fields: [toolsApps.remixFrom],
+        references: [toolsApps.id],
+        relationName: "remix_relation"
+    }),
+}));
 
 export const toolsFiles = sqliteTable("tools_files", {
     id: text("id").primaryKey(),
@@ -39,6 +53,13 @@ export const toolsFiles = sqliteTable("tools_files", {
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
+
+export const toolsFilesRelations = relations(toolsFiles, ({ one }) => ({
+    app: one(toolsApps, {
+        fields: [toolsFiles.appId],
+        references: [toolsApps.id],
+    }),
+}));
 
 export const toolsRatings = sqliteTable("tools_ratings", {
     id: text("id").primaryKey(),
@@ -52,3 +73,4 @@ export const toolsRatings = sqliteTable("tools_ratings", {
     comment: text("comment"),
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
+

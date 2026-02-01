@@ -34,6 +34,12 @@ const serverSchema = z.object({
     GICHO_DISCORD_IDS: z.string().optional(),
     GIIN_ROLE_ID: z.string().optional(),
     MEIYO_GIIN_ROLE_ID: z.string().optional(),
+
+    // YouTube API
+    YOUTUBE_API_KEY: z.string().optional(),
+    YOUTUBE_CLIENT_ID: z.string().optional(),
+    YOUTUBE_CLIENT_SECRET: z.string().optional(),
+    YOUTUBE_REDIRECT_URI: z.string().optional(),
 });
 
 const clientSchema = z.object({
@@ -60,6 +66,10 @@ const processEnv = {
     GIIN_ROLE_ID: process.env.GIIN_ROLE_ID,
     MEIYO_GIIN_ROLE_ID: process.env.MEIYO_GIIN_ROLE_ID,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
+    YOUTUBE_CLIENT_ID: process.env.YOUTUBE_CLIENT_ID,
+    YOUTUBE_CLIENT_SECRET: process.env.YOUTUBE_CLIENT_SECRET,
+    YOUTUBE_REDIRECT_URI: process.env.YOUTUBE_REDIRECT_URI,
 };
 
 // バリデーション実行

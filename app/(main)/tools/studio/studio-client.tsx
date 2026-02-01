@@ -5,12 +5,13 @@ import { MonacoEditorClient } from "@/components/tools/studio/monaco-client";
 import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from "react-resizable-panels";
 import { useState } from "react";
 import { useToolsMessageHandler } from "@/components/tools/runtime/use-tools-message-handler";
-import { Button, Modal, Input, message, Tabs, Select } from "antd";
-import { SaveOutlined, CodeOutlined, EyeOutlined } from "@ant-design/icons";
+import { Button, Modal, Input, message, Tabs, Select, Tag, Switch, Slider } from "antd";
+import { SaveOutlined, CodeOutlined, EyeOutlined, ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import { saveToolsApp } from "@/app/actions/tools-data";
 import { SandpackProvider, SandpackPreview, useSandpack } from "@codesandbox/sandpack-react";
 import { FUKAI_SDK_SOURCE } from "@/lib/tools/sdk-source";
 import { CustomFileExplorer } from "@/components/tools/studio/file-explorer";
+import { M3Button } from "@/components/ui/m3-button";
 
 // --- SDK Injection Logic ---
 const SDK_INJECTION_SCRIPT = `
@@ -28,7 +29,10 @@ const DEFAULT_INDEX_HTML = `<!DOCTYPE html>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fukai App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: system-ui, -apple-system, sans-serif; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
@@ -37,10 +41,6 @@ const DEFAULT_INDEX_HTML = `<!DOCTYPE html>
 </html>`;
 
 // --- Components ---
-
-import { M3Button } from "@/components/ui/m3-button";
-import { Slider } from "antd";
-import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 
 function StudioToolbar({
     savedAppId,
@@ -53,7 +53,9 @@ function StudioToolbar({
     language,
     setLanguage,
     zoom,
-    setZoom
+    setZoom,
+    isPublic,
+    setIsPublic
 }: {
     savedAppId: string | null,
     draftId: string,
@@ -65,7 +67,9 @@ function StudioToolbar({
     language: string,
     setLanguage: (l: string) => void,
     zoom: number,
-    setZoom: (z: number) => void
+    setZoom: (z: number) => void,
+    isPublic: boolean,
+    setIsPublic: (v: boolean) => void
 }) {
     const { sandpack } = useSandpack();
     const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
@@ -96,19 +100,18 @@ function StudioToolbar({
                 description: appDesc,
                 files: simpleFiles,
                 type: language === "python" ? "python" : (language.includes("html") ? "html" : "react-ts"),
-                isPublic: false
+                isPublic: isPublic
             });
 
             if (result.success && result.appId) {
                 setSavedAppId(result.appId);
-                message.success("保存しました！");
+                message.success(isPublic ? "公開しました！" : "保存しました！");
                 setIsSaveModalOpen(false);
             } else {
-                message.error("保存失敗: " + result.error);
+                message.error(result.error || "保存に失敗しました");
             }
-        } catch (e) {
-            message.error("保存中にエラーが発生しました");
-            console.error(e);
+        } catch (e: any) {
+            message.error("保存エラー: " + e.message);
         } finally {
             setSaving(false);
         }
@@ -141,6 +144,9 @@ function StudioToolbar({
                     variant="borderless"
                     className="bg-[var(--md-sys-color-surface-container-high)] rounded-full"
                 />
+                {isPublic && (
+                    <Tag color="success" style={{ margin: 0 }}>公開中</Tag>
+                )}
             </div>
 
             {/* Center: Zoom Control (M3) */}
@@ -156,7 +162,7 @@ function StudioToolbar({
                     value={zoom}
                     onChange={setZoom}
                     style={{ width: 100, margin: '0 8px' }}
-                    tooltip={{ formatter: (v) => `${Math.round((v || 1) * 100)}%` }}
+                    tooltip={{ formatter: (v?: number) => `${Math.round((v || 1) * 100)}%` }}
                 />
                 <ZoomInOutlined
                     className="text-[var(--md-sys-color-on-surface-variant)] cursor-pointer hover:text-[var(--md-sys-color-primary)]"
@@ -185,7 +191,6 @@ function StudioToolbar({
                 okText="保存"
                 cancelText="キャンセル"
             >
-                {/* Modal content remains mostly same, just ensuring colors */}
                 <div className="flex flex-col gap-4 py-4">
                     <div>
                         <label className="block text-sm font-medium mb-1">タイトル</label>
@@ -204,7 +209,20 @@ function StudioToolbar({
                             rows={3}
                         />
                     </div>
-                    {/* Public Switch would go here (props need to be passed correctly) */}
+                    <div className="flex items-center justify-between pt-2 border-t border-[var(--md-sys-color-outline-variant)]">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">公開設定</label>
+                            <p className="text-xs text-[var(--md-sys-color-on-surface-variant)]">
+                                公開するとギャラリーに表示されます
+                            </p>
+                        </div>
+                        <Switch
+                            checked={isPublic}
+                            onChange={setIsPublic}
+                            checkedChildren="公開"
+                            unCheckedChildren="非公開"
+                        />
+                    </div>
                 </div>
             </Modal>
         </div>

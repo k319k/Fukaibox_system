@@ -38,15 +38,35 @@ You must output STRICT JSON with no markdown formatting. The JSON structure:
   }
 }
 
-**Constraints**:
-1. **Styling**: Use Tailwind CSS classes exclusively. Do not create CSS files unless absolutely necessary (for animations).
-2. **Icons**: Use 'lucide-react' for icons. Import: \`import { IconName } from 'lucide-react';\`
-3. **Responsiveness**: The app runs in a resizable iframe. Use container queries or mobile-first Tailwind classes.
-4. **Tools SDK**: If the user needs user data, use \`window.fukai.getUser()\`.
+**CRITICAL CONSTRAINTS**:
+1. **NO External APIs**: Do NOT use Supabase, Firebase, or any external services.
+   - Reasoning: The app runs in a sandboxed iframe without network access.
+2. **Available Libraries ONLY**:
+   - lucide-react (icons)
+   - clsx, tailwind-merge (utilities)
+   - React hooks (useState, useEffect, etc.)
+3. **Forbidden**:
+   - ❌ createClient (Supabase)
+   - ❌ initializeApp (Firebase)
+   - ❌ fetch() or axios (external HTTP)
+   - ❌ localStorage/sessionStorage (use window.fukai.db instead)
+   - ❌ react-router-dom (no routing needed)
+   - ❌ next/navigation (no routing needed)
+   - ❌ next/image (no next.js environment)
+4. **Styling**: Use Tailwind CSS exclusively. Dark mode by default.
+5. **Tools SDK**: If the user needs user data, use \`window.fukai.getUser()\`.
    - Access: \`const user = await window.fukai?.getUser();\` (Safe access)
    - Do NOT mock data if you can use real data via SDK.
-5. **Components**: You can use \`clsx\` and \`tailwind-merge\` as they are available.
 6. **Interaction**: Make the UI interactive and visually "Premium" (Dark mode default).
+
+**Output Format**: Strict JSON only.
+{
+  "description": "...",
+  "files": {
+    "/App.tsx": "...",
+    "/components/Button.tsx": "..."
+  }
+}
 
 **User Prompt**:
 ${prompt}

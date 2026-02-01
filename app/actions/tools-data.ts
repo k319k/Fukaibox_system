@@ -178,7 +178,7 @@ export async function getToolsApps(filter: 'all' | 'mine' | 'public' = 'public')
     try {
         // Need to join user info? For now just fetch apps.
         // Drizzle query
-        let conditions = [];
+        const conditions = [];
 
         if (filter === 'public') {
             conditions.push(eq(toolsApps.isPublic, true));
@@ -298,6 +298,7 @@ export async function getMyApps() {
     if (!session?.user?.id) return [];
 
     try {
+        console.log(`[getMyApps] Fetching apps for user: ${session.user.id}`);
         const apps = await db.query.toolsApps.findMany({
             where: eq(toolsApps.createdBy, session.user.id),
             orderBy: [desc(toolsApps.updatedAt)],
@@ -310,6 +311,7 @@ export async function getMyApps() {
                 }
             }
         });
+        console.log(`[getMyApps] Found ${apps.length} apps`);
 
         return apps.map(app => ({
             ...app,
@@ -344,7 +346,7 @@ export async function getPublicApps() {
             creatorName: app.creator?.name,
             creatorImage: app.creator?.image,
         }));
-    } catch (e) {
+    } catch (e: unknown) {
         console.error("Get Public Apps Error:", e);
         return [];
     }
