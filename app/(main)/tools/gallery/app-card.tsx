@@ -1,8 +1,9 @@
 "use client";
 
-import { PlayCircleOutlined, EyeOutlined, ShareAltOutlined } from "@ant-design/icons";
-import { ForkOutlined } from "@ant-design/icons";
+import { PlayCircleFilled, EyeOutlined, ShareAltOutlined } from "@ant-design/icons";
+import { ForkOutlined, CodeOutlined, Html5Outlined, PythonOutlined } from "@ant-design/icons";
 import { M3Button } from "@/components/ui/m3-button";
+import { Tooltip } from "antd";
 
 interface AppCardProps {
     app: {
@@ -14,6 +15,7 @@ interface AppCardProps {
         remixCount: number | null;
         remixFrom: string | null;
         updatedAt: Date;
+        type?: string;
     };
     onRun: (id: string) => void;
     onRemix?: (id: string) => void;
@@ -23,109 +25,138 @@ interface AppCardProps {
 }
 
 export function AppCard({ app, onRun, onRemix, onShare, isRemixing, isOwned }: AppCardProps) {
+    // Generate a consistent gradient based on app ID or name
+    const getGradient = (id: string) => {
+        const colors = [
+            'from-rose-400 to-orange-300',
+            'from-violet-400 to-fuchsia-300',
+            'from-cyan-400 to-blue-300',
+            'from-emerald-400 to-teal-300',
+            'from-amber-400 to-yellow-300',
+        ];
+        // Use last char code to vary
+        const index = id.charCodeAt(id.length - 1) % colors.length;
+        return colors[index];
+    };
+
+    const gradient = getGradient(app.id);
+
+    const getTypeIcon = (type?: string) => {
+        if (type?.includes('html')) return <Html5Outlined />;
+        if (type === 'python') return <PythonOutlined />;
+        return <CodeOutlined />;
+    };
+
     return (
         <div
-            className="group relative flex flex-col overflow-hidden transition-all duration-200 m3-card-filled hover:shadow-md"
+            className="group relative flex flex-col overflow-hidden transition-all duration-300 m3-card-elevated hover:shadow-xl hover:-translate-y-1"
             style={{
-                backgroundColor: 'var(--md-sys-color-surface-container-high)',
-                borderRadius: 'var(--radius-lg)'
+                backgroundColor: 'var(--md-sys-color-surface-container)',
+                borderRadius: 'var(--radius-xl)',
+                height: '320px'
             }}
         >
-            {/* Status Badge */}
-            <div className={`absolute top-3 right-3 z-20 px-2 py-1 text-[10px] font-bold rounded-full shadow-sm ${app.isPublic
-                ? "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
-                : "bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface-variant)]"
+            {/* Status & Type Badges */}
+            <div className="absolute top-4 left-4 z-20 flex gap-2">
+                <div className="px-3 py-1 text-[10px] font-bold rounded-full shadow-sm backdrop-blur-md bg-white/30 text-white flex items-center gap-1">
+                    {getTypeIcon(app.type)}
+                    <span>{app.type === 'python' ? 'PYTHON' : (app.type?.includes('html') ? 'HTML' : 'REACT')}</span>
+                </div>
+            </div>
+
+            <div className={`absolute top-4 right-4 z-20 px-3 py-1 text-[10px] font-bold rounded-full shadow-sm backdrop-blur-md ${app.isPublic
+                ? "bg-green-500/80 text-white"
+                : "bg-gray-500/80 text-white"
                 }`}>
                 {app.isPublic ? "PUBLIC" : "PRIVATE"}
             </div>
 
-            {/* Cover */}
+            {/* Cover Image (Gradient) */}
             <div
-                className="h-32 w-full relative overflow-hidden bg-[var(--md-sys-color-surface-container-highest)] cursor-pointer"
+                className={`h-40 w-full relative overflow-hidden bg-gradient-to-br ${gradient} cursor-pointer`}
                 onClick={() => onRun(app.id)}
             >
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 z-10">
-                    <PlayCircleOutlined className="text-3xl text-white drop-shadow-md" />
-                </div>
-                {/* Gradient Placeholder */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[var(--md-sys-color-surface-container-low)] to-[var(--md-sys-color-surface-container-highest)]" />
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors" />
 
-                {/* App Icon / Initial */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-4xl font-bold opacity-10 select-none pb-2" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>
-                        {app.name.slice(0, 1).toUpperCase()}
-                    </span>
+                {/* Play Button Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100">
+                    <PlayCircleFilled className="text-6xl text-white drop-shadow-lg" />
+                </div>
+
+                {/* App Initial */}
+                <div className="absolute bottom-[-20px] right-[-10px] text-9xl font-black opacity-20 select-none text-white rotate-[-10deg]">
+                    {app.name.slice(0, 1).toUpperCase()}
                 </div>
             </div>
 
             {/* Content */}
-            <div className="flex flex-col p-4 gap-2 flex-1">
-                <h3 className="text-base font-medium truncate leading-tight" style={{ color: 'var(--md-sys-color-on-surface)' }}>
+            <div className="flex flex-col p-5 gap-2 flex-1 relative">
+                <h3 className="text-lg font-bold truncate leading-tight tracking-tight" style={{ color: 'var(--md-sys-color-on-surface)' }}>
                     {app.name}
                 </h3>
-                <p className="text-xs line-clamp-2 h-8" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>
+
+                <p className="text-xs line-clamp-2 leading-relaxed opacity-80 h-10" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>
                     {app.description || "No description provided."}
                 </p>
 
                 {/* Remix Info */}
                 {app.remixFrom && (
-                    <div className="flex items-center gap-1 text-[10px]" style={{ color: 'var(--md-sys-color-tertiary)' }}>
+                    <div className="flex items-center gap-1 text-[10px] mt-1" style={{ color: 'var(--md-sys-color-tertiary)' }}>
                         <ForkOutlined />
                         <span>Remixed</span>
                     </div>
                 )}
 
-                {/* Stats */}
-                <div className="flex items-center justify-between mt-auto pt-2 border-t border-[var(--md-sys-color-outline-variant)]/20">
-                    <div className="flex items-center gap-3">
-                        <span className="text-[10px] flex items-center gap-1" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>
-                            <EyeOutlined /> {app.viewCount || 0}
-                        </span>
+                <div className="flex-1" />
+
+                {/* Footer: Stats & Actions */}
+                <div className="flex items-center justify-between mt-2 pt-3 border-t border-[var(--md-sys-color-outline-variant)]/20">
+                    <div className="flex items-center gap-3 text-xs opacity-70" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>
+                        <Tooltip title="View Count">
+                            <span className="flex items-center gap-1"><EyeOutlined /> {app.viewCount || 0}</span>
+                        </Tooltip>
                         {app.remixCount !== null && app.remixCount > 0 && (
-                            <span className="text-[10px] flex items-center gap-1" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>
-                                <ForkOutlined /> {app.remixCount}
-                            </span>
+                            <Tooltip title="Remix Count">
+                                <span className="flex items-center gap-1"><ForkOutlined /> {app.remixCount}</span>
+                            </Tooltip>
                         )}
                     </div>
-                    <span className="text-[10px]" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>
-                        {new Intl.DateTimeFormat('ja-JP', { dateStyle: 'medium' }).format(new Date(app.updatedAt))}
-                    </span>
-                </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-2 mt-2">
-                    {onRemix && !isOwned && (
-                        <M3Button
-                            variant="tonal"
-                            icon={<ForkOutlined />}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onRemix(app.id);
-                            }}
-                            disabled={isRemixing}
-                            className="flex-1 text-xs h-8"
-                        >
-                            {isRemixing ? "..." : "Remix"}
-                        </M3Button>
-                    )}
-                    {onShare && (
-                        <M3Button
-                            variant="outlined"
-                            icon={<ShareAltOutlined />}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onShare(app.id);
-                            }}
-                            className="flex-1 text-xs h-8"
-                        >
-                            共有
-                        </M3Button>
-                    )}
+                    <div className="flex gap-1 opacity-100 transition-opacity">
+                        {onShare && (
+                            <M3Button
+                                variant="text"
+                                icon={<ShareAltOutlined />}
+                                onClick={() => onShare(app.id)}
+                                size="small"
+                                className="!w-8 !h-8 !p-0"
+                            />
+                        )}
+                        {onRemix && !isOwned && (
+                            <M3Button
+                                variant="tonal"
+                                icon={<ForkOutlined />}
+                                onClick={() => onRemix(app.id)}
+                                disabled={isRemixing}
+                                size="small"
+                                className="!h-8 text-[11px]"
+                            >
+                                Remix
+                            </M3Button>
+                        )}
+                        {isOwned && onRun && (
+                            <M3Button
+                                variant="filled"
+                                onClick={() => onRun(app.id)}
+                                size="small"
+                                className="!h-8 text-[11px]"
+                            >
+                                Edit
+                            </M3Button>
+                        )}
+                    </div>
                 </div>
             </div>
-
-            {/* M3 State Layer */}
-            <div className="absolute inset-0 bg-[var(--md-sys-color-on-surface)] opacity-0 group-hover:opacity-[0.08] transition-opacity pointer-events-none" />
         </div>
     );
 }

@@ -6,13 +6,20 @@ import { cn } from "@/lib/utils";
 interface M3ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: "filled" | "tonal" | "outlined" | "text" | "elevated";
     icon?: React.ReactNode;
+    size?: "small" | "medium" | "large";
 }
 
 export const M3Button = forwardRef<HTMLButtonElement, M3ButtonProps>(
-    ({ className, variant = "filled", icon, children, ...props }, ref) => {
+    ({ className, variant = "filled", size = "medium", icon, children, ...props }, ref) => {
 
         // Base styles mimicking M3 State Layer and shape
-        const baseStyles = "relative inline-flex items-center justify-center gap-2 px-6 h-10 text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none rounded-[var(--radius-full)] overflow-hidden";
+        const baseStyles = "relative inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none rounded-[var(--radius-full)] overflow-hidden";
+
+        const sizeStyles = {
+            small: "h-8 px-3 text-xs",
+            medium: "h-10 px-6 text-sm",
+            large: "h-12 px-8 text-base"
+        };
 
         // Variants mapping to globals.css variables
         const variants = {
@@ -26,7 +33,7 @@ export const M3Button = forwardRef<HTMLButtonElement, M3ButtonProps>(
         return (
             <button
                 ref={ref}
-                className={cn(baseStyles, variants[variant], className)}
+                className={cn(baseStyles, variants[variant], sizeStyles[size], className)}
                 {...props}
             >
                 {/* State Layer (Ripple effect could be added here) */}

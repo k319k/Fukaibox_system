@@ -184,9 +184,9 @@
 
 ### Phase 9.2: UI/UX刷新 (Phase 2)
 
-- [ ] カラーパレット見直し (コントラスト向上)
-- [ ] Gallery/AppCardデザイン改善
-- [ ] Studioレイアウト最適化
+- [x] カラーパレット見直し (コントラスト向上)
+- [x] Gallery/AppCardデザイン改善
+- [x] Studioレイアウト最適化
 
 ### Phase 9.3: YouTube Manager完全実装 (Phase 3)
 

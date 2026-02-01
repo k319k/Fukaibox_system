@@ -1,119 +1,194 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Material Design 3 カラーパレット (Ivory & Carmine)
-   封解Box テーマ
-   Reference: https://m3.material.io/styles/color/the-color-system/tokens
+   Fukai Box Premium Theme (Version 2.0)
+   Concept: "Ironclad Elegance"
+   Base Colors: Deep Burgundy (#800020) & Jet Black (#121212)
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* Default Light Theme */
 :root {
-  /* Primary (Carmine Red) */
-  /* M3 Tonal Palettes & Surface Hierarchy */
-  /* Reference: https://m3.material.io/styles/color/the-color-system/tokens */
-
-  /* Primary (Carmine Red) */
-  --md-sys-color-primary: #73342b;
+  /* Primary: Deep Burgundy */
+  --md-sys-color-primary: #941e32;
   --md-sys-color-on-primary: #ffffff;
-  --md-sys-color-primary-container: #ffdad5;
-  --md-sys-color-on-primary-container: #2d0b08;
-  /* Darker for better contrast */
+  --md-sys-color-primary-container: #ffd9de;
+  --md-sys-color-on-primary-container: #3e000d;
 
-  /* Secondary (Deep Red) */
-  --md-sys-color-secondary: #9E2B1F;
-  --md-sys-color-on-secondary: #FFFFFF;
-  --md-sys-color-secondary-container: #FFDAD4;
-  --md-sys-color-on-secondary-container: #400001;
+  /* Secondary: Neutral Warm Brown */
+  --md-sys-color-secondary: #775651;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #ffdad4;
+  --md-sys-color-on-secondary-container: #2c1512;
 
-  /* Tertiary (Brown) */
-  --md-sys-color-tertiary: #564419;
+  /* Tertiary: Gold/Bronze Accent */
+  --md-sys-color-tertiary: #705c2e;
   --md-sys-color-on-tertiary: #ffffff;
-  --md-sys-color-tertiary-container: #fbe7a6;
-  --md-sys-color-on-tertiary-container: #1e1603;
+  --md-sys-color-tertiary-container: #fbdfa6;
+  --md-sys-color-on-tertiary-container: #261a00;
 
-  /* Surface & Background */
+  /* Surface & Background (Light) */
   --md-sys-color-surface: #fff8f6;
   --md-sys-color-on-surface: #201a19;
-  --md-sys-color-surface-variant: #f3d6ce;
-  --md-sys-color-on-surface-variant: #53433f;
+
+  /* Surface Container Hierarchy */
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #fef1ed;
+  --md-sys-color-surface-container: #fceae5;
+  --md-sys-color-surface-container-high: #f7e4e0;
+  --md-sys-color-surface-container-highest: #f3deda;
 
   /* Outline */
-  --md-sys-color-outline: #85736f;
-  --md-sys-color-outline-variant: #d8c2bc;
+  --md-sys-color-outline: #85736e;
+  --md-sys-color-outline-variant: #d8c2be;
 
-  /* Surface Container Hierarchy (Borderless Design) */
-  --md-sys-color-surface-container-lowest: #ffffff;
-  --md-sys-color-surface-container-low: #fef5f2;
-  --md-sys-color-surface-container: #fceae5;
-  /* Default Card */
-  --md-sys-color-surface-container-high: #f7e0da;
-  --md-sys-color-surface-container-highest: #f3d6ce;
+  /* Scrim/Shadow */
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-shadow: #000000;
 
-  /* Legacy / Tailwind mappings */
+  /* Legacy/Compatibility */
   --background: var(--md-sys-color-surface);
   --foreground: var(--md-sys-color-on-surface);
-  --color-primary: var(--md-sys-color-primary);
 
-  /* Role Colors */
-  --color-gicho: #73342b;
-  --color-gicho-container: #ffdad5;
-  --color-meiyo-giin: #564419;
-  --color-meiyo-giin-container: #fbe7a6;
-  --color-giin: #10200a;
-  --color-giin-container: #d7f0cb;
-  --color-guest: #6b7280;
-  --color-guest-container: #f3f4f6;
+  /* Typography */
+  --font-sans: 'Inter', 'Noto Sans JP', sans-serif;
 
   /* Shapes */
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
-  /* M3 Medium */
   --radius-lg: 16px;
-  /* M3 Large */
   --radius-xl: 28px;
-  /* M3 Extra Large */
   --radius-full: 9999px;
-
-  /* Typography */
-  --font-sans: 'Inter', 'Noto Sans JP', sans-serif;
 }
 
+/* Dark Theme (Preferred) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Primary: Soft Rose / Pink */
+    --md-sys-color-primary: #ffb2be;
+    --md-sys-color-on-primary: #5a0016;
+    --md-sys-color-primary-container: #770020;
+    --md-sys-color-on-primary-container: #ffd9de;
+
+    /* Secondary: Muted Warm Beige */
+    --md-sys-color-secondary: #e7bdb6;
+    --md-sys-color-on-secondary: #442925;
+    --md-sys-color-secondary-container: #5d3f3b;
+    --md-sys-color-on-secondary-container: #ffdad4;
+
+    /* Tertiary: Pale Gold */
+    --md-sys-color-tertiary: #dec48c;
+    --md-sys-color-on-tertiary: #3e2e04;
+    --md-sys-color-tertiary-container: #564419;
+    --md-sys-color-on-tertiary-container: #fbdfa6;
+
+    /* Surface: Deep Charcoal / Jet Black */
+    --md-sys-color-surface: #181211;
+    --md-sys-color-on-surface: #d0c4c2;
+
+    /* Surface Container Hierarchy (Dark) */
+    --md-sys-color-surface-container-lowest: #0f0d0c;
+    --md-sys-color-surface-container-low: #1d1b1a;
+    --md-sys-color-surface-container: #211f1e;
+    --md-sys-color-surface-container-high: #2b2928;
+    --md-sys-color-surface-container-highest: #363432;
+
+    /* Outline */
+    --md-sys-color-outline: #a08c89;
+    --md-sys-color-outline-variant: #534341;
+
+    /* Legacy Map */
+    --background: var(--md-sys-color-surface);
+    --foreground: var(--md-sys-color-on-surface);
+  }
+}
+
+/* Tailwind v4 Setup */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
 
-  /* Surface Colors for Tailwind */
+  /* Surface Colors */
   --color-surface: var(--md-sys-color-surface);
+  --color-on-surface: var(--md-sys-color-on-surface);
+  --color-surface-variant: var(--md-sys-color-surface-variant);
+  --color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+
   --color-surface-container-lowest: var(--md-sys-color-surface-container-lowest);
   --color-surface-container-low: var(--md-sys-color-surface-container-low);
   --color-surface-container: var(--md-sys-color-surface-container);
   --color-surface-container-high: var(--md-sys-color-surface-container-high);
   --color-surface-container-highest: var(--md-sys-color-surface-container-highest);
+
+  /* Primary Colors */
+  --color-primary: var(--md-sys-color-primary);
+  --color-on-primary: var(--md-sys-color-on-primary);
+  --color-primary-container: var(--md-sys-color-primary-container);
+  --color-on-primary-container: var(--md-sys-color-on-primary-container);
+
+  /* Secondary Colors */
+  --color-secondary: var(--md-sys-color-secondary);
+  --color-on-secondary: var(--md-sys-color-on-secondary);
+  --color-secondary-container: var(--md-sys-color-secondary-container);
+  --color-on-secondary-container: var(--md-sys-color-on-secondary-container);
+
+  /* Outline */
   --color-outline: var(--md-sys-color-outline);
   --color-outline-variant: var(--md-sys-color-outline-variant);
 
-  /* Extend spacing */
+  /* Spacing */
   --spacing-18: 4.5rem;
   --spacing-112: 28rem;
   --spacing-128: 32rem;
 }
 
+/* Base Styles */
 body {
   background: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
   font-family: var(--font-sans);
   min-height: 100vh;
-  line-height: normal;
-  /* Ant Design handles line-height */
+  line-height: 1.5;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Typography Hierarchy */
+/* M3 Card Helper */
+.m3-card-filled {
+  background-color: var(--md-sys-color-surface-container-highest);
+  border-radius: var(--radius-lg);
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.m3-card-filled:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.m3-card-elevated {
+  background-color: var(--md-sys-color-surface-container-low);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.m3-card-elevated:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.m3-card-outlined {
+  background-color: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--radius-lg);
+}
+
+/* Typography Scale */
 .text-headline-large {
   font-size: 32px;
   line-height: 40px;
   font-weight: 400;
-  /* Regular */
 }
 
 .text-headline-medium {
@@ -148,13 +223,6 @@ body {
   letter-spacing: 0.25px;
 }
 
-.text-body-small {
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 400;
-  letter-spacing: 0.4px;
-}
-
 .text-label-large {
   font-size: 14px;
   line-height: 20px;
@@ -162,25 +230,11 @@ body {
   letter-spacing: 0.1px;
 }
 
-/* Utilities */
-.spacing-2 {
-  gap: 0.5rem;
-}
-
-.spacing-4 {
-  gap: 1rem;
-}
-
-.spacing-6 {
-  gap: 1.5rem;
-}
-
-/* M3 Navigation Drawer Item (Active State) */
+/* Navigation */
 .nav-item-active {
   background-color: var(--md-sys-color-secondary-container) !important;
   color: var(--md-sys-color-on-secondary-container) !important;
-  border-radius: 9999px !important;
-  /* Pill shape */
+  border-radius: 9999px;
   font-weight: 600 !important;
 }
 
@@ -190,49 +244,6 @@ body {
 }
 
 .nav-item-inactive:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-  /* State Layer */
+  background-color: var(--md-sys-color-surface-container-highest);
   color: var(--md-sys-color-on-surface);
-}
-
-/* M3 Card Styles Helper (Borderless) */
-/* Use these classes instead of borders */
-.m3-card-filled {
-  background: var(--md-sys-color-surface-container-lowest);
-  border-radius: var(--radius-lg);
-  border: none;
-}
-
-.m3-card-outlined {
-  background: var(--md-sys-color-surface);
-  border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: var(--radius-lg);
-}
-
-.m3-card-elevated {
-  background: var(--md-sys-color-surface-container-low);
-  border-radius: var(--radius-lg);
-  border: none;
-  /* No Shadow, just color tint */
-}
-
-/* Custom Roll Badges */
-.badge-gicho {
-  background: var(--color-gicho-container);
-  color: var(--color-gicho);
-}
-
-.badge-meiyo-giin {
-  background: var(--color-meiyo-giin-container);
-  color: var(--color-meiyo-giin);
-}
-
-.badge-giin {
-  background: var(--color-giin-container);
-  color: var(--color-giin);
-}
-
-.badge-guest {
-  background: var(--color-guest-container);
-  color: var(--color-guest);
 }
