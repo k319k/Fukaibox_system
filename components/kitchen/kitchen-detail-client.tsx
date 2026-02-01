@@ -15,7 +15,8 @@ import ImageAdoptionTab from "./detail/ImageAdoptionTab";
 import DownloadTab from "./detail/DownloadTab";
 import Lightbox from "./detail/Lightbox";
 import KitchenWorkflowStepper from "./detail/KitchenWorkflowStepper";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import UploadModal from "@/components/youtube/upload-modal";
 
 export default function KitchenDetailClient({
     project,
@@ -27,6 +28,7 @@ export default function KitchenDetailClient({
     const store = useKitchenDetail(project, initialSections, userRole);
     const { activeUsers, updateStatus } = usePresence(project.id);
     const isGicho = store.isGicho;
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
     const handleDeleteProject = async () => {
         if (!confirm("プロジェクトを削除しますか？\nこの操作は取り消せません。")) return;
@@ -74,10 +76,6 @@ export default function KitchenDetailClient({
                             onEditContentChange={store.setEditContent} onEditImageInstructionChange={store.setEditImageInstruction}
                             onEditReferenceImageUrlChange={store.setEditReferenceImageUrl} onEditAllowSubmissionChange={store.setEditAllowSubmission}
                             proposalSection={store.proposalSection} proposalContent={store.proposalContent}
-                            onProposalOpen={store.handleProposalOpen} onProposalCancel={store.handleProposalCancel}
-                            onProposalSubmit={store.handleProposalSubmit} onProposalContentChange={store.setProposalContent}
-                            onProposalOpen={store.handleProposalOpen} onProposalCancel={store.handleProposalCancel}
-                            onProposalSubmit={store.handleProposalSubmit} onProposalContentChange={store.setProposalContent}
                             onUploadReferenceImage={store.uploadReferenceImage}
                         />
                     </div>
@@ -140,6 +138,7 @@ export default function KitchenDetailClient({
                         onDownloadScriptBodyOnly={store.handleDownloadScriptBodyOnly}
                         onDownloadImages={store.handleDownloadImages}
                         onDownloadProject={store.handleDownloadProject}
+                        onUploadToYouTube={() => setIsUploadModalOpen(true)}
                     />
                 ),
             });
@@ -175,7 +174,8 @@ export default function KitchenDetailClient({
             <KitchenWorkflowStepper
                 currentStatus={project.status}
                 canNavigate={isGicho}
-                onStepClick={(status) => handleStatusChange(status as string)} // Ensure string compatibility
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onStepClick={(status) => handleStatusChange(status as any)}
             />
 
             <KitchenHeader
@@ -224,6 +224,14 @@ export default function KitchenDetailClient({
                 images={store.lightboxImages} currentIndex={store.lightboxImageIndex}
                 onIndexChange={store.setLightboxImageIndex} uploaderNames={store.userNames}
                 onUpdateComment={store.handleUpdateImageComment}
+            />
+
+            <UploadModal
+                visible={isUploadModalOpen}
+                onClose={() => setIsUploadModalOpen(false)}
+                initialTitle={project.title}
+                initialDescription={project.description || ""}
+                projectId={project.id}
             />
         </motion.div>
     );

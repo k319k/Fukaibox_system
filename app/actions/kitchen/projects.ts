@@ -116,43 +116,67 @@ export async function createProjectWithScript(
  * 既存プロジェクトに台本を設定し、セクションを一括作成
  * 既存のセクションがあれば削除して上書き
  */
+/**
+ * 既存プロジェクトに台本を設定し、セクションを一括作成
+ * 既存のセクションがあれば削除して上書き
+ */
 export async function setProjectScript(projectId: string, fullScript: string) {
-    const session = await getSession();
-    if (!session?.user) {
-        throw new Error("認証が必要です");
-    }
+    try {
+        const session = await getSession();
+        if (!session?.user) {
+            throw new Error("認証が必要です");
+        }
 
-    console.log("[setProjectScript] Request:", { projectId, scriptLength: fullScript.length });
+        console.log("[setProjectScript] Start", { projectId, scriptLength: fullScript.length });
 
-    // 既存のセクションを削除
-    await db.delete(cookingSections).where(eq(cookingSections.projectId, projectId));
+        // 改行*2で分割
+        const sections = fullScript
+            .split(/\n\n+|\r\n\r\n+/)
+            .map(s => s.trim())
+            .filter(s => s.length > 0);
 
-    // 改行*2で分割
-    const sections = fullScript
-        .split(/\n\n+|\r\n\r\n+/)
-        .map(s => s.trim())
-        .filter(s => s.length > 0);
+        console.log("[setProjectScript] Parsed sections count:", sections.length);
 
-    console.log("[setProjectScript] Creating sections:", sections.length);
+        if (sections.length === 0) {
+            // 空の場合は削除だけして終了
+            await db.delete(cookingSections).where(eq(cookingSections.projectId, projectId));
+            return [];
+        }
 
-    // セクション一括作成
-    const createdSections = [];
-    for (let i = 0; i < sections.length; i++) {
-        const newSection = await db.insert(cookingSections).values({
+        // 既存のセクションを削除
+        await db.delete(cookingSections).where(eq(cookingSections.projectId, projectId));
+
+        // セクションデータの準備
+        const sectionData = sections.map((content, i) => ({
             id: crypto.randomUUID(),
             projectId,
             orderIndex: i,
-            content: sections[i],
+            content,
             imageInstruction: "",
             allowImageSubmission: true,
             createdAt: new Date(),
             updatedAt: new Date(),
-        }).returning();
-        createdSections.push(newSection[0]);
-    }
+        }));
 
-    console.log("[setProjectScript] Success:", createdSections.length);
-    return createdSections;
+        // 一括作成 (SQLiteの変数制限を考慮してチャンク分割)
+        // 1回あたり20件程度に分割して挿入
+        const BATCH_SIZE = 20;
+        const createdSections = [];
+
+        for (let i = 0; i < sectionData.length; i += BATCH_SIZE) {
+            const batch = sectionData.slice(i, i + BATCH_SIZE);
+            const res = await db.insert(cookingSections).values(batch).returning();
+            createdSections.push(...res);
+        }
+
+        console.log("[setProjectScript] Success. Created:", createdSections.length);
+        return createdSections;
+
+    } catch (error) {
+        console.error("[setProjectScript] Critical Error:", error);
+        // クライアントにエラー内容を伝えるためにErrorを投げ直す
+        throw new Error(`Failed to set script: ${error instanceof Error ? error.message : String(error)}`);
+    }
 }
 
 /**

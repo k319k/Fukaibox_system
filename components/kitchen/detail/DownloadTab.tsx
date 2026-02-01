@@ -10,10 +10,11 @@ interface DownloadTabProps {
     onDownloadScriptBodyOnly: () => void;
     onDownloadImages: () => void;
     onDownloadProject: () => void;
+    onUploadToYouTube?: () => void; // Optional for now
 }
 
 export default function DownloadTab({
-    isDownloading, onDownloadScript, onDownloadScriptBodyOnly, onDownloadImages, onDownloadProject
+    isDownloading, onDownloadScript, onDownloadScriptBodyOnly, onDownloadImages, onDownloadProject, onUploadToYouTube
 }: DownloadTabProps) {
     return (
         <div className="max-w-2xl mx-auto space-y-6 py-8">
@@ -86,6 +87,28 @@ export default function DownloadTab({
                     >
                         {isDownloading ? "生成中..." : "プロジェクト一式（台本+画像）をダウンロード"}
                     </Button>
+                    {onUploadToYouTube && (
+                        <>
+                            <div className="relative py-2">
+                                <div className="absolute inset-0 flex items-center">
+                                    <span className="w-full border-t border-[var(--md-sys-color-outline-variant)]"></span>
+                                </div>
+                                <div className="relative flex justify-center text-xs uppercase">
+                                    <span className="bg-[var(--md-sys-color-surface-container-lowest)] px-2 text-[var(--md-sys-color-on-surface-variant)]">Integration</span>
+                                </div>
+                            </div>
+
+                            <Button
+                                block
+                                size="large"
+                                icon={<Icon icon="mdi:youtube" className="text-xl text-red-600" />}
+                                onClick={onUploadToYouTube}
+                                className="border-red-200 text-red-700 bg-red-50 hover:bg-red-100"
+                            >
+                                YouTubeへ投稿予約
+                            </Button>
+                        </>
+                    )}
                 </div>
             </Card>
 
