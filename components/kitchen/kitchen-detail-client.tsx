@@ -57,8 +57,9 @@ export default function KitchenDetailClient({
         const status = project.status;
         const tabs = [];
 
-        // Cooking Tab: Always available
-        if (status === "cooking" || status === "draft" || isGicho) {
+        // Cooking Tab: 儀長は常にアクセス可能、その他はセクションが存在する場合のみ閲覧可能
+        const hasSections = store.sections.length > 0;
+        if (isGicho || (hasSections && (status === "cooking" || status === "draft"))) {
             tabs.push({
                 key: "cooking",
                 label: <div className="flex items-center gap-2"><Icon icon="mdi:pot-mix" className="text-lg" /><span className="hidden md:inline">調理</span></div>,
