@@ -1,4 +1,4 @@
-import { getToolsAppById } from "@/app/actions/tools-data";
+import { getToolsAppById } from "@/app/actions/tools-core";
 import { getAppRatings } from "@/app/actions/tools-ratings";
 import { getCurrentUserWithRole } from "@/app/actions/auth";
 import { notFound } from "next/navigation";

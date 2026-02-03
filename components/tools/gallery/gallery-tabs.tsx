@@ -6,7 +6,7 @@ import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { AppCard } from "../../../app/(main)/tools/gallery/app-card";
 import { M3Button } from "@/components/ui/m3-button";
-import { remixApp } from "@/app/actions/tools-data";
+import { remixApp } from "@/app/actions/tools-core";
 
 // Define a local type matching AppCard's requirements to avoid 'any'
 interface GalleryApp {

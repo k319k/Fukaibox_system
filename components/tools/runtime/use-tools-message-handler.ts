@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useSession } from "@/lib/auth-client";
 import { ToolsMessage, ToolsResponse } from "@/types/tools";
 import { handleToolsDbAction, getToolsUserInfo } from "@/app/actions/tools";
-import { mintSupabaseToken } from "@/app/actions/tools-data";
+import { mintSupabaseToken } from "@/app/actions/tools-core";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { RealtimeChannel, SupabaseClient } from "@supabase/supabase-js";
 

@@ -6,10 +6,10 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-// import type { ToolApp } from "@/app/actions/tools"; // Fix: Use local definition or correct path
+// import type { ToolApp } from "@/app/actions/tools-core"; // Fix: Use local definition or correct path
 import type { ToolRating } from "@/app/actions/tools-ratings";
 import { rateApp, deleteRating } from "@/app/actions/tools-ratings";
-import { deleteToolsApp } from "@/app/actions/tools-data"; // Fix: Correct function and path
+import { deleteToolsApp } from "@/app/actions/tools-core"; // Fix: Correct function and path
 
 const { TextArea } = Input;
 

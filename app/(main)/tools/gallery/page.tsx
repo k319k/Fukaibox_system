@@ -1,4 +1,4 @@
-import { getPublicApps, getMyApps } from "@/app/actions/tools-data";
+import { getPublicApps, getMyApps } from "@/app/actions/tools-core";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { ToolsGalleryClient } from "./tools-gallery-client";

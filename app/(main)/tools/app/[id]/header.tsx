@@ -3,7 +3,7 @@
 import { Button, Typography, Tag, message } from "antd";
 import { ArrowLeftOutlined, ShareAltOutlined, GlobalOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import { publishToolsApp } from "@/app/actions/tools-data";
+import { publishToolsApp } from "@/app/actions/tools-core";
 import { useState } from "react";
 import { useSession } from "@/lib/auth-client";
 

@@ -1,4 +1,4 @@
-import { getToolsAppById } from "@/app/actions/tools-data";
+import { getToolsAppById } from "@/app/actions/tools-core";
 import { SandpackClient } from "@/components/tools/studio/sandpack-client";
 import { RuntimeHeader } from "./header";
 import { notFound } from "next/navigation";
