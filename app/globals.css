@@ -64,38 +64,38 @@
 /* Dark Theme (Preferred) */
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Primary: Soft Rose / Pink */
-    --md-sys-color-primary: #ffb2be;
-    --md-sys-color-on-primary: #5a0016;
-    --md-sys-color-primary-container: #770020;
-    --md-sys-color-on-primary-container: #ffd9de;
+    /* Primary: Warm Rose (less pink, more readable) */
+    --md-sys-color-primary: #f5a0a8;
+    --md-sys-color-on-primary: #4a0010;
+    --md-sys-color-primary-container: #6a1a28;
+    --md-sys-color-on-primary-container: #ffdadd;
 
-    /* Secondary: Muted Warm Beige */
-    --md-sys-color-secondary: #e7bdb6;
-    --md-sys-color-on-secondary: #442925;
-    --md-sys-color-secondary-container: #5d3f3b;
+    /* Secondary: Warm Neutral */
+    --md-sys-color-secondary: #e0c4be;
+    --md-sys-color-on-secondary: #3d2823;
+    --md-sys-color-secondary-container: #554038;
     --md-sys-color-on-secondary-container: #ffdad4;
 
-    /* Tertiary: Pale Gold */
-    --md-sys-color-tertiary: #dec48c;
-    --md-sys-color-on-tertiary: #3e2e04;
-    --md-sys-color-tertiary-container: #564419;
-    --md-sys-color-on-tertiary-container: #fbdfa6;
+    /* Tertiary: Soft Gold */
+    --md-sys-color-tertiary: #d8c088;
+    --md-sys-color-on-tertiary: #3a2c02;
+    --md-sys-color-tertiary-container: #524016;
+    --md-sys-color-on-tertiary-container: #f5e0a4;
 
-    /* Surface: Deep Charcoal / Jet Black */
-    --md-sys-color-surface: #181211;
-    --md-sys-color-on-surface: #d0c4c2;
+    /* Surface: Softer Dark (not pure black) */
+    --md-sys-color-surface: #1a1515;
+    --md-sys-color-on-surface: #e8e0df;
 
-    /* Surface Container Hierarchy (Dark) */
-    --md-sys-color-surface-container-lowest: #0f0d0c;
-    --md-sys-color-surface-container-low: #1d1b1a;
-    --md-sys-color-surface-container: #211f1e;
-    --md-sys-color-surface-container-high: #2b2928;
-    --md-sys-color-surface-container-highest: #363432;
+    /* Surface Container Hierarchy (Dark) - Better contrast */
+    --md-sys-color-surface-container-lowest: #110e0e;
+    --md-sys-color-surface-container-low: #231f1e;
+    --md-sys-color-surface-container: #2a2524;
+    --md-sys-color-surface-container-high: #353030;
+    --md-sys-color-surface-container-highest: #413b3a;
 
-    /* Outline */
-    --md-sys-color-outline: #a08c89;
-    --md-sys-color-outline-variant: #534341;
+    /* Outline - More visible */
+    --md-sys-color-outline: #b09a96;
+    --md-sys-color-outline-variant: #5e504d;
 
     /* Legacy Map */
     --background: var(--md-sys-color-surface);
