@@ -40,6 +40,13 @@ const serverSchema = z.object({
     YOUTUBE_CLIENT_ID: z.string().optional(),
     YOUTUBE_CLIENT_SECRET: z.string().optional(),
     YOUTUBE_REDIRECT_URI: z.string().optional(),
+    YOUTUBE_FUKAIKOUGI_CHANNEL_ID: z.string().optional(),
+    YOUTUBE_GICHO_CHANNEL_ID: z.string().optional(),
+
+    // Wiki API
+    MIRAHEZE_API_URL: z.string().url().optional(),
+    MIRAHEZE_BOT_USERNAME: z.string().optional(),
+    MIRAHEZE_BOT_PASSWORD: z.string().optional(),
 });
 
 const clientSchema = z.object({
@@ -70,6 +77,11 @@ const processEnv = {
     YOUTUBE_CLIENT_ID: process.env.YOUTUBE_CLIENT_ID,
     YOUTUBE_CLIENT_SECRET: process.env.YOUTUBE_CLIENT_SECRET,
     YOUTUBE_REDIRECT_URI: process.env.YOUTUBE_REDIRECT_URI,
+    YOUTUBE_FUKAIKOUGI_CHANNEL_ID: process.env.YOUTUBE_FUKAIKOUGI_CHANNEL_ID,
+    YOUTUBE_GICHO_CHANNEL_ID: process.env.YOUTUBE_GICHO_CHANNEL_ID,
+    MIRAHEZE_API_URL: process.env.MIRAHEZE_API_URL,
+    MIRAHEZE_BOT_USERNAME: process.env.MIRAHEZE_BOT_USERNAME,
+    MIRAHEZE_BOT_PASSWORD: process.env.MIRAHEZE_BOT_PASSWORD,
 };
 
 // バリデーション実行

@@ -14,9 +14,27 @@
 - **Vercel管理画面**: <https://vercel.com/k319ks-projects/fukai-box>
 - **GitHubリポジトリ**: <https://github.com/k319k/Fukaibox_system>
 
-- **TursoCLI**:WSLから
-- **VercelCLI**:WSLから
-- **Wrangler**:Shellから
+- **TursoCLI**: `curl -sSfL https://get.tur.so/install.sh | bash`
+- **VercelCLI**: `npm i -g vercel`
+- **Git**: `sudo apt update && sudo apt install git`
+
+### 環境セットアップ (Ubuntu)
+
+```bash
+# Git
+sudo apt update
+sudo apt install git
+
+# Node.js (Volta推奨)
+curl https://get.volta.sh | bash
+volta install node
+
+# Vercel CLI
+npm i -g vercel
+
+# Turso CLI
+curl -sSfL https://get.tur.so/install.sh | bash
+```
 
 ## 技術スタック
 

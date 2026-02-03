@@ -75,7 +75,7 @@ export const userRoles = sqliteTable("user_roles", {
 
 export const apiKeys = sqliteTable("api_keys", {
     id: text("id").primaryKey(),
-    key: text("key").notNull().unique(),
+    key: text("key").notNull(),
     ownerId: text("owner_id").notNull(),
     name: text("name").notNull(),
     permissions: text("permissions").notNull(),

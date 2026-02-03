@@ -58,6 +58,7 @@ export const auth = betterAuth({
             const newSession = ctx.context.newSession;
             if (newSession?.user) {
                 const userId = newSession.user.id;
+                console.log(`[Auth Hook] Session created for user: ${userId} (${newSession.user.name})`);
 
                 // 既存のロール情報を確認
                 const existingRoles = await db.select()
@@ -84,6 +85,7 @@ export const auth = betterAuth({
                     }
 
                     // 新規作成
+                    console.log(`[Auth Hook] Assigning new role: ${role} to user: ${userId} (Discord: ${discordId || "None"})`);
                     await db.insert(userRoles).values({
                         id: crypto.randomUUID(),
                         userId,
@@ -93,6 +95,8 @@ export const auth = betterAuth({
                         createdAt: new Date(),
                         updatedAt: new Date(),
                     });
+                } else {
+                    console.log(`[Auth Hook] User ${userId} already has roles: ${existingRoles.map(r => r.role).join(", ")}`);
                 }
 
                 // アバター画像の強制同期（既存ユーザー含む）

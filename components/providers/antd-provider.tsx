@@ -1,48 +1,49 @@
 "use client";
 
-import { ConfigProvider, App } from "antd";
+import { ConfigProvider, App, theme as antTheme } from "antd";
 import jaJP from "antd/locale/ja_JP";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
+import { ThemeProvider, useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 // Material Design 3 (M3) Theme Adaptation
-// Reference: https://m3.material.io/styles/color/the-color-system/tokens
-const theme = {
+const lightTheme = {
     token: {
         // Colors
         colorPrimary: "#73342b", // Primary (Carmine)
-        colorSuccess: "#10200a", // Custom green
-        colorWarning: "#564419", // Custom brown/gold
-        colorError: "#BA1A1A",   // Error (M3 standard)
+        colorSuccess: "#10200a",
+        colorWarning: "#564419",
+        colorError: "#BA1A1A",
         colorInfo: "#73342b",
 
         // Surface Colors (M3 Hierarchy)
-        colorBgLayout: "#fff8f6",    // Surface (Background)
-        colorBgContainer: "#fceae5", // Surface Container (M3 default container color)
-        colorBgElevated: "#fbe7a6",  // Surface Container (Dialogs/Popovers - slightly different for contrast)
+        colorBgLayout: "#fff8f6",
+        colorBgContainer: "#fceae5",
+        colorBgElevated: "#fbe7a6",
 
-        // Borders - M3 Borderless design mostly, but define for Outlined components
-        colorBorder: "#85736f",       // Outline
-        colorBorderSecondary: "transparent", // Remove default card borders
+        // Borders
+        colorBorder: "#85736f",
+        colorBorderSecondary: "transparent",
 
-        // Typography - Headline vs Body distinction
+        // Typography
         fontFamily: "'Inter', 'Noto Sans JP', sans-serif",
         fontSizeHeading1: 32,
         fontSizeHeading2: 28,
         fontSizeHeading3: 24,
         fontSizeHeading4: 22,
 
-        // Shapes (Corner Radius)
-        borderRadius: 12,   // M3 Medium (12dp) - Default for many small components
-        borderRadiusLG: 16, // M3 Large (16dp) - For Cards
-        borderRadiusSM: 8,  // M3 Small (8dp)
-        borderRadiusXS: 4,  // M3 Extra Small (4dp)
+        // Shapes
+        borderRadius: 12,
+        borderRadiusLG: 16,
+        borderRadiusSM: 8,
+        borderRadiusXS: 4,
 
-        // Shadows (Elevation) - Remove shadows for flat, color-based hierarchy
+        // Shadows
         boxShadow: "none",
         boxShadowSecondary: "none",
         boxShadowTertiary: "none",
 
-        // Spacing - 8dp grid base
+        // Spacing
         marginXS: 4,
         marginSM: 8,
         margin: 16,
@@ -56,30 +57,30 @@ const theme = {
     },
     components: {
         Button: {
-            borderRadius: 9999, // Full accessible (Pill shape)
+            borderRadius: 9999,
             controlHeight: 40,
             controlHeightLG: 48,
             controlHeightSM: 32,
-            primaryShadow: "none", // Remove shadow from primary button
+            primaryShadow: "none",
             defaultShadow: "none",
             dangerShadow: "none",
         },
         Card: {
-            borderRadiusLG: 12, // M3 Card corner (Medium)
-            boxShadowTertiary: "none", // Remove shadow
-            colorBorderSecondary: "transparent", // Hide border
-            colorBgContainer: "#fceae5", // Surface Container (Default Card)
-            headerbg: "transparent", // Transparent header
+            borderRadiusLG: 12,
+            boxShadowTertiary: "none",
+            colorBorderSecondary: "transparent",
+            colorBgContainer: "#fceae5",
+            headerbg: "transparent",
         },
         Modal: {
-            borderRadiusLG: 28, // Dialogs (Extra Large 28dp)
-            boxShadow: "0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15)", // Dialogs need slight elevation
+            borderRadiusLG: 28,
+            boxShadow: "0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15)",
         },
         Input: {
-            borderRadius: 4, // Text Fields usually have small corners in M3 unless search
-            controlHeight: 56, // Tall inputs (M3 spec)
+            borderRadius: 4,
+            controlHeight: 56,
             activeShadow: "none",
-            colorBorder: "#85736f", // Outline color
+            colorBorder: "#85736f",
         },
         Select: {
             borderRadius: 4,
@@ -88,7 +89,7 @@ const theme = {
             colorBorder: "#85736f",
         },
         Tag: {
-            borderRadiusSM: 8, // Assist Chip style
+            borderRadiusSM: 8,
         },
         Layout: {
             colorBgBody: "#fff8f6",
@@ -98,12 +99,65 @@ const theme = {
     },
 };
 
+const darkTheme = {
+    algorithm: antTheme.darkAlgorithm,
+    token: {
+        ...lightTheme.token,
+        colorPrimary: "#ffb4a9", // Light Red for dark mode
+        colorBgLayout: "#121212", // Jet Black
+        colorBgContainer: "#1e1e1e",
+        colorBgElevated: "#2c2c2c",
+        colorBorder: "#444444",
+        colorText: "#e2e2e2",
+        colorTextSecondary: "#a0a0a0",
+    },
+    components: {
+        ...lightTheme.components,
+        Card: {
+            ...lightTheme.components.Card,
+            colorBgContainer: "#1e1e1e",
+        },
+        Layout: {
+            colorBgBody: "#121212",
+            colorBgHeader: "#121212",
+            colorBgTrigger: "#121212",
+        }
+    }
+};
+
+function AntdProvider({ children }: { children: React.ReactNode }) {
+    const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return (
+            <ConfigProvider theme={lightTheme} locale={jaJP}>
+                <App>{children}</App>
+            </ConfigProvider>
+        );
+    }
+
+    const currentTheme = theme === "dark" ? darkTheme : lightTheme;
+
+    return (
+        <ConfigProvider theme={currentTheme} locale={jaJP}>
+            <App>{children}</App>
+        </ConfigProvider>
+    );
+}
+
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
         <AntdRegistry>
-            <ConfigProvider theme={theme} locale={jaJP}>
-                <App>{children}</App>
-            </ConfigProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                <AntdProvider>
+                    {children}
+                </AntdProvider>
+            </ThemeProvider>
         </AntdRegistry>
     );
 }

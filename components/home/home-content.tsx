@@ -6,6 +6,8 @@ import { LiveStreamWidget } from "./live-stream-widget";
 import { ShortsGrid } from "./shorts-grid";
 import { RankingWidget } from "./ranking-widget";
 import { HonoraryMemberWidget } from "./honorary-member-widget";
+import { Icon } from "@iconify/react";
+import LiveStatusWidget from "@/components/youtube/live-status-widget";
 
 interface HomeContentProps {
     latestStream: YouTubeVideo | null;
@@ -14,7 +16,9 @@ interface HomeContentProps {
 
 export function HomeContent({ latestStream, shorts }: HomeContentProps) {
     return (
-        <div className="flex-1 space-y-10 p-8 max-w-[1600px] mx-auto">
+        <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <LiveStatusWidget />
+
             {/* Quick Actions Grid */}
             <QuickActions />
 

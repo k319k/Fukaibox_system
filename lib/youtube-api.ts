@@ -6,6 +6,29 @@ const youtube = google.youtube({
     auth: env.YOUTUBE_API_KEY,
 });
 
+export const publicClient = youtube;
+
+// 指定したチャンネルのライブ配信状態を取得（APIキー使用）
+export async function getLiveStatus(channelId: string) {
+    const response = await youtube.search.list({
+        part: ["snippet"],
+        channelId: channelId,
+        eventType: "live",
+        type: "video",
+        maxResults: 1,
+    });
+
+    const item = response.data.items?.[0];
+    if (!item) return null;
+
+    return {
+        videoId: item.id?.videoId,
+        title: item.snippet?.title,
+        thumbnailUrl: item.snippet?.thumbnails?.high?.url,
+        publishedAt: item.snippet?.publishedAt,
+    };
+}
+
 const OAuth2 = google.auth.OAuth2;
 
 // OAuth2クライアントの初期化

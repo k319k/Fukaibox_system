@@ -1,6 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "@/components/theme-toggle";
+import NotificationBell from "@/components/ui/notification-bell";
 
 const pageTitles: Record<string, string> = {
     "/": "ホーム",
@@ -20,6 +22,10 @@ export function Header() {
             <h1 className="text-2xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
                 {title}
             </h1>
+            <div className="flex items-center gap-4 ml-auto">
+                <NotificationBell />
+                <ThemeToggle />
+            </div>
         </header>
     );
 }

@@ -34,7 +34,7 @@ export const client = createClient({
 // Drizzle ORMインスタンス（SQLite mode、クエリログ有効化）
 export const db = drizzle(client, {
   schema,
-  logger: env.NODE_ENV === "development", // 開発環境のみログ出力
+  logger: process.env.NODE_ENV === "development", // 開発環境のみログ出力
 });
 
 // 互換性のためのエクスポート

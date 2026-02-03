@@ -17,9 +17,19 @@ export default function LoginPage() {
         setIsLoading(true);
         setError("");
         try {
-            await signIn.social({ provider: "discord" });
-        } catch {
-            setError("Discordログインに失敗しました");
+            await signIn.social({
+                provider: "discord",
+                callbackURL: "/?success=true", // 明示的にコールバックを指定
+                fetchOptions: {
+                    onError: (ctx) => {
+                        console.error("Discord Login Error:", ctx);
+                        setError(`Discordログインに失敗しました: ${ctx.error.message}`);
+                    },
+                }
+            });
+        } catch (err: any) {
+            console.error("Discord Login Exception:", err);
+            setError(`Discordログインエラー: ${err.message || "予期せぬエラーが発生しました"}`);
         } finally {
             setIsLoading(false);
         }
@@ -39,12 +49,18 @@ export default function LoginPage() {
             // 自動生成された認証情報でログイン
             await signIn.email({
                 email: result.email,
-                password: result.password
+                password: result.password,
+                fetchOptions: {
+                    onError: (ctx) => {
+                        console.error("Guest Signin Error:", ctx);
+                        throw new Error(`ログイン処理に失敗しました: ${ctx.error.message}`);
+                    }
+                }
             });
 
             window.location.href = "/";
         } catch (err: any) {
-            console.error(err);
+            console.error("Guest Login Exception:", err);
             setError(err.message || "ログインに失敗しました。");
         } finally {
             setIsLoading(false);
@@ -174,6 +190,14 @@ export default function LoginPage() {
                     <p className="text-sm text-center text-[var(--md-sys-color-on-surface-variant)] leading-relaxed">
                         ログインすることで、利用規約とプライバシーポリシーに同意したものとみなされます。
                     </p>
+
+                    <Alert
+                        message="「パスコード」を求められる場合"
+                        description="封解Boxではパスコード機能を使用していません。Discordの2要素認証(2FA)か、デバイスのロック解除コード(Passkey)である可能性があります。"
+                        type="info"
+                        showIcon
+                        className="text-xs rounded-[16px]"
+                    />
                 </div >
             </Card >
         </div >
