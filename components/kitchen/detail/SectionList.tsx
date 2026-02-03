@@ -61,8 +61,25 @@ export default function SectionList(props: SectionListProps) {
     // 儀長権限チェック (master or admin) -> 'gicho' role in types
     const isGicho = userRole === 'gicho';
 
-    // セクションがない場合：台本入力フォーム
+    // セクションがない場合：台本入力フォーム（儀長のみ）
     if (sections.length === 0) {
+        // 儀長以外はメッセージを表示
+        if (!isGicho) {
+            return (
+                <div className="w-full max-w-7xl mx-auto space-y-6 py-8">
+                    <Card className="card-elevated">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Icon icon="mdi:script-text-outline" className="text-xl" />
+                            <h3 className="text-xl font-bold">台本未作成</h3>
+                        </div>
+                        <p className="text-[var(--md-sys-color-on-surface-variant)]">
+                            台本はまだ作成されていません。儀長が台本を作成するまでお待ちください。
+                        </p>
+                    </Card>
+                </div>
+            );
+        }
+
         return (
             <div className="w-full max-w-7xl mx-auto space-y-6 py-8">
                 <Card className="card-elevated">
