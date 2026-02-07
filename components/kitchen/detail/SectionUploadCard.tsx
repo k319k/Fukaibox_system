@@ -43,16 +43,16 @@ export default function SectionUploadCard({
     return (
         <div className="space-y-4">
             {isGicho && (
-                <div className="flex justify-center opacity-0 hover:opacity-100 transition-opacity">
+                <div className="flex justify-center py-2 relative group">
+                    <div className="absolute inset-x-0 top-1/2 h-px bg-[var(--md-sys-color-outline-variant)] -z-10 group-hover:bg-[var(--md-sys-color-primary)] transition-colors" />
                     <Button
                         size="small"
-                        shape="round"
+                        shape="circle"
                         icon={<Icon icon="material-symbols:add" />}
                         onClick={() => onAddSection(originalIndex)}
-                        className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-none shadow-none"
-                    >
-                        ここにセクションを追加
-                    </Button>
+                        className="bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)] border-[var(--md-sys-color-outline-variant)] hover:bg-[var(--md-sys-color-primary-container)] hover:text-[var(--md-sys-color-on-primary-container)] hover:border-[var(--md-sys-color-primary)]"
+                        title="ここにセクションを追加"
+                    />
                 </div>
             )}
 
@@ -217,13 +217,13 @@ export default function SectionUploadCard({
             </div>
 
             {isGicho && originalIndex === totalSections - 1 && (
-                <div className="flex justify-center pt-4">
+                <div className="flex justify-center pt-6 pb-2">
                     <Button
-                        size="small"
+                        type="dashed"
                         shape="round"
                         icon={<Icon icon="material-symbols:add" />}
                         onClick={() => onAddSection(originalIndex + 1)}
-                        className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-none shadow-none"
+                        className="border-[var(--md-sys-color-primary)] text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary-container)]"
                     >
                         末尾にセクションを追加
                     </Button>
