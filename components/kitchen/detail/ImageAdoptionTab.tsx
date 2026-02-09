@@ -32,13 +32,34 @@ export default function ImageAdoptionTab({
                 return (
                     <div key={section.id} className="space-y-2">
                         <Card className="card-elevated rounded-[20px]" styles={{ body: { padding: 0 } }}>
-                            <div className="pb-2 bg-[var(--md-sys-color-surface-container)] border-b border-[var(--md-sys-color-outline-variant)] p-4 rounded-t-[20px]">
-                                <div className="flex items-center justify-between w-full">
+                            <div className="bg-[var(--md-sys-color-surface-container)] border-b border-[var(--md-sys-color-outline-variant)] p-4 rounded-t-[20px]">
+                                <div className="flex items-center justify-between w-full mb-3">
                                     <div className="flex items-center gap-2">
-                                        <Tag className="rounded-full bg-[#ffdad5] text-[#73342b] border-none">セクション {originalIndex + 1}</Tag>
-                                        <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] truncate max-w-[200px]">{section.content?.slice(0, 30)}...</span>
+                                        <Tag className="rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-none text-label-large px-3 py-1">
+                                            セクション {originalIndex + 1}
+                                        </Tag>
+                                        <Tag className="rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-none text-label-large px-3 py-1">
+                                            候補: {sectionImages.length}枚
+                                        </Tag>
                                     </div>
-                                    <Tag className="rounded-full bg-[#9E2B1F]/20 text-[#9E2B1F] border-none">候補: {sectionImages.length}枚</Tag>
+                                </div>
+
+                                <div className="bg-[var(--md-sys-color-surface)] p-4 rounded-xl border border-[var(--md-sys-color-outline-variant)] shadow-sm">
+                                    <div className="mb-2">
+                                        <span className="text-label-small text-[var(--md-sys-color-outline)] block mb-1">台本</span>
+                                        <p className="text-body-large text-[var(--md-sys-color-on-surface)] whitespace-pre-wrap font-medium leading-relaxed">
+                                            {section.content || "（台本なし）"}
+                                        </p>
+                                    </div>
+
+                                    {section.imageInstruction && (
+                                        <div className="mt-3 pt-3 border-t border-[var(--md-sys-color-outline-variant)]">
+                                            <span className="text-label-small text-[var(--md-sys-color-primary)] font-bold block mb-1">画像指示</span>
+                                            <p className="text-body-medium text-[var(--md-sys-color-on-surface-variant)] whitespace-pre-wrap bg-[var(--md-sys-color-surface-container-high)]/50 p-2 rounded-lg">
+                                                {section.imageInstruction}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="p-4">
