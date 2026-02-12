@@ -71,10 +71,11 @@ export default function KitchenDetailClient({
                             onAddSection={store.handleAddSection} onDeleteSection={store.handleDeleteSection}
                             editingSection={store.editingSection} editContent={store.editContent}
                             editImageInstruction={store.editImageInstruction} editReferenceImageUrl={store.editReferenceImageUrl}
+                            editReferenceImageUrls={store.editReferenceImageUrls}
                             editAllowSubmission={store.editAllowSubmission} isSaving={store.isSectionSaving || store.isProposalSaving}
                             onEditStart={store.handleEditStart} onEditCancel={store.handleEditCancel} onEditSave={store.handleEditSave}
                             onEditContentChange={store.setEditContent} onEditImageInstructionChange={store.setEditImageInstruction}
-                            onEditReferenceImageUrlChange={store.setEditReferenceImageUrl} onEditAllowSubmissionChange={store.setEditAllowSubmission}
+                            onEditReferenceImageUrlChange={store.setEditReferenceImageUrl} onEditReferenceImageUrlsChange={store.setEditReferenceImageUrls} onEditAllowSubmissionChange={store.setEditAllowSubmission}
                             proposalSection={store.proposalSection} proposalContent={store.proposalContent}
                             onUploadReferenceImage={store.uploadReferenceImage}
                         />

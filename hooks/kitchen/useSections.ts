@@ -24,6 +24,7 @@ export function useSections(
     const [editContent, setEditContent] = useState("");
     const [editImageInstruction, setEditImageInstruction] = useState("");
     const [editReferenceImageUrl, setEditReferenceImageUrl] = useState("");
+    const [editReferenceImageUrls, setEditReferenceImageUrls] = useState<string[]>([]);
     const [editAllowSubmission, setEditAllowSubmission] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -78,6 +79,7 @@ export function useSections(
         setEditContent(section.content || "");
         setEditImageInstruction(section.imageInstruction || "");
         setEditReferenceImageUrl(section.referenceImageUrl || "");
+        setEditReferenceImageUrls(section.referenceImageUrls || []);
         setEditAllowSubmission(section.allowImageSubmission ?? true);
     };
 
@@ -86,6 +88,7 @@ export function useSections(
         setEditContent("");
         setEditImageInstruction("");
         setEditReferenceImageUrl("");
+        setEditReferenceImageUrls([]);
     };
 
     const handleEditSave = async () => {
@@ -97,7 +100,8 @@ export function useSections(
                 editContent,
                 editImageInstruction,
                 editAllowSubmission,
-                editReferenceImageUrl
+                editReferenceImageUrl,
+                editReferenceImageUrls
             );
 
             // Local update optimization
@@ -107,6 +111,7 @@ export function useSections(
                     content: editContent,
                     imageInstruction: editImageInstruction,
                     referenceImageUrl: editReferenceImageUrl,
+                    referenceImageUrls: editReferenceImageUrls,
                     allowImageSubmission: editAllowSubmission
                 } : s
             ));
@@ -131,6 +136,7 @@ export function useSections(
         editContent, setEditContent,
         editImageInstruction, setEditImageInstruction,
         editReferenceImageUrl, setEditReferenceImageUrl,
+        editReferenceImageUrls, setEditReferenceImageUrls,
         editAllowSubmission, setEditAllowSubmission,
         isSaving,
         handleEditStart,

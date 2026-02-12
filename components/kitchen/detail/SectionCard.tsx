@@ -21,6 +21,7 @@ interface SectionCardProps {
     editContent: string;
     editImageInstruction: string;
     editReferenceImageUrl: string;
+    editReferenceImageUrls: string[];
     editAllowSubmission: boolean;
     proposalContent: string;
     onEditStart: (section: Section) => void;
@@ -33,6 +34,7 @@ interface SectionCardProps {
     onEditContentChange: (val: string) => void;
     onEditImageInstructionChange: (val: string) => void;
     onEditReferenceImageUrlChange: (val: string) => void;
+    onEditReferenceImageUrlsChange: (val: string[]) => void;
     onEditAllowSubmissionChange: (val: boolean) => void;
     onProposalContentChange: (val: string) => void;
     onUploadReferenceImage: (file: File) => Promise<string | null>;
@@ -41,10 +43,10 @@ interface SectionCardProps {
 export default function SectionCard({
     section, index, projectStatus, userRole, fontSize,
     isEditing, isProposing, isSaving,
-    editContent, editImageInstruction, editReferenceImageUrl, editAllowSubmission, proposalContent,
+    editContent, editImageInstruction, editReferenceImageUrl, editReferenceImageUrls, editAllowSubmission, proposalContent,
     onEditStart, onEditCancel, onEditSave, onDelete,
     onProposalOpen, onProposalCancel, onProposalSubmit,
-    onEditContentChange, onEditImageInstructionChange, onEditReferenceImageUrlChange, onEditAllowSubmissionChange,
+    onEditContentChange, onEditImageInstructionChange, onEditReferenceImageUrlChange, onEditReferenceImageUrlsChange, onEditAllowSubmissionChange,
     onProposalContentChange, onUploadReferenceImage
 }: SectionCardProps) {
     const isGicho = userRole === 'gicho';
@@ -83,9 +85,9 @@ export default function SectionCard({
                     {isEditing ? (
                         <EditForm
                             content={editContent} imageInstruction={editImageInstruction}
-                            referenceImageUrl={editReferenceImageUrl} allowImageSubmission={editAllowSubmission} fontSize={fontSize}
+                            referenceImageUrl={editReferenceImageUrl} referenceImageUrls={editReferenceImageUrls} allowImageSubmission={editAllowSubmission} fontSize={fontSize}
                             onContentChange={onEditContentChange} onImageInstructionChange={onEditImageInstructionChange}
-                            onReferenceImageUrlChange={onEditReferenceImageUrlChange} onAllowSubmissionChange={onEditAllowSubmissionChange}
+                            onReferenceImageUrlChange={onEditReferenceImageUrlChange} onReferenceImageUrlsChange={onEditReferenceImageUrlsChange} onAllowSubmissionChange={onEditAllowSubmissionChange}
                             onUploadReferenceImage={onUploadReferenceImage}
                         />
                     ) : isProposing ? (

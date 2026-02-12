@@ -15,7 +15,13 @@ export async function getCookingSections(projectId: string) {
         .where(eq(cookingSections.projectId, projectId))
         .orderBy(asc(cookingSections.orderIndex));
 
-    return sections;
+    // referenceImageUrls はDBではJSON文字列として保存されるため、パースして配列に変換
+    return sections.map(s => ({
+        ...s,
+        referenceImageUrls: s.referenceImageUrls
+            ? (() => { try { return JSON.parse(s.referenceImageUrls); } catch { return []; } })()
+            : null
+    }));
 }
 
 /**
@@ -26,7 +32,8 @@ export async function updateCookingSection(
     content: string,
     imageInstruction?: string,
     allowImageSubmission?: boolean,
-    referenceImageUrl?: string
+    referenceImageUrl?: string,
+    referenceImageUrls?: string[]
 ) {
     const updateData: Partial<typeof cookingSections.$inferInsert> = {
         content,
@@ -43,6 +50,10 @@ export async function updateCookingSection(
 
     if (referenceImageUrl !== undefined) {
         updateData.referenceImageUrl = referenceImageUrl;
+    }
+
+    if (referenceImageUrls !== undefined) {
+        updateData.referenceImageUrls = JSON.stringify(referenceImageUrls);
     }
 
     await db

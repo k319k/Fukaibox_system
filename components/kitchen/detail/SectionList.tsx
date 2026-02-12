@@ -28,6 +28,7 @@ interface SectionListProps {
     editContent: string;
     editImageInstruction: string;
     editReferenceImageUrl: string;
+    editReferenceImageUrls: string[];
     editAllowSubmission: boolean;
     isSaving: boolean;
 
@@ -38,6 +39,7 @@ interface SectionListProps {
     onEditContentChange: (val: string) => void;
     onEditImageInstructionChange: (val: string) => void;
     onEditReferenceImageUrlChange: (val: string) => void;
+    onEditReferenceImageUrlsChange: (val: string[]) => void;
     onEditAllowSubmissionChange: (val: boolean) => void;
 
     // Proposal State
@@ -133,6 +135,7 @@ export default function SectionList(props: SectionListProps) {
                             editContent={props.editContent}
                             editImageInstruction={props.editImageInstruction}
                             editReferenceImageUrl={props.editReferenceImageUrl}
+                            editReferenceImageUrls={props.editReferenceImageUrls}
                             editAllowSubmission={props.editAllowSubmission}
                             proposalContent={props.proposalContent}
 
@@ -148,6 +151,7 @@ export default function SectionList(props: SectionListProps) {
                             onEditContentChange={props.onEditContentChange}
                             onEditImageInstructionChange={props.onEditImageInstructionChange}
                             onEditReferenceImageUrlChange={props.onEditReferenceImageUrlChange}
+                            onEditReferenceImageUrlsChange={props.onEditReferenceImageUrlsChange}
                             onEditAllowSubmissionChange={props.onEditAllowSubmissionChange}
                             onProposalContentChange={props.onProposalContentChange}
                             onUploadReferenceImage={props.onUploadReferenceImage}

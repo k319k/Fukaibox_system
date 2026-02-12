@@ -36,6 +36,7 @@ export const cookingSections = sqliteTable("cooking_sections", {
     content: text("content"),
     imageInstruction: text("image_instruction"),
     referenceImageUrl: text("reference_image_url"),
+    referenceImageUrls: text("reference_image_urls"), // JSON array of URLs
     isGenerating: integer("is_generating", { mode: "boolean" }),
     allowImageSubmission: integer("allow_image_submission", { mode: "boolean" }),
     createdAt: integer("created_at", { mode: "timestamp" }),
