@@ -51,7 +51,7 @@ export default function SectionCard({
 }: SectionCardProps) {
     const isGicho = userRole === 'gicho';
     // 推敲提案中はWarning Container色で包む
-    const cardBg = isProposing ? "bg-[#fbe7a6]" : "bg-[var(--md-sys-color-surface-container-lowest)]";
+    const cardBg = isProposing ? "bg-[var(--color-kitchen-proposal-bg)]" : "bg-[var(--md-sys-color-surface-container-lowest)]";
 
     return (
         <motion.div

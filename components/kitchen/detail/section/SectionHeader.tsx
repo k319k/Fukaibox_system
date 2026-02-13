@@ -36,22 +36,22 @@ export default function SectionHeader({
     return (
         <div className="flex flex-row justify-between items-center gap-2 pb-3 p-6">
             <div className="flex flex-wrap items-center gap-2">
-                <Tag className="rounded-full bg-[#ffdad5] text-[#73342b] border-none flex items-center gap-1">
+                <Tag className="rounded-full bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] border-none flex items-center gap-1">
                     <Icon icon="mdi:numeric" />
                     セクション {index + 1}
                 </Tag>
                 {!(section.allowImageSubmission ?? true) && (
-                    <Tag className="rounded-full bg-[#fbe7a6] text-[#564419] border-none flex items-center gap-1">
+                    <Tag className="rounded-full bg-[var(--color-kitchen-gold-bg)] text-[var(--color-kitchen-gold-text)] border-none flex items-center gap-1">
                         <Icon icon="mdi:image-off" />画像なし
                     </Tag>
                 )}
                 {isEditing && (
-                    <Tag className="rounded-full bg-[#ffdad5] text-[#73342b] border-none flex items-center gap-1">
+                    <Tag className="rounded-full bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] border-none flex items-center gap-1">
                         <Icon icon="mdi:pencil" />編集中
                     </Tag>
                 )}
                 {isProposing && (
-                    <Tag className="rounded-full bg-[#fbe7a6] text-[#564419] border-none flex items-center gap-1">
+                    <Tag className="rounded-full bg-[var(--color-kitchen-gold-bg)] text-[var(--color-kitchen-gold-text)] border-none flex items-center gap-1">
                         <Icon icon="mdi:comment-edit" />推敲中
                     </Tag>
                 )}
@@ -70,7 +70,7 @@ export default function SectionHeader({
                             <Button
                                 size="small"
                                 shape="round"
-                                className="bg-[#73342b] text-[#ffdad5] border-none"
+                                className="bg-[var(--color-kitchen-tag-text)] text-[var(--color-kitchen-tag-bg)] border-none"
                                 icon={isSaving ? <LoadingOutlined /> : <SaveOutlined />}
                                 onClick={onEditSave}
                                 disabled={isSaving}
@@ -88,7 +88,7 @@ export default function SectionHeader({
                             <Button
                                 size="small"
                                 shape="round"
-                                className="bg-[#564419] text-[#fbe7a6] border-none"
+                                className="bg-[var(--color-kitchen-gold-text)] text-[var(--color-kitchen-gold-bg)] border-none"
                                 icon={isSaving ? <LoadingOutlined /> : <SendOutlined />}
                                 onClick={onProposalSubmit}
                                 disabled={isSaving}

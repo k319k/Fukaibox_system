@@ -32,14 +32,14 @@ export default function ProjectList({ projects, isGicho, onDeleteClick, onCreate
             >
                 <Card className="bg-[var(--md-sys-color-surface-container-lowest)] border-none shadow-none rounded-[28px]">
                     <div className="text-center py-12">
-                        <Icon icon="mdi:pot-steam-outline" className="text-6xl text-[#73342b] mx-auto mb-4" />
+                        <Icon icon="mdi:pot-steam-outline" className="text-6xl text-[var(--color-kitchen-tag-text)] mx-auto mb-4" />
                         <p className="text-[var(--md-sys-color-on-surface-variant)]">まだプロジェクトがありません</p>
                         {isGicho && (
                             <motion.div whileTap={{ scale: 0.95 }} className="mt-4 inline-block">
                                 <Button
                                     shape="round"
                                     onClick={onCreateClick}
-                                    className="bg-[#ffdad5] text-[#73342b] font-semibold border-none"
+                                    className="bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] font-semibold border-none"
                                 >
                                     最初の料理を作る
                                 </Button>

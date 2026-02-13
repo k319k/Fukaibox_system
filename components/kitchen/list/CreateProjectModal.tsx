@@ -62,8 +62,8 @@ export default function CreateProjectModal({ isOpen, onClose }: CreateProjectMod
             onCancel={handleClose}
             title={
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-[#ffdad5] rounded-lg">
-                        <Icon icon="mdi:pot-steam" className="text-2xl text-[#73342b]" />
+                    <div className="p-2 bg-[var(--color-kitchen-tag-bg)] rounded-lg">
+                        <Icon icon="mdi:pot-steam" className="text-2xl text-[var(--color-kitchen-tag-text)]" />
                     </div>
                     <div>
                         <h2 className="text-xl font-bold">新しい料理を作る</h2>
@@ -84,7 +84,7 @@ export default function CreateProjectModal({ isOpen, onClose }: CreateProjectMod
                     onClick={handleCreate}
                     loading={isLoading}
                     icon={!isLoading && <PlusOutlined />}
-                    className="bg-[#73342b]"
+                    className="bg-[var(--color-kitchen-tag-text)]"
                 >
                     作成
                 </Button>,

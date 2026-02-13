@@ -52,20 +52,20 @@ export default function CharacterCountDisplay({
     return (
         <div className="flex flex-wrap items-center gap-3">
             <Tag
-                className="rounded-full bg-[#ffdad5] text-[#73342b] border-none flex items-center gap-1"
+                className="rounded-full bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] border-none flex items-center gap-1"
             >
                 <Icon icon="mdi:text" className="text-sm" />
                 {stats.charCount.toLocaleString()}文字
             </Tag>
             <Tag
-                className="rounded-full bg-[#9E2B1F]/20 text-[#9E2B1F] border-none flex items-center gap-1"
+                className="rounded-full bg-[var(--color-kitchen-candidate-bg)] text-[var(--color-kitchen-candidate-text)] border-none flex items-center gap-1"
             >
                 <Icon icon="mdi:timer-outline" className="text-sm" />
                 予測尺: {stats.durationText}
             </Tag>
             {showSectionPreview && stats.sectionCount > 0 && (
                 <Tag
-                    className="rounded-full bg-[#d7f0cb] text-[#10200a] border-none flex items-center gap-1"
+                    className="rounded-full bg-[var(--color-kitchen-success-bg)] text-[var(--color-kitchen-success-text)] border-none flex items-center gap-1"
                 >
                     <Icon icon="mdi:format-list-numbered" className="text-sm" />
                     {stats.sectionCount}セクションに分割

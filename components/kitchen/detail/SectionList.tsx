@@ -76,7 +76,7 @@ export default function SectionList(props: SectionListProps) {
                         <textarea
                             value={fullScript}
                             onChange={(e) => onFullScriptChange(e.target.value)}
-                            className="w-full h-[60vh] p-6 border rounded-lg focus:ring-2 focus:ring-[#73342b] focus:border-transparent outline-none bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)] resize-y"
+                            className="w-full h-[60vh] p-6 border rounded-lg focus:ring-2 focus:ring-[var(--color-kitchen-tag-text)] focus:border-transparent outline-none bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)] resize-y"
                             style={{ fontSize: `${editorFontSize}px`, lineHeight: 1.6 }}
                             placeholder={"ここに台本を貼り付けてください。\n\n空行を入れると、そこで新しいセクションとして分割されます。\n\n(例)\nシーン1のセリフ...\n\nシーン2のセリフ..."}
                         />
@@ -87,7 +87,7 @@ export default function SectionList(props: SectionListProps) {
                                 onClick={onCreateSections}
                                 disabled={!fullScript.trim() || isCreatingSections}
                                 icon={isCreatingSections ? <LoadingOutlined /> : <Icon icon="mdi:magic-staff" />}
-                                className="bg-[#73342b]"
+                                className="bg-[var(--color-kitchen-tag-text)]"
                             >
                                 {isCreatingSections ? "セクション分割中..." : "セクションに分割して登録"}
                             </Button>
@@ -114,7 +114,7 @@ export default function SectionList(props: SectionListProps) {
                                     shape="round"
                                     icon={<PlusOutlined />}
                                     onClick={() => onAddSection(index)}
-                                    className="bg-[#ffdad5] text-[#73342b] border-none"
+                                    className="bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] border-none"
                                 >
                                     ここにセクションを追加
                                 </Button>
@@ -165,7 +165,7 @@ export default function SectionList(props: SectionListProps) {
                                     shape="round"
                                     icon={<PlusOutlined />}
                                     onClick={() => onAddSection(index + 1)}
-                                    className="bg-[#ffdad5] text-[#73342b] border-none"
+                                    className="bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] border-none"
                                 >
                                     末尾にセクションを追加
                                 </Button>

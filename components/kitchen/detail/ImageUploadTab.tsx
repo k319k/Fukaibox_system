@@ -249,7 +249,35 @@ export default function ImageUploadTab({
 
                                     <Divider className="border-[var(--md-sys-color-outline-variant)] opacity-50" />
 
-                                    <div>
+                                    <div
+                                        onPaste={(e) => {
+                                            const items = e.clipboardData?.items;
+                                            if (!items) return;
+                                            const imageFiles: File[] = [];
+                                            for (let i = 0; i < items.length; i++) {
+                                                if (items[i].type.startsWith("image/")) {
+                                                    const file = items[i].getAsFile();
+                                                    if (file) imageFiles.push(file);
+                                                }
+                                            }
+                                            if (imageFiles.length > 0) {
+                                                e.preventDefault();
+                                                onImageUpload(section.id, imageFiles);
+                                                message.success(`${imageFiles.length}枚の画像を貼り付けました`);
+                                            }
+                                        }}
+                                        onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                                        onDrop={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/"));
+                                            if (files.length > 0) {
+                                                onImageUpload(section.id, files);
+                                                message.success(`${files.length}枚の画像をドロップしました`);
+                                            }
+                                        }}
+                                        tabIndex={0}
+                                    >
                                         <input
                                             type="file"
                                             multiple
@@ -281,8 +309,8 @@ export default function ImageUploadTab({
                                                 ) : (
                                                     <div className="space-y-2">
                                                         <Icon icon="material-symbols:cloud-upload-outline" className="text-4xl text-[var(--md-sys-color-primary)] mx-auto" />
-                                                        <p className="text-title-medium font-bold text-[var(--md-sys-color-on-surface)]">クリックして画像をアップロード</p>
-                                                        <p className="text-body-small text-[var(--md-sys-color-on-surface-variant)]">jpg, png, gif, webp対応</p>
+                                                        <p className="text-title-medium font-bold text-[var(--md-sys-color-on-surface)]">クリック・ドラッグ・貼り付けで画像をアップロード</p>
+                                                        <p className="text-body-small text-[var(--md-sys-color-on-surface-variant)]">jpg, png, gif, webp対応 ｜ Ctrl+V で貼り付け可能</p>
                                                     </div>
                                                 )}
                                             </div>

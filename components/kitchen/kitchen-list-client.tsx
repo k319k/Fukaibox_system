@@ -40,7 +40,7 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
         >
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-[#73342b]">炊事場</h1>
+                    <h1 className="text-3xl font-bold text-[var(--color-kitchen-tag-text)]">炊事場</h1>
                     <p className="text-[var(--md-sys-color-on-surface-variant)] mt-1">ショート動画制作プロジェクトを管理します</p>
                 </div>
                 {isGicho && (
@@ -50,7 +50,7 @@ export default function KitchenListClient({ projects: initialProjects, userRole 
                             shape="round"
                             icon={<PlusOutlined />}
                             onClick={() => setIsOpen(true)}
-                            className="bg-[#ffdad5] text-[#73342b] font-semibold border-none hover:bg-[#ffdad5]/80"
+                            className="bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] font-semibold border-none hover:bg-[var(--color-kitchen-tag-bg)]/80"
                         >
                             新しい料理を作る
                         </Button>

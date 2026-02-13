@@ -38,7 +38,7 @@ export default function ScriptViewerModal({
             title={
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                        <Icon icon="mdi:script-text-outline" className="text-xl text-[#73342b]" />
+                        <Icon icon="mdi:script-text-outline" className="text-xl text-[var(--color-kitchen-tag-text)]" />
                         <span>{projectTitle} - 原稿</span>
                     </div>
                     <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] font-normal">
@@ -50,7 +50,7 @@ export default function ScriptViewerModal({
                 <Button key="copy" icon={<CopyOutlined />} onClick={handleCopy}>
                     コピー
                 </Button>,
-                <Button key="close" type="primary" onClick={onClose} className="bg-[#73342b]">
+                <Button key="close" type="primary" onClick={onClose} className="bg-[var(--color-kitchen-tag-text)]">
                     閉じる
                 </Button>,
             ]}

@@ -59,6 +59,20 @@
   --radius-lg: 16px;
   --radius-xl: 28px;
   --radius-full: 9999px;
+
+  /* Kitchen accent colors (light) */
+  --color-kitchen-tag-bg: #ffdad5;
+  --color-kitchen-tag-text: #73342b;
+  --color-kitchen-selected-border: #10200a;
+  --color-kitchen-selected-ring: #d7f0cb;
+  --color-kitchen-selected-text: #10200a;
+  --color-kitchen-proposal-bg: #fbe7a6;
+  --color-kitchen-candidate-bg: rgba(158, 43, 31, 0.2);
+  --color-kitchen-candidate-text: #9E2B1F;
+  --color-kitchen-gold-bg: #fbe7a6;
+  --color-kitchen-gold-text: #564419;
+  --color-kitchen-success-bg: #d7f0cb;
+  --color-kitchen-success-text: #10200a;
 }
 
 /* Dark Theme (Preferred) */
@@ -100,6 +114,20 @@
     /* Legacy Map */
     --background: var(--md-sys-color-surface);
     --foreground: var(--md-sys-color-on-surface);
+
+    /* Kitchen accent colors (dark) */
+    --color-kitchen-tag-bg: #5a1520;
+    --color-kitchen-tag-text: #ffb4ab;
+    --color-kitchen-selected-border: #8dd87a;
+    --color-kitchen-selected-ring: rgba(141, 216, 122, 0.3);
+    --color-kitchen-selected-text: #8dd87a;
+    --color-kitchen-proposal-bg: #4a3c10;
+    --color-kitchen-candidate-bg: rgba(255, 180, 171, 0.15);
+    --color-kitchen-candidate-text: #ffb4ab;
+    --color-kitchen-gold-bg: #4a3c10;
+    --color-kitchen-gold-text: #dec48c;
+    --color-kitchen-success-bg: #1a3a12;
+    --color-kitchen-success-text: #8dd87a;
   }
 }
 

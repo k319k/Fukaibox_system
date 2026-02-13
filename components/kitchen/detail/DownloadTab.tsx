@@ -20,7 +20,7 @@ export default function DownloadTab({
         <div className="max-w-2xl mx-auto space-y-6 py-8">
             <Card className="card-elevated">
                 <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                    <Icon icon="mdi:file-document-outline" className="text-[#73342b] text-2xl" />
+                    <Icon icon="mdi:file-document-outline" className="text-[var(--color-kitchen-tag-text)] text-2xl" />
                     成果物ダウンロード
                 </h3>
                 <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] mb-6">
@@ -37,7 +37,7 @@ export default function DownloadTab({
                                 icon={<Icon icon="mdi:script-text" className="text-xl" />}
                                 onClick={onDownloadScriptBodyOnly}
                                 disabled={isDownloading}
-                                className="bg-[#9E2B1F]/10 text-[#9E2B1F] border-none"
+                                className="bg-[var(--color-kitchen-candidate-bg)] text-[var(--color-kitchen-candidate-text)] border-none"
                             >
                                 本文のみ(.txt)
                             </Button>
@@ -62,7 +62,7 @@ export default function DownloadTab({
                         icon={<Icon icon="mdi:image-multiple-outline" className="text-xl" />}
                         onClick={onDownloadImages}
                         disabled={isDownloading}
-                        className="bg-[#d7f0cb] text-[#10200a] border-none"
+                        className="bg-[var(--color-kitchen-success-bg)] text-[var(--color-kitchen-success-text)] border-none"
                     >
                         採用画像（.zip）のみダウンロード
                     </Button>
@@ -80,7 +80,7 @@ export default function DownloadTab({
                         block
                         type="primary"
                         size="large"
-                        className="font-bold shadow-md bg-[#73342b]"
+                        className="font-bold shadow-md bg-[var(--color-kitchen-tag-text)]"
                         icon={isDownloading ? <LoadingOutlined /> : <Icon icon="mdi:folder-zip-outline" className="text-xl" />}
                         onClick={onDownloadProject}
                         disabled={isDownloading}
@@ -112,9 +112,9 @@ export default function DownloadTab({
                 </div>
             </Card>
 
-            <div className="bg-[#fbe7a6]/30 p-4 rounded-lg flex gap-3 items-start">
-                <Icon icon="mdi:information-outline" className="text-[#564419] text-xl shrink-0 mt-0.5" />
-                <div className="text-xs text-[#564419] space-y-1">
+            <div className="bg-[var(--color-kitchen-gold-bg)]/30 p-4 rounded-lg flex gap-3 items-start">
+                <Icon icon="mdi:information-outline" className="text-[var(--color-kitchen-gold-text)] text-xl shrink-0 mt-0.5" />
+                <div className="text-xs text-[var(--color-kitchen-gold-text)] space-y-1">
                     <p className="font-bold">ダウンロードに関する注意</p>
                     <p>・採用画像がない場合、画像フォルダは空になります。</p>
                     <p>・zipファイルの生成には時間がかかる場合があります。</p>
