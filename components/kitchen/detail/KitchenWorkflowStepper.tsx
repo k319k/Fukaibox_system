@@ -2,7 +2,7 @@
 
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { cn } from "@/lib/utils";
-import { CookingStatus } from "@/lib/db/schema";
+import { CookingStatus } from "@/types/kitchen";
 
 interface KitchenWorkflowStepperProps {
     currentStatus: CookingStatus;

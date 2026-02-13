@@ -27,7 +27,6 @@ export function useToolsMessageHandler(appId: string) {
             // 2. Create Client
             const client = createSupabaseBrowserClient(token || undefined);
             supabaseRef.current = client;
-            console.log("[Tools Runtime] Supabase Client Initialized", { authenticated: !!token });
         };
 
         if (session !== undefined) { // Wait for session load (undefined check)
@@ -76,8 +75,8 @@ export function useToolsMessageHandler(appId: string) {
                             const result = await handleToolsDbAction(appId, 'get', message.payload);
                             response.success = true;
                             response.data = result;
-                        } catch (err: any) {
-                            response.error = err.message || "DB_GET failed";
+                        } catch (err: unknown) {
+                            response.error = err instanceof Error ? err.message : "DB_GET failed";
                         }
                         break;
 
@@ -85,8 +84,8 @@ export function useToolsMessageHandler(appId: string) {
                         try {
                             await handleToolsDbAction(appId, 'set', message.payload);
                             response.success = true;
-                        } catch (err: any) {
-                            response.error = err.message || "DB_SET failed";
+                        } catch (err: unknown) {
+                            response.error = err instanceof Error ? err.message : "DB_SET failed";
                         }
                         break;
 
@@ -95,8 +94,8 @@ export function useToolsMessageHandler(appId: string) {
                             const result = await handleToolsDbAction(appId, 'query', message.payload);
                             response.success = true;
                             response.data = result;
-                        } catch (err: any) {
-                            response.error = err.message || "DB_QUERY failed";
+                        } catch (err: unknown) {
+                            response.error = err instanceof Error ? err.message : "DB_QUERY failed";
                         }
                         break;
 
@@ -170,9 +169,9 @@ export function useToolsMessageHandler(appId: string) {
                     default:
                         response.error = "Unknown action: " + message.action;
                 }
-            } catch (e: any) {
+            } catch (e: unknown) {
                 console.error("Tools SDK Error:", e);
-                response.error = e.message;
+                response.error = e instanceof Error ? e.message : String(e);
             }
 
             // Send response back

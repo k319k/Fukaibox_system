@@ -4,7 +4,7 @@ import { Button, Tag, Avatar, Tooltip } from "antd";
 import { ArrowLeftOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
-import { Project } from "@/types/kitchen";
+import { Project, CookingStatus } from "@/types/kitchen";
 import { PresenceUser } from "@/hooks/kitchen/usePresence";
 
 interface KitchenHeaderProps {
@@ -15,7 +15,7 @@ interface KitchenHeaderProps {
     editorFontSize: number;
     onEditorFontSizeChange: (size: number) => void;
     onDeleteProject: () => void;
-    onStatusChange?: (status: string) => void;
+    onStatusChange?: (status: CookingStatus) => void;
 }
 
 export default function KitchenHeader({
@@ -30,15 +30,19 @@ export default function KitchenHeader({
 }: KitchenHeaderProps) {
     const router = useRouter();
 
-    const statusConfig: Record<string, { label: string; className: string; icon: string }> = {
+    const statusConfig: Record<CookingStatus | "draft", { label: string; className: string; icon: string }> = {
         "draft": { label: "調理中", className: "bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]", icon: "material-symbols:skillet" },
         "cooking": { label: "調理中", className: "bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]", icon: "material-symbols:skillet" },
-        "image_collection": { label: "画像収集中", className: "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]", icon: "material-symbols:add-photo-alternate" },
+        "image_upload": { label: "画像募集開始", className: "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]", icon: "material-symbols:add-photo-alternate" },
         "image_selection": { label: "画像採用中", className: "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]", icon: "material-symbols:verified" },
         "download": { label: "完成", className: "bg-[var(--color-giin-container)] text-[var(--color-giin)]", icon: "material-symbols:check-circle" },
-        "completed": { label: "完成", className: "bg-[var(--color-giin-container)] text-[var(--color-giin)]", icon: "material-symbols:check-circle" },
         "archived": { label: "アーカイブ", className: "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]", icon: "material-symbols:archive" },
+        // "completed" is duplicate of "download" in display? Or distinct?
+        // Let's stick to CookingStatus type keys.
+        // Actually, Project.status is CookingStatus.
+        // "draft" might be legacy or future.
     };
+    // Fix implementation below to map properly.
     const config = statusConfig[project.status] || statusConfig["draft"];
 
     return (
@@ -97,7 +101,7 @@ export default function KitchenHeader({
                 {/* 議長/権限者用 ステータス操作 */}
                 {isGicho && onStatusChange && (
                     <>
-                        {project.status !== "download" && project.status !== "completed" && (
+                        {project.status !== "download" && (
                             <Button
                                 size="small"
                                 type="primary"

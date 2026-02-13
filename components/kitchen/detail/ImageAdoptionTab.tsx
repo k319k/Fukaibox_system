@@ -2,7 +2,7 @@
 
 import { Card, Tag, Checkbox } from "antd";
 import { Icon } from "@iconify/react";
-import { Section, UploadedImage } from "@/types/kitchen";
+import { Section, UploadedImage, UserRole } from "@/types/kitchen";
 
 interface ImageAdoptionTabProps {
     sections: Section[];
@@ -11,6 +11,7 @@ interface ImageAdoptionTabProps {
     onImageSelection: (imageId: string, isSelected: boolean, sectionId: string) => void;
     onOpenLightbox: (images: UploadedImage[], index: number) => void;
     isReadOnly?: boolean;
+    userRole?: UserRole;
 }
 
 /** 参考画像URLの統合リストを取得（referenceImageUrls優先、なければreferenceImageUrl） */
@@ -25,7 +26,7 @@ function getRefImages(section: Section): string[] {
 }
 
 export default function ImageAdoptionTab({
-    sections, images, uploaderNames, onImageSelection, onOpenLightbox, isReadOnly = false
+    sections, images, uploaderNames, onImageSelection, onOpenLightbox, isReadOnly = false, userRole
 }: ImageAdoptionTabProps) {
     if (sections.length === 0) {
         return (

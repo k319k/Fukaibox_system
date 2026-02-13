@@ -4,7 +4,7 @@ import { Card, Tabs, Button } from "antd";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { KitchenDetailClientProps } from "@/types/kitchen";
+import { KitchenDetailClientProps, CookingStatus } from "@/types/kitchen";
 import { useKitchenDetail } from "@/hooks/kitchen/useKitchenDetail";
 import { deleteCookingProject, updateCookingProjectStatus } from "@/app/actions/kitchen/projects";
 import { usePresence } from "@/hooks/kitchen/usePresence";
@@ -41,10 +41,9 @@ export default function KitchenDetailClient({
         }
     };
 
-    const handleStatusChange = async (status: string) => {
+    const handleStatusChange = async (status: CookingStatus) => {
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await updateCookingProjectStatus(project.id, status as any);
+            await updateCookingProjectStatus(project.id, status);
             router.refresh();
         } catch (error) {
             console.error("Failed to update status:", error);
@@ -58,7 +57,7 @@ export default function KitchenDetailClient({
         const tabs = [];
 
         // Cooking Tab: Always available
-        if (status === "cooking" || status === "draft" || isGicho) {
+        if (status === "cooking" || isGicho) {
             tabs.push({
                 key: "cooking",
                 label: <div className="flex items-center gap-2"><Icon icon="mdi:pot-mix" className="text-lg" /><span className="hidden md:inline">調理</span></div>,
@@ -77,6 +76,8 @@ export default function KitchenDetailClient({
                             onEditContentChange={store.setEditContent} onEditImageInstructionChange={store.setEditImageInstruction}
                             onEditReferenceImageUrlChange={store.setEditReferenceImageUrl} onEditReferenceImageUrlsChange={store.setEditReferenceImageUrls} onEditAllowSubmissionChange={store.setEditAllowSubmission}
                             proposalSection={store.proposalSection} proposalContent={store.proposalContent}
+                            onProposalOpen={store.handleProposalOpen} onProposalCancel={store.handleProposalCancel}
+                            onProposalSubmit={store.handleProposalSubmit} onProposalContentChange={store.setProposalContent}
                             onUploadReferenceImage={store.uploadReferenceImage}
                         />
                     </div>
@@ -116,12 +117,8 @@ export default function KitchenDetailClient({
                 children: (
                     <ImageAdoptionTab sections={store.sections} images={store.images} uploaderNames={store.userNames}
                         onImageSelection={store.handleImageSelection} onOpenLightbox={store.openLightbox}
-                        // Gicho以外はreadOnlyにするなどの制御が必要だが、ImageAdoptionTab側で対応するか、ここで行うか。
-                        // 現状ImageAdoptionTabはRoleを受け取っていないため、受け取るように修正するか、
-                        // handleImageSelectionをnullにするなどで対応。
-                        // FIXME: ImageAdoptionTabにuserRoleを渡して制御するのがベスト。
-                        // 一旦、handleImageSelectionを制御。
                         isReadOnly={!isGicho}
+                        userRole={userRole}
                     />
                 ),
             });
@@ -175,8 +172,7 @@ export default function KitchenDetailClient({
             <KitchenWorkflowStepper
                 currentStatus={project.status}
                 canNavigate={isGicho}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onStepClick={(status) => handleStatusChange(status as any)}
+                onStepClick={handleStatusChange}
             />
 
             <KitchenHeader

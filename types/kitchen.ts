@@ -12,11 +12,13 @@ export interface Section {
     updatedAt: Date | null;
 }
 
+export type CookingStatus = "cooking" | "image_upload" | "image_selection" | "download" | "archived";
+
 export interface Project {
     id: string;
     title: string;
     description: string | null;
-    status: string;
+    status: CookingStatus;
     createdBy: string;
     createdAt: Date;
     updatedAt: Date;

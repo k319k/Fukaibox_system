@@ -16,19 +16,20 @@ export function useKitchenData(project: Project, initialSections: Section[]) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [imgs, props] = await Promise.all([
+                const [imgsData, propsData] = await Promise.all([
                     getCookingImages(project.id),
-                    // @ts-ignore - Action return type mismatch might occur, allow for now
                     getAllProposalsForProject(project.id)
                 ]);
 
+                // Cast to expected types as Drizzle returns generic objects
+                const imgs = imgsData as unknown as UploadedImage[];
+                const props = propsData as unknown as Proposal[];
+
                 setImages(imgs);
-                // @ts-ignore
                 setProposals(props);
 
                 const userIds = new Set<string>();
                 imgs.forEach(i => userIds.add(i.uploadedBy));
-                // @ts-ignore
                 props.forEach(p => userIds.add(p.proposedBy));
 
                 if (userIds.size > 0) {
