@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, Tag, Checkbox } from "antd";
+import { Icon } from "@iconify/react";
 import { Section, UploadedImage } from "@/types/kitchen";
 
 interface ImageAdoptionTabProps {
@@ -10,6 +11,17 @@ interface ImageAdoptionTabProps {
     onImageSelection: (imageId: string, isSelected: boolean, sectionId: string) => void;
     onOpenLightbox: (images: UploadedImage[], index: number) => void;
     isReadOnly?: boolean;
+}
+
+/** 参考画像URLの統合リストを取得（referenceImageUrls優先、なければreferenceImageUrl） */
+function getRefImages(section: Section): string[] {
+    if (section.referenceImageUrls && section.referenceImageUrls.length > 0) {
+        return section.referenceImageUrls;
+    }
+    if (section.referenceImageUrl) {
+        return [section.referenceImageUrl];
+    }
+    return [];
 }
 
 export default function ImageAdoptionTab({
@@ -28,6 +40,7 @@ export default function ImageAdoptionTab({
             {sections.filter(s => s.allowImageSubmission ?? true).map((section) => {
                 const sectionImages = images.filter(img => img.sectionId === section.id);
                 const originalIndex = sections.findIndex(s => s.id === section.id);
+                const refImages = getRefImages(section);
 
                 return (
                     <div key={section.id} className="space-y-2">
@@ -41,7 +54,34 @@ export default function ImageAdoptionTab({
                                     <Tag className="rounded-full bg-[#9E2B1F]/20 text-[#9E2B1F] border-none">候補: {sectionImages.length}枚</Tag>
                                 </div>
                             </div>
-                            <div className="p-4">
+                            <div className="p-4 space-y-4">
+                                {/* 画像指示文の全文表示 */}
+                                {section.imageInstruction && (
+                                    <div className="bg-[var(--md-sys-color-primary-container)]/30 border-l-4 border-[var(--md-sys-color-primary)] pl-4 py-3 rounded-r-lg">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <Icon icon="material-symbols:image" className="text-[var(--md-sys-color-primary)]" />
+                                            <p className="text-label-large font-bold text-[var(--md-sys-color-primary)]">画像指示</p>
+                                        </div>
+                                        <p className="text-body-medium whitespace-pre-wrap">{section.imageInstruction}</p>
+                                    </div>
+                                )}
+
+                                {/* 参考画像の表示 */}
+                                {refImages.length > 0 && (
+                                    <div className="bg-[var(--md-sys-color-surface-container)] p-3 rounded-xl">
+                                        <p className="text-label-large text-[var(--md-sys-color-on-surface-variant)] mb-2">参考画像</p>
+                                        <div className="flex gap-2 flex-wrap">
+                                            {refImages.map((url, idx) => (
+                                                /* eslint-disable-next-line @next/next/no-img-element */
+                                                <img key={idx} src={url} alt={`参考画像${idx + 1}`}
+                                                    className="max-h-40 rounded-lg border border-[var(--md-sys-color-outline-variant)] object-contain"
+                                                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
                                 {sectionImages.length === 0 ? (
                                     <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] text-center py-4">投稿された画像はありません</p>
                                 ) : (
