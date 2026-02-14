@@ -15,6 +15,12 @@ const theme = {
         colorError: "var(--color-kitchen-error-text)",
         colorInfo: "var(--md-sys-color-primary)",
 
+        // Text Colors - Essential for dark mode readability
+        colorText: "var(--md-sys-color-on-surface)",
+        colorTextSecondary: "var(--md-sys-color-on-surface-variant)",
+        colorTextTertiary: "var(--md-sys-color-on-surface-variant)",
+        colorTextQuaternary: "var(--md-sys-color-outline)",
+
         // Surface Colors (M3 Hierarchy) - Use CSS variables
         colorBgLayout: "var(--md-sys-color-surface)",
         colorBgContainer: "var(--md-sys-color-surface-container)",
