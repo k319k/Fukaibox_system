@@ -212,7 +212,11 @@ export async function getAnalytics(
     accessToken: string,
     startDate: string, // YYYY-MM-DD
     endDate: string,
-    metrics: string[] = ["views", "estimatedMinutesWatched", "averageViewDuration"]
+    metrics: string[] = ["views", "estimatedMinutesWatched", "averageViewDuration"],
+    dimensions: string = "day",
+    filters?: string,
+    sort?: string,
+    maxResults?: number
 ) {
     const oauth2Client = getOAuth2Client();
     oauth2Client.setCredentials({ access_token: accessToken });
@@ -224,8 +228,66 @@ export async function getAnalytics(
         startDate,
         endDate,
         metrics: metrics.join(","),
-        dimensions: "day",
+        dimensions,
+        filters,
+        sort,
+        maxResults,
     });
 
     return response.data;
+}
+
+// ISO 8601 duration parser (PT1M13S -> seconds)
+function parseDuration(duration: string): number {
+    const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+    if (!match) return 0;
+
+    const hours = (parseInt(match[1] || '0') || 0);
+    const minutes = (parseInt(match[2] || '0') || 0);
+    const seconds = (parseInt(match[3] || '0') || 0);
+
+    return hours * 3600 + minutes * 60 + seconds;
+}
+
+// 動画リスト取得（詳細情報付き）
+export async function getVideosExtended(accessToken: string, maxResults: number = 50) {
+    const youtubeClient = setCredentials(accessToken);
+
+    const response = await youtubeClient.search.list({
+        part: ["id"],
+        forMine: true,
+        type: ["video"],
+        maxResults,
+        order: "date",
+    });
+
+    const videoIds = response.data.items?.map(item => item.id?.videoId).filter(Boolean) as string[] || [];
+    if (videoIds.length === 0) return [];
+
+    // 詳細情報を取得
+    const videosResponse = await youtubeClient.videos.list({
+        part: ["snippet", "contentDetails", "statistics"],
+        id: videoIds,
+    });
+
+    return videosResponse.data.items?.map(item => {
+        const durationSec = parseDuration(item.contentDetails?.duration || "");
+        const description = item.snippet?.description || "";
+        const charCount = description.length; // 文字数 (Description length, could start with Title + Description)
+
+        return {
+            videoId: item.id || "",
+            title: item.snippet?.title || "",
+            description,
+            thumbnailUrl: item.snippet?.thumbnails?.default?.url || "",
+            publishedAt: item.snippet?.publishedAt || "",
+            duration: item.contentDetails?.duration || "",
+            durationSec,
+            viewCount: parseInt(item.statistics?.viewCount || "0"),
+            likeCount: parseInt(item.statistics?.likeCount || "0"),
+            commentCount: parseInt(item.statistics?.commentCount || "0"),
+            // subscribersGained is not in video statistics, it's an analytics metric
+            charCount,
+        };
+    }) || [];
 }

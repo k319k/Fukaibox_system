@@ -17,6 +17,7 @@ import {
     getVideoStats,
     getAnalytics,
     getSystemAccessToken,
+    getVideosExtended,
 } from "@/lib/youtube-api";
 import { env } from "@/lib/env";
 import crypto from "crypto";
@@ -447,6 +448,145 @@ export async function getVideoAnalytics(videoId: string) {
         return { success: true, data: stats };
     } catch (error: any) {
         console.error("Get video analytics error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * 高度なアナリティクスデータを取得（example.ods完全再現用）
+ */
+export async function getAdvancedAnalytics() {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (!session?.user) {
+        return { success: false, error: "Unauthorized" };
+    }
+
+    try {
+        let accessToken: string | null = null;
+        if (env.YOUTUBE_REFRESH_TOKEN) {
+            accessToken = await getSystemAccessToken();
+        } else {
+            accessToken = await getValidAccessToken(session.user.id);
+        }
+
+        if (!accessToken) {
+            return { success: false, error: "YouTube not connected" };
+        }
+
+        // 1時間に1回のキャッシュ
+        const getCachedAdvancedData = unstable_cache(
+            async (token: string) => {
+                // 1. 動画リスト取得（最新50件）
+                const videos = await getVideosExtended(token, 50);
+                if (videos.length === 0) return [];
+
+                const videoIds = videos.map(v => v.videoId);
+                const videoIdString = videoIds.join(",");
+
+                // 2. 動画ごとのアナリティクス取得（全期間、最大200件まで自動補完）
+                // 50件なので1回で取得可能
+                // Lifetime analytics
+                const startDate = "2000-01-01";
+                const today = new Date().toISOString().split("T")[0];
+
+                const analyticsData = await getAnalytics(
+                    token,
+                    startDate,
+                    today,
+                    [
+                        "views",
+                        "subscribersGained",
+                        "subscribersLost",
+                        "averageViewPercentage",
+                        "likes",
+                        "dislikes",
+                        "comments",
+                        "shares",
+                        "cardClicks",
+                        "endScreenElementClicks",
+                        "estimatedMinutesWatched"
+                    ],
+                    "video",
+                    `video==${videoIdString}`,
+                    "-views",
+                    50
+                );
+
+                // 3. データのマージと計算
+                const analyticsMap = new Map();
+                if (analyticsData.rows) {
+                    analyticsData.rows.forEach((row: any) => {
+                        // row[0] is videoId because dimension is "video"
+                        analyticsMap.set(row[0], {
+                            views: row[1],
+                            subscribersGained: row[2],
+                            subscribersLost: row[3],
+                            averageViewPercentage: row[4],
+                            likes: row[5],
+                            dislikes: row[6],
+                            comments: row[7],
+                            shares: row[8],
+                            cardClicks: row[9],
+                            endScreenElementClicks: row[10],
+                            estimatedMinutesWatched: row[11],
+                        });
+                    });
+                }
+
+                return videos.map((video, index) => {
+                    const analytics = analyticsMap.get(video.videoId) || {};
+
+                    // Default values if analytics missing (e.g. no views in period?)
+                    const views = analytics.views || video.viewCount || 0;
+                    const likes = analytics.likes || video.likeCount || 0;
+                    const comments = analytics.comments || video.commentCount || 0;
+
+                    // Calculated fields
+                    // 文字数圧縮度: 秒(一文字) = Duration / CharCount
+                    const compressionRateSecPerChar = video.charCount > 0 ? video.durationSec / video.charCount : 0;
+                    // 文字数圧縮度: 文字数(1s) = CharCount / Duration
+                    const compressionRateCharPerSec = video.durationSec > 0 ? video.charCount / video.durationSec : 0;
+
+                    // エンゲージメントビュー (仮計算)
+                    // High value on likes/comments
+                    const engagementView = views + (likes * 10) + (comments * 20);
+
+                    return {
+                        ...video,
+                        publicId: `VID-${index + 1}`, // 仮
+                        dayOfWeek: ["日", "月", "火", "水", "木", "金", "土"][new Date(video.publishedAt).getDay()],
+
+                        // Analytics Override/Supplement
+                        views,
+                        likes,
+                        comments,
+                        subscribersGained: analytics.subscribersGained || 0,
+                        subscribersLost: analytics.subscribersLost || 0,
+                        avgViewPercentage: analytics.averageViewPercentage || 0,
+                        shares: analytics.shares || 0,
+
+                        // Derived
+                        compressionRateSecPerChar,
+                        compressionRateCharPerSec,
+                        engagementView,
+
+                        // Raw analytics if needed
+                        ...analytics
+                    };
+                });
+            },
+            ['youtube-advanced-analytics-v1'],
+            { revalidate: 3600 }
+        );
+
+        const data = await getCachedAdvancedData(accessToken);
+        return { success: true, data };
+
+    } catch (error: any) {
+        console.error("Get advanced analytics error:", error);
         return { success: false, error: error.message };
     }
 }
