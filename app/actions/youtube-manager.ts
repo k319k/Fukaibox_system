@@ -523,8 +523,6 @@ export async function getAdvancedAnalytics() {
                         "dislikes",
                         "comments",
                         "shares",
-                        "cardClicks",
-                        "endScreenElementClicks",
                         "estimatedMinutesWatched"
                     ],
                     "video",
@@ -547,9 +545,7 @@ export async function getAdvancedAnalytics() {
                             dislikes: row[6],
                             comments: row[7],
                             shares: row[8],
-                            cardClicks: row[9],
-                            endScreenElementClicks: row[10],
-                            estimatedMinutesWatched: row[11],
+                            estimatedMinutesWatched: row[9],
                         });
                     });
                 }
