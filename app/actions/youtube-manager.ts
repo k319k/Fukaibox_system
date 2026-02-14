@@ -383,9 +383,23 @@ export async function getChannelAnalytics(startDate: string, endDate: string) {
         }
 
         // アナリティクス取得（キャッシュ利用）
+        // Metrics: views,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost,likes,dislikes,comments,shares,cardClicks,endScreenElementClicks
         const getCachedAnalytics = unstable_cache(
-            async (token: string, start: string, end: string) => getAnalytics(token, start, end),
-            ['youtube-analytics'],
+            async (token: string, start: string, end: string) => getAnalytics(token, start, end, [
+                "views",
+                "estimatedMinutesWatched",
+                "averageViewDuration",
+                "averageViewPercentage",
+                "subscribersGained",
+                "subscribersLost",
+                "likes",
+                "dislikes",
+                "comments",
+                "shares",
+                "cardClicks",
+                "endScreenElementClicks"
+            ]),
+            ['youtube-analytics-extended-v1'], // Changed key to invalidate old cache
             { revalidate: 3600 } // 1時間キャッシュ
         );
 

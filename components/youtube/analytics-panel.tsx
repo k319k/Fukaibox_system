@@ -19,12 +19,21 @@ export function AnalyticsPanel({ data, loading, period, onPeriodChange }: Analyt
 
     const chartData = useMemo(() => {
         if (!data?.rows) return [];
-        // headers: ["day", "views", "estimatedMinutesWatched", "averageViewDuration"]
+        // headers matches the order in youtube-manager.ts
         return data.rows.map((row: any) => ({
             date: row[0],
             views: row[1],
-            watchTime: Math.round(row[2] / 60), // minutes -> hours? or keep minutes
-            avgViewDuration: row[3]
+            watchTime: Math.round(row[2]), // Minutes
+            avgViewDuration: row[3],
+            avgViewPercentage: row[4],
+            subscribersGained: row[5],
+            subscribersLost: row[6],
+            likes: row[7],
+            dislikes: row[8],
+            comments: row[9],
+            shares: row[10],
+            cardClicks: row[11],
+            endScreenElementClicks: row[12],
         }));
     }, [data]);
 
@@ -32,7 +41,7 @@ export function AnalyticsPanel({ data, loading, period, onPeriodChange }: Analyt
         if (!data?.rows) return { views: 0, watchTime: 0 };
         const totalViews = data.rows.reduce((acc: number, row: any) => acc + row[1], 0);
         const totalWatchTime = data.rows.reduce((acc: number, row: any) => acc + row[2], 0);
-        return { views: totalViews, watchTime: Math.round(totalWatchTime) };
+        return { views: totalViews, watchTime: Math.round(totalWatchTime) }; // Total Minutes
     }, [data]);
 
     if (loading) {
@@ -163,22 +172,89 @@ export function AnalyticsPanel({ data, loading, period, onPeriodChange }: Analyt
                             title: '視聴回数',
                             dataIndex: 'views',
                             key: 'views',
-                            render: (val) => `${val.toLocaleString()} 回`,
+                            render: (val) => `${val?.toLocaleString() ?? 0}`,
                             align: 'right',
+                            width: 100,
                         },
                         {
                             title: '総再生時間 (分)',
                             dataIndex: 'watchTime',
                             key: 'watchTime',
-                            render: (val) => `${val.toLocaleString()} 分`, // Previously rounded to minutes
+                            render: (val) => `${val?.toLocaleString() ?? 0}`,
                             align: 'right',
+                            width: 120,
                         },
                         {
                             title: '平均視聴時間 (秒)',
                             dataIndex: 'avgViewDuration',
                             key: 'avgViewDuration',
-                            render: (val) => `${val} 秒`, // Raw seconds?
+                            render: (val) => `${val ?? 0}`,
                             align: 'right',
+                            width: 120,
+                        },
+                        {
+                            title: '視聴維持率 (%)',
+                            dataIndex: 'avgViewPercentage',
+                            key: 'avgViewPercentage',
+                            render: (val) => `${val ? Math.round(val * 100) / 100 : 0}%`,
+                            align: 'right',
+                            width: 120,
+                        },
+                        {
+                            title: '登録増',
+                            dataIndex: 'subscribersGained',
+                            key: 'subscribersGained',
+                            align: 'right',
+                            width: 80,
+                        },
+                        {
+                            title: '登録減',
+                            dataIndex: 'subscribersLost',
+                            key: 'subscribersLost',
+                            align: 'right',
+                            width: 80,
+                        },
+                        {
+                            title: '高評価',
+                            dataIndex: 'likes',
+                            key: 'likes',
+                            align: 'right',
+                            width: 80,
+                        },
+                        {
+                            title: '低評価',
+                            dataIndex: 'dislikes',
+                            key: 'dislikes',
+                            align: 'right',
+                            width: 80,
+                        },
+                        {
+                            title: 'コメント',
+                            dataIndex: 'comments',
+                            key: 'comments',
+                            align: 'right',
+                            width: 90,
+                        },
+                        {
+                            title: 'シェア',
+                            dataIndex: 'shares',
+                            key: 'shares',
+                            align: 'right',
+                            width: 80,
+                        },
+                        {
+                            title: 'カード',
+                            dataIndex: 'cardClicks',
+                            key: 'cardClicks',
+                            align: 'right',
+                            width: 80,
+                        },
+                        {
+                            title: '終了画面',
+                            dataIndex: 'endScreenElementClicks',
+                            key: 'endScreenElementClicks',
+                            align: 'right',
+                            width: 90,
                         },
                     ]}
                     pagination={{ pageSize: 10 }}
