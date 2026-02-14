@@ -50,10 +50,6 @@ export default function EditForm({
             if (newUrls.length > 0) {
                 // 既存のURLリストに追加
                 onReferenceImageUrlsChange([...referenceImageUrls, ...newUrls]);
-                // レガシー: 最初のURLを単体フィールドにも保存
-                if (!referenceImageUrl && newUrls[0]) {
-                    onReferenceImageUrlChange(newUrls[0]);
-                }
                 message.success(`${newUrls.length}枚の画像をアップロードしました`);
             }
         } catch (error) {

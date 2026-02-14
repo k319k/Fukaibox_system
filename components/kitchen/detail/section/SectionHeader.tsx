@@ -102,7 +102,7 @@ export default function SectionHeader({
                     </>
                 ) : (
                     <>
-                        {!isProjectCompleted && (
+                        {isGicho && !isProjectCompleted && (
                             <motion.div whileTap={{ scale: 0.9 }}>
                                 <Button
                                     size="small"
@@ -114,7 +114,7 @@ export default function SectionHeader({
                                 />
                             </motion.div>
                         )}
-                        {!isProjectCompleted && (
+                        {isGicho && !isProjectCompleted && (
                             <motion.div whileTap={{ scale: 0.9 }}>
                                 <Button
                                     size="small"

@@ -8,6 +8,7 @@ import SectionHeader from "./section/SectionHeader";
 import NormalView from "./section/NormalView";
 import EditForm from "./section/EditForm";
 import ProposalForm from "./section/ProposalForm";
+import { useSectionEdit } from "./SectionEditContext";
 
 interface SectionCardProps {
     section: Section;
@@ -15,41 +16,18 @@ interface SectionCardProps {
     projectStatus: string;
     userRole: UserRole;
     fontSize: number;
-    isEditing: boolean;
-    isProposing: boolean;
-    isSaving: boolean;
-    editContent: string;
-    editImageInstruction: string;
-    editReferenceImageUrl: string;
-    editReferenceImageUrls: string[];
-    editAllowSubmission: boolean;
-    proposalContent: string;
-    onEditStart: (section: Section) => void;
-    onEditCancel: () => void;
-    onEditSave: () => void;
     onDelete: (id: string) => void;
-    onProposalOpen: (section: Section) => void;
-    onProposalCancel: () => void;
-    onProposalSubmit: () => void;
-    onEditContentChange: (val: string) => void;
-    onEditImageInstructionChange: (val: string) => void;
-    onEditReferenceImageUrlChange: (val: string) => void;
-    onEditReferenceImageUrlsChange: (val: string[]) => void;
-    onEditAllowSubmissionChange: (val: boolean) => void;
-    onProposalContentChange: (val: string) => void;
-    onUploadReferenceImage: (file: File) => Promise<string | null>;
 }
 
 export default function SectionCard({
-    section, index, projectStatus, userRole, fontSize,
-    isEditing, isProposing, isSaving,
-    editContent, editImageInstruction, editReferenceImageUrl, editReferenceImageUrls, editAllowSubmission, proposalContent,
-    onEditStart, onEditCancel, onEditSave, onDelete,
-    onProposalOpen, onProposalCancel, onProposalSubmit,
-    onEditContentChange, onEditImageInstructionChange, onEditReferenceImageUrlChange, onEditReferenceImageUrlsChange, onEditAllowSubmissionChange,
-    onProposalContentChange, onUploadReferenceImage
+    section, index, projectStatus, userRole, fontSize, onDelete
 }: SectionCardProps) {
+    const ctx = useSectionEdit();
+
     const isGicho = userRole === 'gicho';
+    const isEditing = ctx.editingSection?.id === section.id;
+    const isProposing = ctx.proposalSection?.id === section.id;
+
     // 推敲提案中はWarning Container色で包む
     const cardBg = isProposing ? "bg-[var(--color-kitchen-proposal-bg)]" : "bg-[var(--md-sys-color-surface-container-lowest)]";
 
@@ -62,10 +40,10 @@ export default function SectionCard({
             <Card className={`${cardBg} border-none shadow-none hover-glow transition-all duration-200 rounded-[var(--radius-lg)]`} styles={{ body: { padding: 0 } }}>
                 <SectionHeader
                     index={index} section={section} projectStatus={projectStatus} userRole={userRole}
-                    isEditing={isEditing} isProposing={isProposing} isSaving={isSaving}
-                    onEditStart={() => onEditStart(section)} onEditCancel={onEditCancel} onEditSave={onEditSave}
+                    isEditing={isEditing} isProposing={isProposing} isSaving={ctx.isSaving}
+                    onEditStart={() => ctx.onEditStart(section)} onEditCancel={ctx.onEditCancel} onEditSave={ctx.onEditSave}
                     onDelete={() => onDelete(section.id)}
-                    onProposalOpen={() => onProposalOpen(section)} onProposalCancel={onProposalCancel} onProposalSubmit={onProposalSubmit}
+                    onProposalOpen={() => ctx.onProposalOpen(section)} onProposalCancel={ctx.onProposalCancel} onProposalSubmit={ctx.onProposalSubmit}
                 />
                 {/* Delete Button (Gicho Only) - Fixed Position within relative header */}
                 {isGicho && (
@@ -84,14 +62,14 @@ export default function SectionCard({
                 <div className="pt-4 p-6">
                     {isEditing ? (
                         <EditForm
-                            content={editContent} imageInstruction={editImageInstruction}
-                            referenceImageUrl={editReferenceImageUrl} referenceImageUrls={editReferenceImageUrls} allowImageSubmission={editAllowSubmission} fontSize={fontSize}
-                            onContentChange={onEditContentChange} onImageInstructionChange={onEditImageInstructionChange}
-                            onReferenceImageUrlChange={onEditReferenceImageUrlChange} onReferenceImageUrlsChange={onEditReferenceImageUrlsChange} onAllowSubmissionChange={onEditAllowSubmissionChange}
-                            onUploadReferenceImage={onUploadReferenceImage}
+                            content={ctx.editContent} imageInstruction={ctx.editImageInstruction}
+                            referenceImageUrl={ctx.editReferenceImageUrl} referenceImageUrls={ctx.editReferenceImageUrls} allowImageSubmission={ctx.editAllowSubmission} fontSize={fontSize}
+                            onContentChange={ctx.onEditContentChange} onImageInstructionChange={ctx.onEditImageInstructionChange}
+                            onReferenceImageUrlChange={ctx.onEditReferenceImageUrlChange} onReferenceImageUrlsChange={ctx.onEditReferenceImageUrlsChange} onAllowSubmissionChange={ctx.onEditAllowSubmissionChange}
+                            onUploadReferenceImage={ctx.onUploadReferenceImage}
                         />
                     ) : isProposing ? (
-                        <ProposalForm content={proposalContent} fontSize={fontSize} onContentChange={onProposalContentChange} />
+                        <ProposalForm content={ctx.proposalContent} fontSize={fontSize} onContentChange={ctx.onProposalContentChange} />
                     ) : (
                         <NormalView section={section} fontSize={fontSize} />
                     )}

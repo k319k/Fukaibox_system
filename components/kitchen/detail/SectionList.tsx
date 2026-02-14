@@ -6,6 +6,7 @@ import { Icon } from "@iconify/react";
 import { Section, Project, UserRole } from "@/types/kitchen";
 import SectionCard from "./SectionCard";
 import CharacterCountDisplay from "./section/CharacterCountDisplay";
+import { SectionEditProvider, SectionEditState } from "./SectionEditContext";
 
 interface SectionListProps {
     project: Project;
@@ -23,7 +24,7 @@ interface SectionListProps {
     onAddSection: (index: number) => void;
     onDeleteSection: (id: string) => void;
 
-    // Edit State
+    // Edit & Proposal (passed to context)
     editingSection: Section | null;
     editContent: string;
     editImageInstruction: string;
@@ -42,7 +43,6 @@ interface SectionListProps {
     onEditReferenceImageUrlsChange: (val: string[]) => void;
     onEditAllowSubmissionChange: (val: boolean) => void;
 
-    // Proposal State
     proposalSection: Section | null;
     proposalContent: string;
 
@@ -57,11 +57,37 @@ export default function SectionList(props: SectionListProps) {
     const {
         project, sections, userRole, editorFontSize,
         fullScript, onFullScriptChange, isCreatingSections, onCreateSections,
-        onAddSection
+        onAddSection, onDeleteSection
     } = props;
 
     // 儀長権限チェック (master or admin) -> 'gicho' role in types
     const isGicho = userRole === 'gicho';
+
+    // Build context value from remaining props
+    const editCtx: SectionEditState = {
+        editingSection: props.editingSection,
+        editContent: props.editContent,
+        editImageInstruction: props.editImageInstruction,
+        editReferenceImageUrl: props.editReferenceImageUrl,
+        editReferenceImageUrls: props.editReferenceImageUrls,
+        editAllowSubmission: props.editAllowSubmission,
+        isSaving: props.isSaving,
+        onEditStart: props.onEditStart,
+        onEditCancel: props.onEditCancel,
+        onEditSave: props.onEditSave,
+        onEditContentChange: props.onEditContentChange,
+        onEditImageInstructionChange: props.onEditImageInstructionChange,
+        onEditReferenceImageUrlChange: props.onEditReferenceImageUrlChange,
+        onEditReferenceImageUrlsChange: props.onEditReferenceImageUrlsChange,
+        onEditAllowSubmissionChange: props.onEditAllowSubmissionChange,
+        proposalSection: props.proposalSection,
+        proposalContent: props.proposalContent,
+        onProposalOpen: props.onProposalOpen,
+        onProposalCancel: props.onProposalCancel,
+        onProposalSubmit: props.onProposalSubmit,
+        onProposalContentChange: props.onProposalContentChange,
+        onUploadReferenceImage: props.onUploadReferenceImage,
+    };
 
     // セクションがない場合：台本入力フォーム
     if (sections.length === 0) {
@@ -100,80 +126,55 @@ export default function SectionList(props: SectionListProps) {
 
     // セクションがある場合：リスト表示
     return (
-        <div className="space-y-4 pb-20">
-            {sections.map((section) => {
-                const index = sections.findIndex(s => s.id === section.id);
+        <SectionEditProvider value={editCtx}>
+            <div className="space-y-4 pb-20">
+                {sections.map((section) => {
+                    const index = sections.findIndex(s => s.id === section.id);
 
-                return (
-                    <div key={section.id} className="space-y-4">
-                        {/* 挿入ボタン (儀長のみ) */}
-                        {isGicho && (
-                            <div className="flex justify-center opacity-0 hover:opacity-100 transition-opacity">
-                                <Button
-                                    size="small"
-                                    shape="round"
-                                    icon={<PlusOutlined />}
-                                    onClick={() => onAddSection(index)}
-                                    className="bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] border-none"
-                                >
-                                    ここにセクションを追加
-                                </Button>
-                            </div>
-                        )}
+                    return (
+                        <div key={section.id} className="space-y-4">
+                            {/* 挿入ボタン (儀長のみ) */}
+                            {isGicho && (
+                                <div className="flex justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                    <Button
+                                        size="small"
+                                        shape="round"
+                                        icon={<PlusOutlined />}
+                                        onClick={() => onAddSection(index)}
+                                        className="bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] border-none"
+                                    >
+                                        ここにセクションを追加
+                                    </Button>
+                                </div>
+                            )}
 
-                        <SectionCard
-                            section={section}
-                            index={index}
-                            projectStatus={project.status}
-                            userRole={userRole}
-                            fontSize={editorFontSize}
+                            <SectionCard
+                                section={section}
+                                index={index}
+                                projectStatus={project.status}
+                                userRole={userRole}
+                                fontSize={editorFontSize}
+                                onDelete={onDeleteSection}
+                            />
 
-                            isEditing={props.editingSection?.id === section.id}
-                            isProposing={props.proposalSection?.id === section.id}
-                            isSaving={props.isSaving}
-
-                            editContent={props.editContent}
-                            editImageInstruction={props.editImageInstruction}
-                            editReferenceImageUrl={props.editReferenceImageUrl}
-                            editReferenceImageUrls={props.editReferenceImageUrls}
-                            editAllowSubmission={props.editAllowSubmission}
-                            proposalContent={props.proposalContent}
-
-                            onEditStart={props.onEditStart}
-                            onEditCancel={props.onEditCancel}
-                            onEditSave={props.onEditSave}
-                            onDelete={props.onDeleteSection}
-
-                            onProposalOpen={props.onProposalOpen}
-                            onProposalCancel={props.onProposalCancel}
-                            onProposalSubmit={props.onProposalSubmit}
-
-                            onEditContentChange={props.onEditContentChange}
-                            onEditImageInstructionChange={props.onEditImageInstructionChange}
-                            onEditReferenceImageUrlChange={props.onEditReferenceImageUrlChange}
-                            onEditReferenceImageUrlsChange={props.onEditReferenceImageUrlsChange}
-                            onEditAllowSubmissionChange={props.onEditAllowSubmissionChange}
-                            onProposalContentChange={props.onProposalContentChange}
-                            onUploadReferenceImage={props.onUploadReferenceImage}
-                        />
-
-                        {/* 末尾追加ボタン (儀長のみ) */}
-                        {isGicho && index === sections.length - 1 && (
-                            <div className="flex justify-center pt-4">
-                                <Button
-                                    size="small"
-                                    shape="round"
-                                    icon={<PlusOutlined />}
-                                    onClick={() => onAddSection(index + 1)}
-                                    className="bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] border-none"
-                                >
-                                    末尾にセクションを追加
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-                );
-            })}
-        </div>
+                            {/* 末尾追加ボタン (儀長のみ) */}
+                            {isGicho && index === sections.length - 1 && (
+                                <div className="flex justify-center pt-4">
+                                    <Button
+                                        size="small"
+                                        shape="round"
+                                        icon={<PlusOutlined />}
+                                        onClick={() => onAddSection(index + 1)}
+                                        className="bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] border-none"
+                                    >
+                                        末尾にセクションを追加
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+        </SectionEditProvider>
     );
 }

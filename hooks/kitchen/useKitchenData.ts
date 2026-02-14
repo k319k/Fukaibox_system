@@ -21,9 +21,9 @@ export function useKitchenData(project: Project, initialSections: Section[]) {
                     getAllProposalsForProject(project.id)
                 ]);
 
-                // Cast to expected types as Drizzle returns generic objects
-                const imgs = imgsData as unknown as UploadedImage[];
-                const props = propsData as unknown as Proposal[];
+                // Ensure types match expected interfaces
+                const imgs = imgsData as UploadedImage[];
+                const props = propsData as Proposal[];
 
                 setImages(imgs);
                 setProposals(props);

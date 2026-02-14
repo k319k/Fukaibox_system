@@ -51,99 +51,102 @@ export default function KitchenDetailClient({
         }
     };
 
-    // Strict Workflow Logic
-    const availableTabs = useMemo(() => {
+    // Compute which tabs should be visible based on status and role
+    const visibleTabKeys = useMemo(() => {
         const status = project.status;
-        const tabs = [];
+        const keys: string[] = [];
 
-        // Cooking Tab: Always available
-        if (status === "cooking" || isGicho) {
-            tabs.push({
-                key: "cooking",
-                label: <div className="flex items-center gap-2"><Icon icon="mdi:pot-mix" className="text-lg" /><span className="hidden md:inline">調理</span></div>,
-                children: (
-                    <div className="p-4 md:p-6 bg-[var(--md-sys-color-surface-container-low)] min-h-[500px]">
-                        <SectionList
-                            project={project} sections={store.sections} userRole={userRole} editorFontSize={store.editorFontSize}
-                            fullScript={store.fullScript} onFullScriptChange={store.setFullScript}
-                            isCreatingSections={store.isCreatingSections} onCreateSections={store.handleCreateSections}
-                            onAddSection={store.handleAddSection} onDeleteSection={store.handleDeleteSection}
-                            editingSection={store.editingSection} editContent={store.editContent}
-                            editImageInstruction={store.editImageInstruction} editReferenceImageUrl={store.editReferenceImageUrl}
-                            editReferenceImageUrls={store.editReferenceImageUrls}
-                            editAllowSubmission={store.editAllowSubmission} isSaving={store.isSectionSaving || store.isProposalSaving}
-                            onEditStart={store.handleEditStart} onEditCancel={store.handleEditCancel} onEditSave={store.handleEditSave}
-                            onEditContentChange={store.setEditContent} onEditImageInstructionChange={store.setEditImageInstruction}
-                            onEditReferenceImageUrlChange={store.setEditReferenceImageUrl} onEditReferenceImageUrlsChange={store.setEditReferenceImageUrls} onEditAllowSubmissionChange={store.setEditAllowSubmission}
-                            proposalSection={store.proposalSection} proposalContent={store.proposalContent}
-                            onProposalOpen={store.handleProposalOpen} onProposalCancel={store.handleProposalCancel}
-                            onProposalSubmit={store.handleProposalSubmit} onProposalContentChange={store.setProposalContent}
-                            onUploadReferenceImage={store.uploadReferenceImage}
-                        />
-                    </div>
-                ),
-            });
-        }
+        if (status === "cooking" || isGicho) keys.push("cooking");
 
-        // Image Upload Tab
         const canViewImageUpload = status === "image_upload" || status === "image_selection" || status === "download" || status === "archived";
-        if (canViewImageUpload || isGicho) {
-            tabs.push({
-                key: "images",
-                label: <div className="flex items-center gap-2"><Icon icon="mdi:image-plus" className="text-lg" /><span className="hidden md:inline">画像UP</span></div>,
-                children: (
-                    <ImageUploadTab
-                        sections={store.sections} images={store.images} editorFontSize={store.editorFontSize}
-                        uploadingSectionId={store.uploadingSectionId} uploadProgress={store.uploadProgress} uploaderNames={store.userNames}
-                        projectTitle={project.title} projectId={project.id} activeUsers={activeUsers}
-                        currentUser={currentUser}
-                        // Status Update logic...
-                        onStatusUpdate={updateStatus}
-                        onTabChange={store.setSelectedTab}
-                        onAddSection={store.handleAddSection} onDeleteSection={store.handleDeleteSection}
-                        onImageUpload={store.handleImageUpload} onDeleteImage={store.handleDeleteImage} onOpenLightbox={store.openLightbox}
-                        userRole={userRole}
-                    />
-                ),
-            });
-        }
+        if (canViewImageUpload || isGicho) keys.push("images");
 
-        // Image Selection Tab
         const canViewSelection = status === "image_selection" || status === "download" || status === "archived";
-        if (canViewSelection || isGicho) {
-            tabs.push({
-                key: "selection",
-                label: <div className="flex items-center gap-2"><Icon icon="mdi:check-decagram" className="text-lg" /><span className="hidden md:inline">画像採用</span></div>,
-                children: (
-                    <ImageAdoptionTab sections={store.sections} images={store.images} uploaderNames={store.userNames}
-                        onImageSelection={store.handleImageSelection} onOpenLightbox={store.openLightbox}
-                        isReadOnly={!isGicho}
-                        userRole={userRole}
-                    />
-                ),
-            });
-        }
+        if (canViewSelection || isGicho) keys.push("selection");
 
-        // Download Tab
         const canViewDownload = status === "download" || status === "archived";
-        if (canViewDownload || isGicho) {
-            tabs.push({
-                key: "download",
-                label: <div className="flex items-center gap-2"><Icon icon="mdi:download" className="text-lg" /><span className="hidden md:inline">DL</span></div>,
-                children: (
-                    <DownloadTab isDownloading={store.downloading}
-                        onDownloadScript={store.handleDownloadScript}
-                        onDownloadScriptBodyOnly={store.handleDownloadScriptBodyOnly}
-                        onDownloadImages={store.handleDownloadImages}
-                        onDownloadProject={store.handleDownloadProject}
-                        onUploadToYouTube={() => setIsUploadModalOpen(true)}
-                    />
-                ),
-            });
-        }
+        if (canViewDownload || isGicho) keys.push("download");
 
-        return tabs;
-    }, [project, isGicho, store, userRole, activeUsers, currentUser, updateStatus]);
+        return keys;
+    }, [project.status, isGicho]);
+
+    // Build tab items — content is rendered lazily by Ant Design Tabs
+    const tabItems = visibleTabKeys.map((key) => {
+        switch (key) {
+            case "cooking":
+                return {
+                    key,
+                    label: <div className="flex items-center gap-2"><Icon icon="mdi:pot-mix" className="text-lg" /><span className="hidden md:inline">調理</span></div>,
+                    children: (
+                        <div className="p-4 md:p-6 bg-[var(--md-sys-color-surface-container-low)] min-h-[500px]">
+                            <SectionList
+                                project={project} sections={store.sections} userRole={userRole} editorFontSize={store.editorFontSize}
+                                fullScript={store.fullScript} onFullScriptChange={store.setFullScript}
+                                isCreatingSections={store.isCreatingSections} onCreateSections={store.handleCreateSections}
+                                onAddSection={store.handleAddSection} onDeleteSection={store.handleDeleteSection}
+                                editingSection={store.editingSection} editContent={store.editContent}
+                                editImageInstruction={store.editImageInstruction} editReferenceImageUrl={store.editReferenceImageUrl}
+                                editReferenceImageUrls={store.editReferenceImageUrls}
+                                editAllowSubmission={store.editAllowSubmission} isSaving={store.isSectionSaving || store.isProposalSaving}
+                                onEditStart={store.handleEditStart} onEditCancel={store.handleEditCancel} onEditSave={store.handleEditSave}
+                                onEditContentChange={store.setEditContent} onEditImageInstructionChange={store.setEditImageInstruction}
+                                onEditReferenceImageUrlChange={store.setEditReferenceImageUrl} onEditReferenceImageUrlsChange={store.setEditReferenceImageUrls} onEditAllowSubmissionChange={store.setEditAllowSubmission}
+                                proposalSection={store.proposalSection} proposalContent={store.proposalContent}
+                                onProposalOpen={store.handleProposalOpen} onProposalCancel={store.handleProposalCancel}
+                                onProposalSubmit={store.handleProposalSubmit} onProposalContentChange={store.setProposalContent}
+                                onUploadReferenceImage={store.uploadReferenceImage}
+                            />
+                        </div>
+                    ),
+                };
+            case "images":
+                return {
+                    key,
+                    label: <div className="flex items-center gap-2"><Icon icon="mdi:image-plus" className="text-lg" /><span className="hidden md:inline">画像UP</span></div>,
+                    children: (
+                        <ImageUploadTab
+                            sections={store.sections} images={store.images} editorFontSize={store.editorFontSize}
+                            uploadingSectionId={store.uploadingSectionId} uploadProgress={store.uploadProgress} uploaderNames={store.userNames}
+                            projectTitle={project.title} projectId={project.id} activeUsers={activeUsers}
+                            currentUser={currentUser}
+                            onStatusUpdate={updateStatus}
+                            onTabChange={store.setSelectedTab}
+                            onAddSection={store.handleAddSection} onDeleteSection={store.handleDeleteSection}
+                            onImageUpload={store.handleImageUpload} onDeleteImage={store.handleDeleteImage} onOpenLightbox={store.openLightbox}
+                            userRole={userRole}
+                        />
+                    ),
+                };
+            case "selection":
+                return {
+                    key,
+                    label: <div className="flex items-center gap-2"><Icon icon="mdi:check-decagram" className="text-lg" /><span className="hidden md:inline">画像採用</span></div>,
+                    children: (
+                        <ImageAdoptionTab sections={store.sections} images={store.images} uploaderNames={store.userNames}
+                            onImageSelection={store.handleImageSelection} onOpenLightbox={store.openLightbox}
+                            isReadOnly={!isGicho}
+                            userRole={userRole}
+                        />
+                    ),
+                };
+            case "download":
+                return {
+                    key,
+                    label: <div className="flex items-center gap-2"><Icon icon="mdi:download" className="text-lg" /><span className="hidden md:inline">DL</span></div>,
+                    children: (
+                        <DownloadTab isDownloading={store.downloading}
+                            onDownloadScript={store.handleDownloadScript}
+                            onDownloadScriptBodyOnly={store.handleDownloadScriptBodyOnly}
+                            onDownloadImages={store.handleDownloadImages}
+                            onDownloadProject={store.handleDownloadProject}
+                            onUploadToYouTube={() => setIsUploadModalOpen(true)}
+                        />
+                    ),
+                };
+            default:
+                return null;
+        }
+    }).filter((item): item is NonNullable<typeof item> => item !== null);
 
     // Force tab selection based on status (for non-Gicho) or if current tab is invalid
     useEffect(() => {
@@ -212,7 +215,7 @@ export default function KitchenDetailClient({
                 <Tabs
                     activeKey={store.selectedTab}
                     onChange={(k) => store.setSelectedTab(k)}
-                    items={availableTabs}
+                    items={tabItems}
                     className="kitchen-tabs"
                 />
             </Card>

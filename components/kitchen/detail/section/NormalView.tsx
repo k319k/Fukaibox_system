@@ -81,34 +81,30 @@ export default function NormalView({ section, fontSize }: NormalViewProps) {
                 </div>
             )}
 
-            {section.referenceImageUrl && (
-                <div className="bg-default-100 p-3 rounded-lg mt-4">
-                    <p className="text-xs font-semibold text-foreground-muted mb-2">参考画像</p>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                        src={section.referenceImageUrl}
-                        alt="参考画像"
-                        className="max-h-60 max-w-full rounded border border-default-200 object-contain"
-                    />
-                </div>
-            )}
-
-            {section.referenceImageUrls && section.referenceImageUrls.length > 0 && (
-                <div className="bg-default-100 p-3 rounded-lg mt-4">
-                    <p className="text-xs font-semibold text-foreground-muted mb-2">参考画像（{section.referenceImageUrls.length}枚）</p>
-                    <div className="flex gap-2 overflow-x-auto pb-2">
-                        {section.referenceImageUrls.map((url, idx) => (
-                            /* eslint-disable-next-line @next/next/no-img-element */
-                            <img
-                                key={idx}
-                                src={url}
-                                alt={`参考画像${idx + 1}`}
-                                className="max-h-60 rounded border border-default-200 object-contain flex-shrink-0"
-                            />
-                        ))}
+            {(() => {
+                // Merge referenceImageUrl and referenceImageUrls, deduplicating
+                const urls = new Set<string>();
+                if (section.referenceImageUrls) section.referenceImageUrls.forEach(u => urls.add(u));
+                if (section.referenceImageUrl) urls.add(section.referenceImageUrl);
+                const allUrls = Array.from(urls);
+                if (allUrls.length === 0) return null;
+                return (
+                    <div className="bg-default-100 p-3 rounded-lg mt-4">
+                        <p className="text-xs font-semibold text-foreground-muted mb-2">参考画像{allUrls.length > 1 ? `（${allUrls.length}枚）` : ""}</p>
+                        <div className="flex gap-2 overflow-x-auto pb-2">
+                            {allUrls.map((url, idx) => (
+                                /* eslint-disable-next-line @next/next/no-img-element */
+                                <img
+                                    key={idx}
+                                    src={url}
+                                    alt={`参考画像${idx + 1}`}
+                                    className="max-h-60 rounded border border-default-200 object-contain flex-shrink-0"
+                                />
+                            ))}
+                        </div>
                     </div>
-                </div>
-            )}
+                );
+            })()}
         </div>
     );
 }
