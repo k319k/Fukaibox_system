@@ -44,7 +44,7 @@ export function ConnectionStatus({ connectionStatus, onReconnect, compact = fals
                 }}
             >
                 <div className="flex flex-col items-center justify-center py-12">
-                    <YoutubeOutlined style={{ fontSize: 64, color: "#FF0000", marginBottom: 24 }} />
+                    <YoutubeOutlined style={{ fontSize: 64, color: "var(--color-kitchen-error-text)", marginBottom: 24 }} />
                     <h3 className="text-[var(--md-sys-color-on-surface)] text-xl mb-2">
                         YouTubeアカウントを連携
                     </h3>

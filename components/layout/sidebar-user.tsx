@@ -23,9 +23,9 @@ const roleLabels: Record<string, string> = {
 };
 
 const roleBadgeClasses: Record<string, string> = {
-    gicho: "bg-[#ffdad5] text-[#73342b]",
-    giin: "bg-[#d7f0cb] text-[#10200a]",
-    meiyo_giin: "bg-[#fbe7a6] text-[#564419]",
+    gicho: "bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)]",
+    giin: "bg-[var(--color-kitchen-success-bg)] text-[var(--color-kitchen-success-text)]",
+    meiyo_giin: "bg-[var(--color-kitchen-gold-bg)] text-[var(--color-kitchen-gold-text)]",
     guest: "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]",
 };
 

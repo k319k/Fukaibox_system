@@ -81,7 +81,7 @@ export default function UploadModal({ visible, onClose, initialTitle, initialDes
 
     return (
         <Modal
-            title={<div className="flex items-center gap-2"><YoutubeOutlined className="text-red-600" /> 動画アップロード予約 <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full"><ExperimentOutlined /> WIP</span></div>}
+            title={<div className="flex items-center gap-2"><YoutubeOutlined className="text-[var(--color-kitchen-error-text)]" /> 動画アップロード予約 <span className="text-xs bg-[var(--color-kitchen-gold-bg)] text-[var(--color-kitchen-gold-text)] px-2 py-0.5 rounded-full"><ExperimentOutlined /> WIP</span></div>}
             open={visible}
             onCancel={!uploading ? onClose : undefined}
             footer={[
@@ -116,7 +116,7 @@ export default function UploadModal({ visible, onClose, initialTitle, initialDes
                 {uploading && (
                     <div className="mb-6 text-center">
                         <Spin />
-                        <p className="text-xs text-gray-500 mt-2">メタデータを登録中...</p>
+                        <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mt-2">メタデータを登録中...</p>
                     </div>
                 )}
 
@@ -132,7 +132,7 @@ export default function UploadModal({ visible, onClose, initialTitle, initialDes
                     <DatePicker showTime format="YYYY-MM-DD HH:mm" className="w-full" size="large" />
                 </Form.Item>
 
-                <p className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
+                <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container-high)] p-3 rounded">
                     ※ 動画は一旦非公開(Private)としてアップロードされ、指定日時に公開設定が変更されます。<br />
                     ※ 現在はメタデータ登録のみ動作します。動画ファイルのアップロード機能は開発中です。
                 </p>

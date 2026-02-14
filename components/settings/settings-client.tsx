@@ -28,9 +28,9 @@ const roleLabels: Record<string, string> = {
 };
 
 const roleBadgeClasses: Record<string, { bg: string; text: string }> = {
-    gicho: { bg: "#ffdad5", text: "#73342b" },
-    giin: { bg: "#d7f0cb", text: "#10200a" },
-    meiyo_giin: { bg: "#fbe7a6", text: "#564419" },
+    gicho: { bg: "var(--color-kitchen-tag-bg)", text: "var(--color-kitchen-tag-text)" },
+    giin: { bg: "var(--color-kitchen-success-bg)", text: "var(--color-kitchen-success-text)" },
+    meiyo_giin: { bg: "var(--color-kitchen-gold-bg)", text: "var(--color-kitchen-gold-text)" },
     guest: { bg: "var(--md-sys-color-surface-container-high)", text: "var(--md-sys-color-on-surface-variant)" },
 };
 
@@ -43,8 +43,8 @@ export function SettingsClient({ user }: SettingsClientProps) {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="max-w-3xl mx-auto space-y-8">
             {/* Header */}
             <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-[#ffdad5] rounded-[16px] flex items-center justify-center">
-                    <Icon icon="material-symbols:settings-outline" className="w-6 h-6 text-[#73342b]" />
+                <div className="w-12 h-12 bg-[var(--color-kitchen-tag-bg)] rounded-[16px] flex items-center justify-center">
+                    <Icon icon="material-symbols:settings-outline" className="w-6 h-6 text-[var(--color-kitchen-tag-text)]" />
                 </div>
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">設定</h1>
@@ -55,7 +55,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
             {/* Profile Section */}
             <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
                 <div className="p-8 pb-4 flex items-center gap-4">
-                    <Icon icon="material-symbols:person-outline" className="w-5 h-5 text-[#73342b]" />
+                    <Icon icon="material-symbols:person-outline" className="w-5 h-5 text-[var(--md-sys-color-primary)]" />
                     <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">プロフィール</h2>
                 </div>
                 <div className="px-8 pb-8 space-y-6">
@@ -86,7 +86,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
             {/* Discord Connection */}
             <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
                 <div className="p-8 pb-4 flex items-center gap-4">
-                    <Icon icon="material-symbols:link" className="w-5 h-5 text-[#73342b]" />
+                    <Icon icon="material-symbols:link" className="w-5 h-5 text-[var(--md-sys-color-primary)]" />
                     <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">連携サービス</h2>
                 </div>
                 <div className="px-8 pb-8">
@@ -100,7 +100,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
                                 <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">{user.discordId ? "連携済み" : "未連携"}</p>
                             </div>
                         </div>
-                        <Tag className={`rounded-full px-3 border-none ${user.discordId ? "bg-[#d7f0cb] text-[#10200a]" : ""}`}>{user.discordId ? "接続済み" : "未接続"}</Tag>
+                        <Tag className={`rounded-full px-3 border-none ${user.discordId ? "bg-[var(--color-kitchen-success-bg)] text-[var(--color-kitchen-success-text)]" : ""}`}>{user.discordId ? "接続済み" : "未接続"}</Tag>
                     </div>
                 </div>
             </Card>
@@ -108,7 +108,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
             {/* Notification Settings */}
             <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
                 <div className="p-8 pb-4 flex items-center gap-4">
-                    <Icon icon="material-symbols:notifications-outline" className="w-5 h-5 text-[#73342b]" />
+                    <Icon icon="material-symbols:notifications-outline" className="w-5 h-5 text-[var(--md-sys-color-primary)]" />
                     <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">通知設定</h2>
                 </div>
                 <div className="px-8 pb-8 space-y-4">
@@ -133,7 +133,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
             {/* Account Actions */}
             <Card className="bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
                 <div className="p-8 pb-4 flex items-center gap-4">
-                    <Icon icon="material-symbols:shield-outline" className="w-5 h-5 text-[#73342b]" />
+                    <Icon icon="material-symbols:shield-outline" className="w-5 h-5 text-[var(--md-sys-color-primary)]" />
                     <h2 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">アカウント</h2>
                 </div>
                 <div className="px-8 pb-8">

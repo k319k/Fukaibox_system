@@ -16,10 +16,10 @@ interface User {
 }
 
 const roleConfig: Record<string, { bg: string; text: string; label: string }> = {
-    gicho: { bg: "#ffdad5", text: "#73342b", label: "儀長" },
-    giin: { bg: "#d7f0cb", text: "#10200a", label: "儀員" },
-    meiyo_giin: { bg: "#fbe7a6", text: "#564419", label: "名誉儀員" },
-    guest: { bg: "#f3f4f6", text: "#6b7280", label: "ゲスト" },
+    gicho: { bg: "var(--color-kitchen-tag-bg)", text: "var(--color-kitchen-tag-text)", label: "儀長" },
+    giin: { bg: "var(--color-kitchen-success-bg)", text: "var(--color-kitchen-success-text)", label: "儀員" },
+    meiyo_giin: { bg: "var(--color-kitchen-gold-bg)", text: "var(--color-kitchen-gold-text)", label: "名誉儀員" },
+    guest: { bg: "var(--md-sys-color-surface-container-high)", text: "var(--md-sys-color-on-surface-variant)", label: "ゲスト" },
 };
 
 const containerVariants = {
@@ -68,9 +68,9 @@ export function UsersClient() {
             transition={{ duration: 0.3 }}
         >
             <div className="flex items-center gap-3 mb-8">
-                <Icon icon="solar:users-group-rounded-bold" className="text-3xl text-[#73342b]" />
+                <Icon icon="solar:users-group-rounded-bold" className="text-3xl text-[var(--md-sys-color-primary)]" />
                 <h1 className="text-2xl font-bold text-[var(--md-sys-color-on-surface)]">儀員名簿</h1>
-                <Tag className="rounded-full bg-[#ffdad5] text-[#73342b] border-none">{users.length}名</Tag>
+                <Tag className="rounded-full bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] border-none">{users.length}名</Tag>
             </div>
 
             <motion.div
@@ -90,7 +90,7 @@ export function UsersClient() {
                                             <Avatar src={user.image || undefined} size="large" className="rounded-[16px]">
                                                 {user.discordUsername?.[0] || user.name?.[0] || "?"}
                                             </Avatar>
-                                            <span className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-[#fff8f6] ${user.isOnline ? "bg-[#10200a]" : "bg-[#6b7280]"}`} />
+                                            <span className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-[var(--md-sys-color-surface)] ${user.isOnline ? "bg-[var(--color-kitchen-online)]" : "bg-[var(--md-sys-color-outline)]"}`} />
                                         </div>
                                         <div className="flex flex-col min-w-0">
                                             <span className="font-bold text-[var(--md-sys-color-on-surface)] truncate">

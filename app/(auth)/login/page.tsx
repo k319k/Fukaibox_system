@@ -58,14 +58,14 @@ export default function LoginPage() {
     );
 
     return (
-        <div className="min-h-screen min-h-dvh flex items-center justify-center relative overflow-hidden bg-[#fff8f6] px-4 py-8">
-            <div className="absolute top-[-30%] left-[-15%] w-[500px] md:w-[700px] h-[500px] md:h-[700px] bg-[#ffdad5] rounded-full blur-[120px] md:blur-[150px] opacity-25 pointer-events-none" />
-            <div className="absolute bottom-[-30%] right-[-15%] w-[500px] md:w-[700px] h-[500px] md:h-[700px] bg-[#fbe7a6] rounded-full blur-[120px] md:blur-[150px] opacity-15 pointer-events-none" />
+        <div className="min-h-screen min-h-dvh flex items-center justify-center relative overflow-hidden bg-[var(--md-sys-color-surface)] px-4 py-8">
+            <div className="absolute top-[-30%] left-[-15%] w-[500px] md:w-[700px] h-[500px] md:h-[700px] bg-[var(--md-sys-color-primary-container)] rounded-full blur-[120px] md:blur-[150px] opacity-25 pointer-events-none" />
+            <div className="absolute bottom-[-30%] right-[-15%] w-[500px] md:w-[700px] h-[500px] md:h-[700px] bg-[var(--md-sys-color-tertiary-container)] rounded-full blur-[120px] md:blur-[150px] opacity-15 pointer-events-none" />
 
             <Card className="w-full max-w-sm md:max-w-md bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] shadow-sm border-none relative z-10">
                 <div className="flex flex-col gap-3 items-center justify-center pt-8 md:pt-12 pb-2 md:pb-4 px-6 md:px-10">
-                    <div className="w-14 h-14 md:w-16 md:h-16 bg-[#ffdad5] rounded-[16px] flex items-center justify-center">
-                        <Icon icon="material-symbols:package-2-outline" className="w-7 h-7 md:w-8 md:h-8 text-[#73342b]" />
+                    <div className="w-14 h-14 md:w-16 md:h-16 bg-[var(--color-kitchen-tag-bg)] rounded-[16px] flex items-center justify-center">
+                        <Icon icon="material-symbols:package-2-outline" className="w-7 h-7 md:w-8 md:h-8 text-[var(--color-kitchen-tag-text)]" />
                     </div>
                     <div className="text-center">
                         <h1 className="text-2xl md:text-3xl text-[var(--md-sys-color-on-surface)] font-extrabold tracking-tight">封解Box</h1>
@@ -90,7 +90,7 @@ export default function LoginPage() {
                                     type="primary"
                                     size="large"
                                     block
-                                    className="font-semibold rounded-full h-12 md:h-14 flex items-center justify-center bg-[#73342b] border-none"
+                                    className="font-semibold rounded-full h-12 md:h-14 flex items-center justify-center border-none"
                                     onClick={handleDiscordLogin}
                                     loading={isLoading}
                                     icon={!isLoading && <DiscordIcon />}
@@ -109,7 +109,7 @@ export default function LoginPage() {
                                 <Button
                                     size="large"
                                     block
-                                    className="rounded-full h-11 md:h-12 bg-[#ffdad5] text-[#73342b] border-none flex items-center justify-center gap-2"
+                                    className="rounded-full h-11 md:h-12 bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] border-none flex items-center justify-center gap-2"
                                     onClick={() => setIsGuestMode(true)}
                                     icon={<Icon icon="material-symbols:person-outline" className="w-5 h-5" />}
                                 >
@@ -166,7 +166,7 @@ export default function LoginPage() {
                     }
 
                     <div className="text-center pt-2 md:pt-4">
-                        <Link href="/register" className="text-sm font-semibold text-[#73342b] hover:underline transition-colors">
+                        <Link href="/register" className="text-sm font-semibold text-[var(--md-sys-color-primary)] hover:underline transition-colors">
                             新規登録はこちら
                         </Link>
                     </div>

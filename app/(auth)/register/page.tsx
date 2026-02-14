@@ -53,14 +53,14 @@ export default function RegisterPage() {
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-[#ffdad5]/30 to-transparent rounded-full blur-3xl" />
-                <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-[#fbe7a6]/20 to-transparent rounded-full blur-3xl" />
+                <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-[var(--md-sys-color-primary-container)] opacity-30 to-transparent rounded-full blur-3xl" />
+                <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-[var(--md-sys-color-tertiary-container)] opacity-20 to-transparent rounded-full blur-3xl" />
             </div>
 
             <Card className="w-full max-w-md bg-[var(--md-sys-color-surface-container-lowest)] rounded-[28px] border-none shadow-none">
                 <div className="flex flex-col items-center pb-4 pt-8">
-                    <div className="w-20 h-20 bg-[#73342b] rounded-[20px] flex items-center justify-center mb-4 shadow-lg">
-                        <span className="text-3xl font-bold text-[#ffdad5]">封</span>
+                    <div className="w-20 h-20 bg-[var(--md-sys-color-primary)] rounded-[20px] flex items-center justify-center mb-4 shadow-lg">
+                        <span className="text-3xl font-bold text-[var(--md-sys-color-on-primary)]">封</span>
                     </div>
                     <h1 className="text-2xl font-bold text-[var(--md-sys-color-on-surface)]">新規登録</h1>
                     <p className="text-[var(--md-sys-color-on-surface-variant)] text-sm mt-1">
@@ -74,7 +74,7 @@ export default function RegisterPage() {
                     )}
 
                     <div>
-                        <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">名前 <span className="text-red-500">*</span></label>
+                        <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-2 block">名前 <span className="text-[var(--color-kitchen-error-text)]">*</span></label>
                         <Input
                             size="large"
                             value={name}
@@ -123,7 +123,7 @@ export default function RegisterPage() {
                         type="primary"
                         size="large"
                         block
-                        className="mt-2 rounded-full bg-[#73342b] border-none"
+                        className="mt-2 rounded-full border-none"
                         onClick={handleRegister}
                         loading={isLoading}
                     >
@@ -131,7 +131,7 @@ export default function RegisterPage() {
                     </Button>
 
                     <div className="text-center mt-2">
-                        <Link href="/login" className="text-sm text-[#73342b] hover:underline">
+                        <Link href="/login" className="text-sm text-[var(--md-sys-color-primary)] hover:underline">
                             既にアカウントをお持ちの方はこちら
                         </Link>
                     </div>
