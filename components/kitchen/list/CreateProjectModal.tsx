@@ -104,7 +104,7 @@ export default function CreateProjectModal({ isOpen, onClose }: CreateProjectMod
             <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-2">
                     <label className="text-sm font-medium text-[var(--md-sys-color-on-surface)]">
-                        タイトル <span className="text-red-500">*</span>
+                        タイトル <span className="text-[var(--color-kitchen-error-text)]">*</span>
                     </label>
                     <Input
                         placeholder="例: 封解公儀の新年挨拶"

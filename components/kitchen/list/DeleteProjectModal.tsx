@@ -38,8 +38,8 @@ export default function DeleteProjectModal({ isOpen, onClose, project, onProject
             onCancel={onClose}
             title={
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-[#ffdad6] rounded-lg">
-                        <Icon icon="mdi:delete-alert" className="text-2xl text-[#93000a]" />
+                    <div className="p-2 bg-[var(--color-kitchen-error-bg)] rounded-lg">
+                        <Icon icon="mdi:delete-alert" className="text-2xl text-[var(--color-kitchen-error-text)]" />
                     </div>
                     <h2 className="text-xl font-bold">削除の確認</h2>
                 </div>
@@ -65,7 +65,7 @@ export default function DeleteProjectModal({ isOpen, onClose, project, onProject
             <p className="text-[var(--md-sys-color-on-surface-variant)]">
                 「<span className="font-semibold text-[var(--md-sys-color-on-surface)]">{project?.title}</span>」を削除しますか？
             </p>
-            <p className="text-sm text-red-500 mt-2">
+            <p className="text-sm text-[var(--color-kitchen-error-text)] mt-2">
                 この操作は取り消せません。関連するセクション・画像もすべて削除されます。
             </p>
         </Modal>

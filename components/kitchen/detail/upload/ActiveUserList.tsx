@@ -28,14 +28,14 @@ export default function ActiveUserList({ activeUsers, images, uploaderNames }: A
             const status = user?.status || "not_participating";
 
             let statusText = "不参加";
-            let statusColor = "bg-gray-100 text-gray-500";
+            let statusColor = "bg-[var(--color-kitchen-muted-bg)] text-[var(--color-kitchen-muted)]";
 
             if (status === "participating") {
                 statusText = "参加中";
-                statusColor = "bg-blue-100 text-blue-700";
+                statusColor = "bg-[var(--color-kitchen-info-bg)] text-[var(--color-kitchen-info-text)]";
             } else if (status === "completed") {
                 statusText = "提出完了";
-                statusColor = "bg-green-100 text-green-700";
+                statusColor = "bg-[var(--color-kitchen-success-bg)] text-[var(--color-kitchen-success-text)]";
             }
 
             if (userImages.length > 0) {
@@ -70,7 +70,7 @@ export default function ActiveUserList({ activeUsers, images, uploaderNames }: A
                 <div key={user.userId} className="flex items-center gap-2 pr-4 min-w-max border-r last:border-0 border-[var(--md-sys-color-outline-variant)]">
                     <div className="relative">
                         <Avatar src={user.userImage} icon={<Icon icon="mdi:account" />} size="small" />
-                        {user.isActive && <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-white" />}
+                        {user.isActive && <span className="absolute bottom-0 right-0 w-2 h-2 bg-[var(--color-kitchen-online)] rounded-full border border-[var(--md-sys-color-surface)]" />}
                     </div>
                     <div className="flex flex-col">
                         <span className="text-xs font-bold text-[var(--md-sys-color-on-surface)]">{user.userName}</span>

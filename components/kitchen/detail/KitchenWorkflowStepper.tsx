@@ -37,7 +37,7 @@ export default function KitchenWorkflowStepper({
                             <li key={step.label} className={cn("relative", stepIdx !== steps.length - 1 ? "pr-8 sm:pr-20" : "")}>
                                 {stepIdx !== steps.length - 1 && (
                                     <div
-                                        className="absolute top-4 left-0 -ml-px mt-0.5 h-0.5 w-full bg-gray-200"
+                                        className="absolute top-4 left-0 -ml-px mt-0.5 h-0.5 w-full bg-[var(--md-sys-color-outline-variant)]"
                                         aria-hidden="true"
                                     >
                                         <div
@@ -59,16 +59,16 @@ export default function KitchenWorkflowStepper({
                                                 "relative z-10 flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-300",
                                                 isCompletedEffective || isCurrentEffective
                                                     ? "bg-[var(--md-sys-color-primary)]"
-                                                    : "bg-gray-200 group-hover:bg-gray-300"
+                                                    : "bg-[var(--md-sys-color-outline-variant)] group-hover:bg-[var(--md-sys-color-outline)]"
                                             )}
                                         >
                                             {isCompletedEffective ? (
-                                                <CheckIcon className="h-5 w-5 text-white" aria-hidden="true" />
+                                                <CheckIcon className="h-5 w-5 text-[var(--md-sys-color-on-primary)]" aria-hidden="true" />
                                             ) : (
                                                 <span
                                                     className={cn(
                                                         "h-2.5 w-2.5 rounded-full",
-                                                        isCurrentEffective ? "bg-white" : "bg-transparent"
+                                                        isCurrentEffective ? "bg-[var(--md-sys-color-on-primary)]" : "bg-transparent"
                                                     )}
                                                 />
                                             )}
@@ -79,7 +79,7 @@ export default function KitchenWorkflowStepper({
                                             "mt-2 text-xs font-medium uppercase transition-colors duration-300",
                                             isCurrentEffective
                                                 ? "text-[var(--md-sys-color-primary)]"
-                                                : "text-gray-500"
+                                                : "text-[var(--md-sys-color-on-surface-variant)]"
                                         )}
                                     >
                                         {step.label}

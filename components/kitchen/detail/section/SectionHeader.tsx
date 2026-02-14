@@ -56,7 +56,7 @@ export default function SectionHeader({
                     </Tag>
                 )}
                 {section.isGenerating && (
-                    <Tag className="rounded-full bg-blue-100 text-blue-700 border-none flex items-center gap-1 animate-pulse">
+                    <Tag className="rounded-full bg-[var(--color-kitchen-info-bg)] text-[var(--color-kitchen-info-text)] border-none flex items-center gap-1 animate-pulse">
                         <Icon icon="mdi:creation" className="animate-spin" />
                         画像生成中
                     </Tag>
@@ -107,7 +107,7 @@ export default function SectionHeader({
                                 <Button
                                     size="small"
                                     shape="circle"
-                                    className="bg-[#ffdad5] text-[#73342b] border-none"
+                                    className="bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] border-none"
                                     icon={<EditOutlined />}
                                     onClick={onEditStart}
                                     title="編集"
@@ -119,7 +119,7 @@ export default function SectionHeader({
                                 <Button
                                     size="small"
                                     shape="circle"
-                                    className="bg-[#ffdad6] text-[#93000a] border-none"
+                                    className="bg-[var(--color-kitchen-error-bg)] text-[var(--color-kitchen-error-text)] border-none"
                                     icon={<DeleteOutlined />}
                                     onClick={onDelete}
                                     title="削除"
@@ -131,7 +131,7 @@ export default function SectionHeader({
                                 <Button
                                     size="small"
                                     shape="circle"
-                                    className="bg-[#fbe7a6] text-[#564419] border-none"
+                                    className="bg-[var(--color-kitchen-gold-bg)] text-[var(--color-kitchen-gold-text)] border-none"
                                     icon={<CommentOutlined />}
                                     onClick={onProposalOpen}
                                     title="推敲提案"

@@ -130,7 +130,7 @@ export default function EditForm({
                                 <button
                                     type="button"
                                     onClick={() => handleRemoveImage(idx)}
-                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="absolute -top-2 -right-2 bg-[var(--color-kitchen-error-text)] text-[var(--color-kitchen-error-bg)] rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                                     title="削除"
                                 >
                                     ×

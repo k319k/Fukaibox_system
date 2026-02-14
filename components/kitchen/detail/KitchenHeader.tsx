@@ -80,12 +80,12 @@ export default function KitchenHeader({
                                                 icon={<Icon icon="mdi:account" />}
                                                 className="border-2 border-[var(--md-sys-color-surface)] shadow-sm cursor-help"
                                             />
-                                            <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-green-500 border border-white"></span>
+                                            <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-[var(--color-kitchen-online)] border border-[var(--md-sys-color-surface)]"></span>
                                         </div>
                                     </Tooltip>
                                 ))}
                                 <span className="ml-3 text-label-medium text-[var(--md-sys-color-on-surface-variant)] flex items-center gap-1">
-                                    <span className="w-2 h-2 rounded-full bg-green-500 inline-block animate-pulse"></span>
+                                    <span className="w-2 h-2 rounded-full bg-[var(--color-kitchen-online)] inline-block animate-pulse"></span>
                                     {activeUsers.length}人が参加中
                                 </span>
                             </div>

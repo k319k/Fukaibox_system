@@ -73,6 +73,17 @@
   --color-kitchen-gold-text: #564419;
   --color-kitchen-success-bg: #d7f0cb;
   --color-kitchen-success-text: #10200a;
+
+  /* Semantic status tokens */
+  --color-kitchen-error-bg: #ffdad6;
+  --color-kitchen-error-text: #93000a;
+  --color-kitchen-info-bg: #d3e4ff;
+  --color-kitchen-info-text: #001c3a;
+  --color-kitchen-link: #941e32;
+  --color-kitchen-link-hover: #73342b;
+  --color-kitchen-online: #386a20;
+  --color-kitchen-muted: #85736e;
+  --color-kitchen-muted-bg: var(--md-sys-color-surface-container);
 }
 
 /* Dark Theme (Preferred) */
@@ -128,6 +139,17 @@
     --color-kitchen-gold-text: #dec48c;
     --color-kitchen-success-bg: #1a3a12;
     --color-kitchen-success-text: #8dd87a;
+
+    /* Semantic status tokens (dark) */
+    --color-kitchen-error-bg: #93000a;
+    --color-kitchen-error-text: #ffdad6;
+    --color-kitchen-info-bg: #003062;
+    --color-kitchen-info-text: #a9c7ff;
+    --color-kitchen-link: #ffb2be;
+    --color-kitchen-link-hover: #ffd9de;
+    --color-kitchen-online: #8dd87a;
+    --color-kitchen-muted: #a08c89;
+    --color-kitchen-muted-bg: var(--md-sys-color-surface-container);
   }
 }
 

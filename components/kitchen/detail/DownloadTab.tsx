@@ -101,9 +101,9 @@ export default function DownloadTab({
                             <Button
                                 block
                                 size="large"
-                                icon={<Icon icon="mdi:youtube" className="text-xl text-red-600" />}
+                                icon={<Icon icon="mdi:youtube" className="text-xl text-[var(--color-kitchen-error-text)]" />}
                                 onClick={onUploadToYouTube}
-                                className="border-red-200 text-red-700 bg-red-50 hover:bg-red-100"
+                                className="border-[var(--md-sys-color-outline-variant)] text-[var(--color-kitchen-error-text)] bg-[var(--color-kitchen-error-bg)] hover:opacity-80"
                             >
                                 YouTubeへ投稿予約
                             </Button>
