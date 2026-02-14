@@ -23,6 +23,20 @@ import { env } from "@/lib/env";
 import crypto from "crypto";
 import { addDays, startOfDay } from "date-fns";
 
+// Batch size for concurrent API requests
+const BATCH_SIZE = 5;
+
+// Helper to batch process promises
+async function batchProcess<T, R>(items: T[], batchSize: number, processItem: (item: T) => Promise<R>): Promise<R[]> {
+    const results: R[] = [];
+    for (let i = 0; i < items.length; i += batchSize) {
+        const batch = items.slice(i, i + batchSize);
+        const batchResults = await Promise.all(batch.map(processItem));
+        results.push(...batchResults);
+    }
+    return results;
+}
+
 // =============================================
 // YouTube連携管理
 // =============================================
@@ -536,30 +550,91 @@ export async function getAdvancedAnalytics() {
                     });
                 }
 
-                return videos.map((video, index) => {
+                return await batchProcess(videos, BATCH_SIZE, async (video) => {
+                    const index = videos.indexOf(video);
                     const analytics = analyticsMap.get(video.videoId) || {};
 
-                    // Default values if analytics missing (e.g. no views in period?)
+                    // Default values if analytics missing
                     const views = analytics.views || video.viewCount || 0;
                     const likes = analytics.likes || video.likeCount || 0;
                     const comments = analytics.comments || video.commentCount || 0;
 
                     // Calculated fields
-                    // 文字数圧縮度: 秒(一文字) = Duration / CharCount
                     const compressionRateSecPerChar = video.charCount > 0 ? video.durationSec / video.charCount : 0;
-                    // 文字数圧縮度: 文字数(1s) = CharCount / Duration
                     const compressionRateCharPerSec = video.durationSec > 0 ? video.charCount / video.durationSec : 0;
-
-                    // エンゲージメントビュー (仮計算)
-                    // High value on likes/comments
                     const engagementView = views + (likes * 10) + (comments * 20);
+
+                    // Fetch Traffic Source & Demographics (Parallel within batch)
+                    let trafficSourceData: any = {};
+                    let demographicsData: any = {};
+
+                    try {
+                        const [tsRes, demoRes] = await Promise.all([
+                            getAnalytics(token, startDate, today, ["views"], "insightTrafficSourceType", `video==${video.videoId}`, "-views"),
+                            getAnalytics(token, startDate, today, ["viewerPercentage"], "ageGroup,gender", `video==${video.videoId}`)
+                        ]);
+
+                        // Map Traffic Source
+                        if (tsRes.rows) {
+                            const tsMap = new Map(tsRes.rows.map((r: any) => [r[0], r[1]]));
+                            trafficSourceData = {
+                                trafficSourceShorts: tsMap.get("SHORTS") || 0,
+                                trafficSourceChannel: tsMap.get("CHANNEL") || 0,
+                                trafficSourceBrowse: tsMap.get("BROWSE_FEATURES") || 0,
+                                trafficSourceSearch: tsMap.get("YOUTUBE_SEARCH") || 0,
+                                trafficSourceSound: tsMap.get("SOUND_PAGE") || 0,
+                                // Sum others for 'Other'
+                                trafficSourceOther: Array.from(tsMap.entries())
+                                    .filter(([k]) => !["SHORTS", "CHANNEL", "BROWSE_FEATURES", "YOUTUBE_SEARCH", "SOUND_PAGE"].includes(k))
+                                    .reduce((acc, [, v]) => acc + (v as number), 0)
+                            };
+                        }
+
+                        // Map Demographics
+                        if (demoRes.rows) {
+                            // Rows: [ageGroup, gender, viewerPercentage]
+                            // We need to aggregate by Age and by Gender separately?
+                            // Actually dimensions=ageGroup,gender returns combinations e.g. ["age13-17", "male", 5.2]
+                            // We sum them up for column headers
+
+                            let genderMale = 0, genderFemale = 0;
+                            const ageMap = new Map<string, number>();
+
+                            demoRes.rows.forEach((row: any) => {
+                                const age = row[0];
+                                const gender = row[1];
+                                const pct = row[2];
+
+                                if (gender === "male") genderMale += pct;
+                                if (gender === "female") genderFemale += pct;
+
+                                ageMap.set(age, (ageMap.get(age) || 0) + pct);
+                            });
+
+                            demographicsData = {
+                                genderMale,
+                                genderFemale,
+                                age13_17: ageMap.get("age13-17") || 0,
+                                age18_24: ageMap.get("age18-24") || 0,
+                                age25_34: ageMap.get("age25-34") || 0,
+                                age35_44: ageMap.get("age35-44") || 0,
+                                age45_54: ageMap.get("age45-54") || 0,
+                                age55_64: ageMap.get("age55-64") || 0,
+                                age65_plus: ageMap.get("age65-") || 0,
+                            };
+                        }
+
+                    } catch (e) {
+                        console.error(`Detailed analytics error for ${video.videoId}`, e);
+                        // Continue with partial data
+                    }
 
                     return {
                         ...video,
-                        publicId: `VID-${index + 1}`, // 仮
+                        publicId: `VID-${index + 1}`,
                         dayOfWeek: ["日", "月", "火", "水", "木", "金", "土"][new Date(video.publishedAt).getDay()],
 
-                        // Analytics Override/Supplement
+                        // Analytics Override
                         views,
                         likes,
                         comments,
@@ -567,22 +642,38 @@ export async function getAdvancedAnalytics() {
                         subscribersLost: analytics.subscribersLost || 0,
                         avgViewPercentage: analytics.averageViewPercentage || 0,
                         shares: analytics.shares || 0,
+                        estimatedMinutesWatched: analytics.estimatedMinutesWatched || 0,
+                        cardClicks: analytics.cardClicks || 0,
+                        endScreenElementClicks: analytics.endScreenElementClicks || 0,
 
                         // Derived
                         compressionRateSecPerChar,
                         compressionRateCharPerSec,
                         engagementView,
 
-                        // Raw analytics if needed
-                        ...analytics
+                        // Detailed
+                        ...trafficSourceData,
+                        ...demographicsData
                     };
                 });
             },
-            ['youtube-advanced-analytics-v1'],
+            ['youtube-advanced-analytics-v2-full'], // Changed key for full implementation
             { revalidate: 3600 }
         );
 
         const data = await getCachedAdvancedData(accessToken);
+
+        // --- 4. Populate Demographics & Traffic Source (Parallel Fetching) ---
+        // This part is NOT cached separately inside the unstable_cache above because it's too complex?
+        // Wait, unstable_cache callback must return the full data.
+        // So I need to move this logic INSIDE the unstable_cache callback.
+        // But unstable_cache has timeout? 
+        // Vercel serverless function execution timeout is 10s (Hobby) or 60s (Pro).
+        // 50 videos * 2 request = 100 requests. Even with batching, it might take > 10s.
+        // However, I must try.
+
+        // I'll rewrite the unstable_cache block to include step 4.
+
         return { success: true, data };
 
     } catch (error: any) {
