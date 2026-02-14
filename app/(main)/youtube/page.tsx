@@ -5,7 +5,7 @@ import { Card, Button, Spin, message, Result, Segmented } from "antd";
 import { GoogleOutlined, ReloadOutlined, UploadOutlined, CalendarOutlined, DisconnectOutlined } from "@ant-design/icons";
 import { Icon } from "@iconify/react";
 import { getYouTubeConnectionStatus, getYouTubeConnectUrl, disconnectYouTube, getChannelAnalytics, getScheduledVideos } from "@/app/actions/youtube-manager";
-import AnalyticsPanel from "@/components/youtube/analytics-panel";
+import { AnalyticsPanel } from "@/components/youtube/analytics-panel";
 import UploadModal from "@/components/youtube/upload-modal";
 import { M3Button } from "@/components/ui/m3-button";
 import { format, subDays } from "date-fns";
