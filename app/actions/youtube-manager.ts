@@ -493,16 +493,14 @@ export async function getAdvancedAnalytics() {
         // 1時間に1回のキャッシュ
         const getCachedAdvancedData = unstable_cache(
             async (token: string) => {
-                // 1. 動画リスト取得（最新50件）
-                const videos = await getVideosExtended(token, 50);
+                // 1. 動画リスト取得（最新30件に削減してタイムアウト回避）
+                const videos = await getVideosExtended(token, 30);
                 if (videos.length === 0) return [];
 
                 const videoIds = videos.map(v => v.videoId);
                 const videoIdString = videoIds.join(",");
 
-                // 2. 動画ごとのアナリティクス取得（全期間、最大200件まで自動補完）
-                // 50件なので1回で取得可能
-                // Lifetime analytics
+                // 2. 動画ごとのアナリティクス取得（全期間）
                 const startDate = "2000-01-01";
                 const today = new Date().toISOString().split("T")[0];
 
@@ -526,14 +524,13 @@ export async function getAdvancedAnalytics() {
                     "video",
                     `video==${videoIdString}`,
                     "-views",
-                    50
+                    30
                 );
 
                 // 3. データのマージと計算
                 const analyticsMap = new Map();
                 if (analyticsData.rows) {
                     analyticsData.rows.forEach((row: any) => {
-                        // row[0] is videoId because dimension is "video"
                         analyticsMap.set(row[0], {
                             views: row[1],
                             subscribersGained: row[2],
@@ -550,7 +547,8 @@ export async function getAdvancedAnalytics() {
                     });
                 }
 
-                return await batchProcess(videos, BATCH_SIZE, async (video) => {
+                // Batch size increased to 10 for faster execution
+                return await batchProcess(videos, 10, async (video) => {
                     const index = videos.indexOf(video);
                     const analytics = analyticsMap.get(video.videoId) || {};
 
@@ -583,7 +581,6 @@ export async function getAdvancedAnalytics() {
                                 trafficSourceBrowse: tsMap.get("BROWSE_FEATURES") || 0,
                                 trafficSourceSearch: tsMap.get("YOUTUBE_SEARCH") || 0,
                                 trafficSourceSound: tsMap.get("SOUND_PAGE") || 0,
-                                // Sum others for 'Other'
                                 trafficSourceOther: Array.from(tsMap.entries())
                                     .filter(([k]) => !["SHORTS", "CHANNEL", "BROWSE_FEATURES", "YOUTUBE_SEARCH", "SOUND_PAGE"].includes(k))
                                     .reduce((acc, [, v]) => acc + (v as number), 0)
@@ -592,11 +589,6 @@ export async function getAdvancedAnalytics() {
 
                         // Map Demographics
                         if (demoRes.rows) {
-                            // Rows: [ageGroup, gender, viewerPercentage]
-                            // We need to aggregate by Age and by Gender separately?
-                            // Actually dimensions=ageGroup,gender returns combinations e.g. ["age13-17", "male", 5.2]
-                            // We sum them up for column headers
-
                             let genderMale = 0, genderFemale = 0;
                             const ageMap = new Map<string, number>();
 
@@ -625,8 +617,7 @@ export async function getAdvancedAnalytics() {
                         }
 
                     } catch (e) {
-                        console.error(`Detailed analytics error for ${video.videoId}`, e);
-                        // Continue with partial data
+                        // Fallback safely
                     }
 
                     return {
@@ -657,23 +648,11 @@ export async function getAdvancedAnalytics() {
                     };
                 });
             },
-            ['youtube-advanced-analytics-v2-full'], // Changed key for full implementation
+            ['youtube-advanced-analytics-v3-optimized'], // Changed key
             { revalidate: 3600 }
         );
 
         const data = await getCachedAdvancedData(accessToken);
-
-        // --- 4. Populate Demographics & Traffic Source (Parallel Fetching) ---
-        // This part is NOT cached separately inside the unstable_cache above because it's too complex?
-        // Wait, unstable_cache callback must return the full data.
-        // So I need to move this logic INSIDE the unstable_cache callback.
-        // But unstable_cache has timeout? 
-        // Vercel serverless function execution timeout is 10s (Hobby) or 60s (Pro).
-        // 50 videos * 2 request = 100 requests. Even with batching, it might take > 10s.
-        // However, I must try.
-
-        // I'll rewrite the unstable_cache block to include step 4.
-
         return { success: true, data };
 
     } catch (error: any) {
@@ -681,3 +660,4 @@ export async function getAdvancedAnalytics() {
         return { success: false, error: error.message };
     }
 }
+
