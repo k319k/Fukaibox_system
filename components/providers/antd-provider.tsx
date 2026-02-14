@@ -5,24 +5,24 @@ import jaJP from "antd/locale/ja_JP";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 
 // Material Design 3 (M3) Theme Adaptation
-// Reference: https://m3.material.io/styles/color/the-color-system/tokens
+// Ant Design v5+ supports CSS variables in theme tokens
 const theme = {
     token: {
-        // Colors
-        colorPrimary: "#73342b", // Primary (Carmine)
-        colorSuccess: "#10200a", // Custom green
-        colorWarning: "#564419", // Custom brown/gold
-        colorError: "#BA1A1A",   // Error (M3 standard)
-        colorInfo: "#73342b",
+        // Colors - Use CSS variables so they adapt to dark mode automatically
+        colorPrimary: "var(--md-sys-color-primary)",
+        colorSuccess: "var(--color-kitchen-success-text)",
+        colorWarning: "var(--color-kitchen-gold-text)",
+        colorError: "var(--color-kitchen-error-text)",
+        colorInfo: "var(--md-sys-color-primary)",
 
-        // Surface Colors (M3 Hierarchy)
-        colorBgLayout: "#fff8f6",    // Surface (Background)
-        colorBgContainer: "#fceae5", // Surface Container (M3 default container color)
-        colorBgElevated: "#fbe7a6",  // Surface Container (Dialogs/Popovers - slightly different for contrast)
+        // Surface Colors (M3 Hierarchy) - Use CSS variables
+        colorBgLayout: "var(--md-sys-color-surface)",
+        colorBgContainer: "var(--md-sys-color-surface-container)",
+        colorBgElevated: "var(--md-sys-color-surface-container-low)",
 
-        // Borders - M3 Borderless design mostly, but define for Outlined components
-        colorBorder: "#85736f",       // Outline
-        colorBorderSecondary: "transparent", // Remove default card borders
+        // Borders
+        colorBorder: "var(--md-sys-color-outline)",
+        colorBorderSecondary: "transparent",
 
         // Typography - Headline vs Body distinction
         fontFamily: "'Inter', 'Noto Sans JP', sans-serif",
@@ -32,10 +32,10 @@ const theme = {
         fontSizeHeading4: 22,
 
         // Shapes (Corner Radius)
-        borderRadius: 12,   // M3 Medium (12dp) - Default for many small components
-        borderRadiusLG: 16, // M3 Large (16dp) - For Cards
-        borderRadiusSM: 8,  // M3 Small (8dp)
-        borderRadiusXS: 4,  // M3 Extra Small (4dp)
+        borderRadius: 12,
+        borderRadiusLG: 16,
+        borderRadiusSM: 8,
+        borderRadiusXS: 4,
 
         // Shadows (Elevation) - Remove shadows for flat, color-based hierarchy
         boxShadow: "none",
@@ -56,44 +56,44 @@ const theme = {
     },
     components: {
         Button: {
-            borderRadius: 9999, // Full accessible (Pill shape)
+            borderRadius: 9999,
             controlHeight: 40,
             controlHeightLG: 48,
             controlHeightSM: 32,
-            primaryShadow: "none", // Remove shadow from primary button
+            primaryShadow: "none",
             defaultShadow: "none",
             dangerShadow: "none",
         },
         Card: {
-            borderRadiusLG: 12, // M3 Card corner (Medium)
-            boxShadowTertiary: "none", // Remove shadow
-            colorBorderSecondary: "transparent", // Hide border
-            colorBgContainer: "#fceae5", // Surface Container (Default Card)
-            headerbg: "transparent", // Transparent header
+            borderRadiusLG: 12,
+            boxShadowTertiary: "none",
+            colorBorderSecondary: "transparent",
+            colorBgContainer: "var(--md-sys-color-surface-container)",
+            headerbg: "transparent",
         },
         Modal: {
-            borderRadiusLG: 28, // Dialogs (Extra Large 28dp)
-            boxShadow: "0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15)", // Dialogs need slight elevation
+            borderRadiusLG: 28,
+            boxShadow: "0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15)",
         },
         Input: {
-            borderRadius: 4, // Text Fields usually have small corners in M3 unless search
-            controlHeight: 56, // Tall inputs (M3 spec)
+            borderRadius: 4,
+            controlHeight: 56,
             activeShadow: "none",
-            colorBorder: "#85736f", // Outline color
+            colorBorder: "var(--md-sys-color-outline)",
         },
         Select: {
             borderRadius: 4,
             controlHeight: 56,
             controlOutline: "none",
-            colorBorder: "#85736f",
+            colorBorder: "var(--md-sys-color-outline)",
         },
         Tag: {
-            borderRadiusSM: 8, // Assist Chip style
+            borderRadiusSM: 8,
         },
         Layout: {
-            colorBgBody: "#fff8f6",
-            colorBgHeader: "#fff8f6",
-            colorBgTrigger: "#fff8f6",
+            colorBgBody: "var(--md-sys-color-surface)",
+            colorBgHeader: "var(--md-sys-color-surface)",
+            colorBgTrigger: "var(--md-sys-color-surface)",
         }
     },
 };
