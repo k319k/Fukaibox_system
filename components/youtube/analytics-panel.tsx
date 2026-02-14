@@ -4,7 +4,8 @@ import { useMemo } from "react";
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
-import { Card, Statistic, Segmented, Spin, Empty } from "antd";
+import { Card, Statistic, Segmented, Spin, Empty, Table } from "antd";
+import type { TableProps } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
 
 interface AnalyticsPanelProps {
@@ -145,6 +146,47 @@ export function AnalyticsPanel({ data, loading, period, onPeriodChange }: Analyt
                     </ResponsiveContainer>
                 </div>
             </Card>
-        </div>
+
+            <Card
+                className="w-full bg-[var(--md-sys-color-surface-container-low)] border-none"
+                title="詳細データ"
+            >
+                <Table
+                    dataSource={chartData}
+                    columns={[
+                        {
+                            title: '日付',
+                            dataIndex: 'date',
+                            key: 'date',
+                        },
+                        {
+                            title: '視聴回数',
+                            dataIndex: 'views',
+                            key: 'views',
+                            render: (val) => `${val.toLocaleString()} 回`,
+                            align: 'right',
+                        },
+                        {
+                            title: '総再生時間 (分)',
+                            dataIndex: 'watchTime',
+                            key: 'watchTime',
+                            render: (val) => `${val.toLocaleString()} 分`, // Previously rounded to minutes
+                            align: 'right',
+                        },
+                        {
+                            title: '平均視聴時間 (秒)',
+                            dataIndex: 'avgViewDuration',
+                            key: 'avgViewDuration',
+                            render: (val) => `${val} 秒`, // Raw seconds?
+                            align: 'right',
+                        },
+                    ]}
+                    pagination={{ pageSize: 10 }}
+                    size="small"
+                    rowKey="date"
+                    scroll={{ x: true }}
+                />
+            </Card>
+        </div >
     );
 }
