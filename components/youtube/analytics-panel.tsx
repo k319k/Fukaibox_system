@@ -14,7 +14,7 @@ interface AnalyticsPanelProps {
     onPeriodChange: (val: string) => void;
 }
 
-export default function AnalyticsPanel({ data, loading, period, onPeriodChange }: AnalyticsPanelProps) {
+export function AnalyticsPanel({ data, loading, period, onPeriodChange }: AnalyticsPanelProps) {
 
     const chartData = useMemo(() => {
         if (!data?.rows) return [];

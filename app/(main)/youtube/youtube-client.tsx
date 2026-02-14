@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Tabs, message } from "antd";
 import { BarChartOutlined, CalendarOutlined } from "@ant-design/icons";
 import { ConnectionStatus } from "@/components/youtube/connection-status";
 import { AnalyticsPanel } from "@/components/youtube/analytics-panel";
 import { SchedulePanel } from "@/components/youtube/schedule-panel";
+import { getChannelAnalytics } from "@/app/actions/youtube-manager";
+import { subDays, format } from "date-fns";
 
 interface YouTubeClientProps {
     initialConnectionStatus: any;
@@ -16,19 +18,58 @@ export function YouTubeClient({ initialConnectionStatus, initialScheduledVideos 
     const [connectionStatus, setConnectionStatus] = useState(initialConnectionStatus);
     const [scheduledVideos, setScheduledVideos] = useState(initialScheduledVideos);
 
+    // Analytics state
+    const [analyticsData, setAnalyticsData] = useState<any>(null);
+    const [analyticsLoading, setAnalyticsLoading] = useState(false);
+    const [period, setPeriod] = useState("30d");
+
     // URL paramsからメッセージを表示
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         if (params.get("connected") === "true") {
             message.success("YouTubeアカウントを連携しました");
             window.history.replaceState({}, "", "/youtube");
-            // 再読み込みして最新状態を取得
             window.location.reload();
         } else if (params.get("error")) {
             message.error("YouTube連携に失敗しました");
             window.history.replaceState({}, "", "/youtube");
         }
     }, []);
+
+    // アナリティクスデータ取得
+    const fetchAnalytics = useCallback(async (p: string) => {
+        setAnalyticsLoading(true);
+        try {
+            const days = p === "7d" ? 7 : p === "90d" ? 90 : 30;
+            const endDate = format(new Date(), "yyyy-MM-dd");
+            const startDate = format(subDays(new Date(), days), "yyyy-MM-dd");
+
+            const result = await getChannelAnalytics(startDate, endDate);
+            if (result.success) {
+                setAnalyticsData(result.data);
+            } else {
+                console.error("Analytics fetch failed:", result.error);
+                setAnalyticsData(null);
+            }
+        } catch (error) {
+            console.error("Analytics fetch error:", error);
+            setAnalyticsData(null);
+        } finally {
+            setAnalyticsLoading(false);
+        }
+    }, []);
+
+    // 接続済みの場合、初回データ取得
+    useEffect(() => {
+        if (connectionStatus.connected) {
+            fetchAnalytics(period);
+        }
+    }, [connectionStatus.connected]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handlePeriodChange = (val: string) => {
+        setPeriod(val);
+        fetchAnalytics(val);
+    };
 
     const handleReconnect = () => {
         window.location.reload();
@@ -83,7 +124,14 @@ export function YouTubeClient({ initialConnectionStatus, initialScheduledVideos 
                                     <BarChartOutlined /> アナリティクス
                                 </span>
                             ),
-                            children: <AnalyticsPanel />,
+                            children: (
+                                <AnalyticsPanel
+                                    data={analyticsData}
+                                    loading={analyticsLoading}
+                                    period={period}
+                                    onPeriodChange={handlePeriodChange}
+                                />
+                            ),
                         },
                         {
                             key: "schedule",
