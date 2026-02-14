@@ -71,6 +71,7 @@ export function AnalyticsPanel({ data, loading, period, onPeriodChange }: Analyt
         return { views: totalViews, watchTime: Math.round(totalWatchTime) }; // Total Minutes
     }, [data]);
 
+    // Early return ONLY if loading. If data is empty, we still might want to show Advanced Tab.
     if (loading) {
         return (
             <Card className="min-h-[400px] flex items-center justify-center">
@@ -79,24 +80,7 @@ export function AnalyticsPanel({ data, loading, period, onPeriodChange }: Analyt
         );
     }
 
-    if (!data || chartData.length === 0) {
-        return (
-            <Card className="min-h-[400px] flex flex-col items-center justify-center">
-                <Empty description="データがありません。期間を変更してみてください。" />
-                <div className="mt-4">
-                    <Segmented
-                        options={[
-                            { label: '7日間', value: '7d' },
-                            { label: '30日間', value: '30d' },
-                            { label: '90日間', value: '90d' },
-                        ]}
-                        value={period}
-                        onChange={onPeriodChange}
-                    />
-                </div>
-            </Card>
-        );
-    }
+    const isDashboardEmpty = !data || chartData.length === 0;
 
     return (
         <div className="space-y-6">
@@ -133,185 +117,194 @@ export function AnalyticsPanel({ data, loading, period, onPeriodChange }: Analyt
                 />
             ) : (
                 <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <Card bordered={false} className="bg-[var(--md-sys-color-surface-container)]">
-                            <Statistic
-                                title="総視聴回数"
-                                value={totals.views}
-                                valueStyle={{ color: 'var(--md-sys-color-primary)' }}
-                                prefix={<ArrowUpOutlined />} // Dummy trend
-                                suffix="回"
-                            />
+                    {isDashboardEmpty ? (
+                        <Card className="min-h-[400px] flex flex-col items-center justify-center">
+                            <Empty description="データがありません。期間を変更してみてください。" />
                         </Card>
-                        <Card bordered={false} className="bg-[var(--md-sys-color-surface-container)]">
-                            <Statistic
-                                title="総再生時間"
-                                value={Math.round(totals.watchTime / 60)} // Hours
-                                precision={1}
-                                valueStyle={{ color: 'var(--md-sys-color-tertiary)' }}
-                                suffix="時間"
-                            />
-                        </Card>
-                    </div>
+                    ) : (
+                        <>
 
-                    <Card
-                        className="w-full bg-[var(--md-sys-color-surface-container-low)] border-none"
-                        title="視聴回数推移"
-                    >
-                        <div className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart
-                                    data={chartData}
-                                    margin={{
-                                        top: 10,
-                                        right: 30,
-                                        left: 0,
-                                        bottom: 0,
-                                    }}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
-                                    <XAxis
-                                        dataKey="date"
-                                        tick={{ fill: 'var(--md-sys-color-on-surface-variant)', fontSize: 12 }}
-                                        tickLine={false}
-                                        axisLine={false}
-                                        minTickGap={30}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <Card bordered={false} className="bg-[var(--md-sys-color-surface-container)]">
+                                    <Statistic
+                                        title="総視聴回数"
+                                        value={totals.views}
+                                        valueStyle={{ color: 'var(--md-sys-color-primary)' }}
+                                        prefix={<ArrowUpOutlined />} // Dummy trend
+                                        suffix="回"
                                     />
-                                    <YAxis
-                                        tick={{ fill: 'var(--md-sys-color-on-surface-variant)', fontSize: 12 }}
-                                        tickLine={false}
-                                        axisLine={false}
+                                </Card>
+                                <Card bordered={false} className="bg-[var(--md-sys-color-surface-container)]">
+                                    <Statistic
+                                        title="総再生時間"
+                                        value={Math.round(totals.watchTime / 60)} // Hours
+                                        precision={1}
+                                        valueStyle={{ color: 'var(--md-sys-color-tertiary)' }}
+                                        suffix="時間"
                                     />
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: 'var(--md-sys-color-surface)',
-                                            borderRadius: '8px',
-                                            border: 'none',
-                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                                        }}
-                                    />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="views"
-                                        stroke="var(--md-sys-color-primary)"
-                                        fill="var(--md-sys-color-primary)"
-                                        fillOpacity={0.1}
-                                        strokeWidth={2}
-                                    />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </Card>
+                                </Card>
+                            </div>
 
-                    <Card
-                        className="w-full bg-[var(--md-sys-color-surface-container-low)] border-none"
-                        title="詳細データ"
-                    >
-                        <Table
-                            dataSource={chartData}
-                            columns={[
-                                {
-                                    title: '日付',
-                                    dataIndex: 'date',
-                                    key: 'date',
-                                },
-                                {
-                                    title: '視聴回数',
-                                    dataIndex: 'views',
-                                    key: 'views',
-                                    render: (val) => `${val?.toLocaleString() ?? 0}`,
-                                    align: 'right',
-                                    width: 100,
-                                },
-                                {
-                                    title: '総再生時間 (分)',
-                                    dataIndex: 'watchTime',
-                                    key: 'watchTime',
-                                    render: (val) => `${val?.toLocaleString() ?? 0}`,
-                                    align: 'right',
-                                    width: 120,
-                                },
-                                {
-                                    title: '平均視聴時間 (秒)',
-                                    dataIndex: 'avgViewDuration',
-                                    key: 'avgViewDuration',
-                                    render: (val) => `${val ?? 0}`,
-                                    align: 'right',
-                                    width: 120,
-                                },
-                                {
-                                    title: '視聴維持率 (%)',
-                                    dataIndex: 'avgViewPercentage',
-                                    key: 'avgViewPercentage',
-                                    render: (val) => `${val ? Math.round(val * 100) / 100 : 0}%`,
-                                    align: 'right',
-                                    width: 120,
-                                },
-                                {
-                                    title: '登録増',
-                                    dataIndex: 'subscribersGained',
-                                    key: 'subscribersGained',
-                                    align: 'right',
-                                    width: 80,
-                                },
-                                {
-                                    title: '登録減',
-                                    dataIndex: 'subscribersLost',
-                                    key: 'subscribersLost',
-                                    align: 'right',
-                                    width: 80,
-                                },
-                                {
-                                    title: '高評価',
-                                    dataIndex: 'likes',
-                                    key: 'likes',
-                                    align: 'right',
-                                    width: 80,
-                                },
-                                {
-                                    title: '低評価',
-                                    dataIndex: 'dislikes',
-                                    key: 'dislikes',
-                                    align: 'right',
-                                    width: 80,
-                                },
-                                {
-                                    title: 'コメント',
-                                    dataIndex: 'comments',
-                                    key: 'comments',
-                                    align: 'right',
-                                    width: 90,
-                                },
-                                {
-                                    title: 'シェア',
-                                    dataIndex: 'shares',
-                                    key: 'shares',
-                                    align: 'right',
-                                    width: 80,
-                                },
-                                {
-                                    title: 'カード',
-                                    dataIndex: 'cardClicks',
-                                    key: 'cardClicks',
-                                    align: 'right',
-                                    width: 80,
-                                },
-                                {
-                                    title: '終了画面',
-                                    dataIndex: 'endScreenElementClicks',
-                                    key: 'endScreenElementClicks',
-                                    align: 'right',
-                                    width: 90,
-                                },
-                            ]}
-                            pagination={{ pageSize: 10 }}
-                            size="small"
-                            rowKey="date"
-                            scroll={{ x: true }}
-                        />
-                    </Card>
+                            <Card
+                                className="w-full bg-[var(--md-sys-color-surface-container-low)] border-none"
+                                title="視聴回数推移"
+                            >
+                                <div className="h-[300px] w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart
+                                            data={chartData}
+                                            margin={{
+                                                top: 10,
+                                                right: 30,
+                                                left: 0,
+                                                bottom: 0,
+                                            }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                                            <XAxis
+                                                dataKey="date"
+                                                tick={{ fill: 'var(--md-sys-color-on-surface-variant)', fontSize: 12 }}
+                                                tickLine={false}
+                                                axisLine={false}
+                                                minTickGap={30}
+                                            />
+                                            <YAxis
+                                                tick={{ fill: 'var(--md-sys-color-on-surface-variant)', fontSize: 12 }}
+                                                tickLine={false}
+                                                axisLine={false}
+                                            />
+                                            <Tooltip
+                                                contentStyle={{
+                                                    backgroundColor: 'var(--md-sys-color-surface)',
+                                                    borderRadius: '8px',
+                                                    border: 'none',
+                                                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                                }}
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="views"
+                                                stroke="var(--md-sys-color-primary)"
+                                                fill="var(--md-sys-color-primary)"
+                                                fillOpacity={0.1}
+                                                strokeWidth={2}
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </Card>
+
+                            <Card
+                                className="w-full bg-[var(--md-sys-color-surface-container-low)] border-none"
+                                title="詳細データ"
+                            >
+                                <Table
+                                    dataSource={chartData}
+                                    columns={[
+                                        {
+                                            title: '日付',
+                                            dataIndex: 'date',
+                                            key: 'date',
+                                        },
+                                        {
+                                            title: '視聴回数',
+                                            dataIndex: 'views',
+                                            key: 'views',
+                                            render: (val) => `${val?.toLocaleString() ?? 0}`,
+                                            align: 'right',
+                                            width: 100,
+                                        },
+                                        {
+                                            title: '総再生時間 (分)',
+                                            dataIndex: 'watchTime',
+                                            key: 'watchTime',
+                                            render: (val) => `${val?.toLocaleString() ?? 0}`,
+                                            align: 'right',
+                                            width: 120,
+                                        },
+                                        {
+                                            title: '平均視聴時間 (秒)',
+                                            dataIndex: 'avgViewDuration',
+                                            key: 'avgViewDuration',
+                                            render: (val) => `${val ?? 0}`,
+                                            align: 'right',
+                                            width: 120,
+                                        },
+                                        {
+                                            title: '視聴維持率 (%)',
+                                            dataIndex: 'avgViewPercentage',
+                                            key: 'avgViewPercentage',
+                                            render: (val) => `${val ? Math.round(val * 100) / 100 : 0}%`,
+                                            align: 'right',
+                                            width: 120,
+                                        },
+                                        {
+                                            title: '登録増',
+                                            dataIndex: 'subscribersGained',
+                                            key: 'subscribersGained',
+                                            align: 'right',
+                                            width: 80,
+                                        },
+                                        {
+                                            title: '登録減',
+                                            dataIndex: 'subscribersLost',
+                                            key: 'subscribersLost',
+                                            align: 'right',
+                                            width: 80,
+                                        },
+                                        {
+                                            title: '高評価',
+                                            dataIndex: 'likes',
+                                            key: 'likes',
+                                            align: 'right',
+                                            width: 80,
+                                        },
+                                        {
+                                            title: '低評価',
+                                            dataIndex: 'dislikes',
+                                            key: 'dislikes',
+                                            align: 'right',
+                                            width: 80,
+                                        },
+                                        {
+                                            title: 'コメント',
+                                            dataIndex: 'comments',
+                                            key: 'comments',
+                                            align: 'right',
+                                            width: 90,
+                                        },
+                                        {
+                                            title: 'シェア',
+                                            dataIndex: 'shares',
+                                            key: 'shares',
+                                            align: 'right',
+                                            width: 80,
+                                        },
+                                        {
+                                            title: 'カード',
+                                            dataIndex: 'cardClicks',
+                                            key: 'cardClicks',
+                                            align: 'right',
+                                            width: 80,
+                                        },
+                                        {
+                                            title: '終了画面',
+                                            dataIndex: 'endScreenElementClicks',
+                                            key: 'endScreenElementClicks',
+                                            align: 'right',
+                                            width: 90,
+                                        },
+                                    ]}
+                                    pagination={{ pageSize: 10 }}
+                                    size="small"
+                                    rowKey="date"
+                                    scroll={{ x: true }}
+                                />
+                            </Card>
+                        </>
+                    )}
                 </>
             )}
-        </div >
+        </div>
     );
 }
