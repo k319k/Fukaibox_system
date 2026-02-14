@@ -84,6 +84,13 @@
   --color-kitchen-online: #386a20;
   --color-kitchen-muted: #85736e;
   --color-kitchen-muted-bg: var(--md-sys-color-surface-container);
+
+  /* Home page accent tokens */
+  --color-rank-silver-bg: #E8E8E8;
+  --color-rank-silver-text: #4a4a4a;
+  --color-rank-bronze-bg: #EACDAF;
+  --color-rank-bronze-text: #6b4423;
+  --color-play-surface: rgba(255, 248, 246, 0.95);
 }
 
 /* Dark Theme (Preferred) */
@@ -150,6 +157,13 @@
     --color-kitchen-online: #8dd87a;
     --color-kitchen-muted: #a08c89;
     --color-kitchen-muted-bg: var(--md-sys-color-surface-container);
+
+    /* Home page accent tokens (dark) */
+    --color-rank-silver-bg: #3a3a3a;
+    --color-rank-silver-text: #c8c8c8;
+    --color-rank-bronze-bg: #4a3620;
+    --color-rank-bronze-text: #d4b088;
+    --color-play-surface: rgba(54, 52, 50, 0.95);
   }
 }
 

@@ -10,22 +10,22 @@ const actions = [
         label: "料理をする",
         href: "/cooking",
         icon: "material-symbols:skillet",
-        bgColor: "bg-[#ffdad5]",
-        textColor: "text-[#73342b]"
+        bgColor: "bg-[var(--color-kitchen-tag-bg)]",
+        textColor: "text-[var(--color-kitchen-tag-text)]"
     },
     {
         label: "保管庫を見る",
         href: "/storage",
         icon: "material-symbols:package-2-outline",
-        bgColor: "bg-[#fbe7a6]",
-        textColor: "text-[#564419]"
+        bgColor: "bg-[var(--color-kitchen-gold-bg)]",
+        textColor: "text-[var(--color-kitchen-gold-text)]"
     },
     {
         label: "道具を使う",
         href: "/tools",
         icon: "material-symbols:build",
-        bgColor: "bg-[#d7f0cb]",
-        textColor: "text-[#10200a]"
+        bgColor: "bg-[var(--color-kitchen-success-bg)]",
+        textColor: "text-[var(--color-kitchen-success-text)]"
     },
     {
         label: "設定",

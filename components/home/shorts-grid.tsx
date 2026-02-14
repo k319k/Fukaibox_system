@@ -38,7 +38,7 @@ export function ShortsGrid({ shorts }: ShortsGridProps) {
             >
                 <div className="p-8 pb-0">
                     <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3 text-[var(--md-sys-color-on-surface)]">
-                        <Icon icon="material-symbols:play-arrow" className="w-6 h-6 text-[#73342b]" />
+                        <Icon icon="material-symbols:play-arrow" className="w-6 h-6 text-[var(--color-kitchen-tag-text)]" />
                         最新のShorts
                     </h2>
                 </div>
@@ -66,12 +66,12 @@ export function ShortsGrid({ shorts }: ShortsGridProps) {
                                                     unoptimized
                                                 />
                                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px]">
-                                                    <div className="w-12 h-12 bg-[#fff8f6]/95 rounded-full flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform text-[#73342b] pl-0.5">
+                                                    <div className="w-12 h-12 bg-[var(--color-play-surface)] rounded-full flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform text-[var(--md-sys-color-primary)] pl-0.5">
                                                         <Icon icon="material-symbols:play-arrow" className="w-6 h-6" />
                                                     </div>
                                                 </div>
                                             </div>
-                                            <h3 className="text-base font-normal leading-relaxed group-hover:text-[#73342b] transition-colors line-clamp-2 text-[var(--md-sys-color-on-surface)]">
+                                            <h3 className="text-base font-normal leading-relaxed group-hover:text-[var(--md-sys-color-primary)] transition-colors line-clamp-2 text-[var(--md-sys-color-on-surface)]">
                                                 {video.title}
                                             </h3>
                                             <span className="text-sm text-[var(--md-sys-color-on-surface-variant)] mt-1 block">

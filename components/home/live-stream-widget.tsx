@@ -27,7 +27,7 @@ export function LiveStreamWidget({ latestStream }: LiveStreamWidgetProps) {
                     <div className="flex justify-between items-center w-full">
                         <div>
                             <h2 className="text-2xl font-bold tracking-tight flex items-center gap-4 text-[var(--md-sys-color-on-surface)]">
-                                <span className="w-3 h-3 rounded-full bg-[#73342b] shadow-[0_0_12px_rgba(115,52,43,0.4)]" />
+                                <span className="w-3 h-3 rounded-full bg-[var(--color-kitchen-tag-text)] shadow-[0_0_12px_rgba(115,52,43,0.4)]" />
                                 最新の配信
                             </h2>
                             <p className="text-lg font-medium tracking-normal text-[var(--md-sys-color-on-surface-variant)] mt-1 opacity-80">
@@ -35,7 +35,7 @@ export function LiveStreamWidget({ latestStream }: LiveStreamWidgetProps) {
                             </p>
                         </div>
                         {latestStream && (
-                            <Tag className="text-[11px] font-bold uppercase tracking-[0.1em] rounded-full px-4 py-1 bg-[#ffdad5] text-[#73342b] border-none">
+                            <Tag className="text-[11px] font-bold uppercase tracking-[0.1em] rounded-full px-4 py-1 bg-[var(--color-kitchen-tag-bg)] text-[var(--color-kitchen-tag-text)] border-none">
                                 {formatRelativeTime(latestStream.publishedAt)}
                             </Tag>
                         )}
@@ -54,13 +54,13 @@ export function LiveStreamWidget({ latestStream }: LiveStreamWidgetProps) {
                                         unoptimized
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px]">
-                                        <div className="w-16 h-16 bg-[#fff8f6]/95 rounded-full flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform text-[#73342b] pl-1">
+                                        <div className="w-16 h-16 bg-[var(--color-play-surface)] rounded-full flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform text-[var(--md-sys-color-primary)] pl-1">
                                             <Icon icon="material-symbols:play-arrow" className="w-8 h-8" />
                                         </div>
                                     </div>
                                 </div>
                             </motion.div>
-                            <h3 className="text-lg font-medium tracking-normal group-hover:text-[#73342b] transition-colors line-clamp-2 leading-relaxed text-[var(--md-sys-color-on-surface)]">
+                            <h3 className="text-lg font-medium tracking-normal group-hover:text-[var(--md-sys-color-primary)] transition-colors line-clamp-2 leading-relaxed text-[var(--md-sys-color-on-surface)]">
                                 {latestStream.title}
                             </h3>
                             <div className="flex items-center gap-3 mt-3 text-[var(--md-sys-color-on-surface-variant)]">
@@ -71,7 +71,7 @@ export function LiveStreamWidget({ latestStream }: LiveStreamWidgetProps) {
                         </Link>
                     ) : (
                         <div className="text-center space-y-8 opacity-70 flex-grow flex flex-col items-center justify-center">
-                            <div className="w-40 h-40 mx-auto rounded-full bg-[var(--md-sys-color-surface-container-highest)] flex items-center justify-center shadow-inner ring-4 ring-[#fff8f6]">
+                            <div className="w-40 h-40 mx-auto rounded-full bg-[var(--md-sys-color-surface-container-highest)] flex items-center justify-center shadow-inner ring-4 ring-[var(--md-sys-color-surface-container)]">
                                 <Icon icon="material-symbols:tv" className="w-20 h-20 text-[var(--md-sys-color-on-surface-variant)]" />
                             </div>
                             <p className="text-2xl font-bold tracking-tight text-[var(--md-sys-color-on-surface-variant)]">
@@ -80,7 +80,7 @@ export function LiveStreamWidget({ latestStream }: LiveStreamWidgetProps) {
                         </div>
                     )}
                 </div>
-                <div className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-[#ffdad5] to-transparent opacity-20 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-[var(--md-sys-color-primary-container)] to-transparent opacity-20 rounded-full blur-3xl pointer-events-none" />
             </Card>
         </motion.div>
     );

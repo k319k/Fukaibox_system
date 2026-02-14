@@ -20,14 +20,14 @@ const itemVariants = {
 };
 
 function getRankStyle(rank: number): { bg: string; text: string } {
-    if (rank === 1) return { bg: "bg-[#ffdad5]", text: "text-[#73342b]" };
-    if (rank === 2) return { bg: "bg-[#E8E8E8]", text: "text-[#4a4a4a]" };
-    if (rank === 3) return { bg: "bg-[#EACDAF]", text: "text-[#6b4423]" };
+    if (rank === 1) return { bg: "bg-[var(--color-kitchen-tag-bg)]", text: "text-[var(--color-kitchen-tag-text)]" };
+    if (rank === 2) return { bg: "bg-[var(--color-rank-silver-bg)]", text: "text-[var(--color-rank-silver-text)]" };
+    if (rank === 3) return { bg: "bg-[var(--color-rank-bronze-bg)]", text: "text-[var(--color-rank-bronze-text)]" };
     return { bg: "bg-[var(--md-sys-color-surface-container-highest)]", text: "text-[var(--md-sys-color-on-surface-variant)]" };
 }
 
 function getRankIcon(rank: number) {
-    if (rank === 1) return <Icon icon="material-symbols:workspace-premium" className="w-4 h-4 text-[#73342b]" />;
+    if (rank === 1) return <Icon icon="material-symbols:workspace-premium" className="w-4 h-4 text-[var(--color-kitchen-tag-text)]" />;
     return null;
 }
 
@@ -64,7 +64,7 @@ export function RankingWidget() {
             >
                 <div className="p-8 pb-4">
                     <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3 text-[var(--md-sys-color-on-surface)]">
-                        <Icon icon="material-symbols:trophy" className="w-5 h-5 text-[#564419]" />
+                        <Icon icon="material-symbols:trophy" className="w-5 h-5 text-[var(--color-kitchen-gold-text)]" />
                         貢献度ランキング
                     </h2>
                 </div>
@@ -111,7 +111,7 @@ export function RankingWidget() {
                                         </Avatar>
                                         <div className="flex-1 space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <p className="text-lg font-medium tracking-normal group-hover:text-[#73342b] transition-colors text-[var(--md-sys-color-on-surface)]">
+                                                <p className="text-lg font-medium tracking-normal group-hover:text-[var(--md-sys-color-primary)] transition-colors text-[var(--md-sys-color-on-surface)]">
                                                     {displayName}
                                                 </p>
                                                 <span className="text-sm font-mono text-[var(--md-sys-color-on-surface-variant)]">
@@ -122,7 +122,7 @@ export function RankingWidget() {
                                                 percent={(user.points / maxPoints) * 100}
                                                 showInfo={false}
                                                 size="small"
-                                                strokeColor="#73342b"
+                                                strokeColor="var(--color-kitchen-tag-text)"
                                                 trailColor="var(--md-sys-color-surface-container-highest)"
                                             />
                                         </div>

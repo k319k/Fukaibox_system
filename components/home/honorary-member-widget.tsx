@@ -56,7 +56,7 @@ export function HonoraryMemberWidget() {
             >
                 <div className="p-8 pb-4">
                     <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3 text-[var(--md-sys-color-on-surface)]">
-                        <Icon icon="material-symbols:local-police" className="w-5 h-5 text-[#fbe7a6]" />
+                        <Icon icon="material-symbols:local-police" className="w-5 h-5 text-[var(--color-kitchen-gold-bg)]" />
                         名誉儀員
                     </h2>
                     <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] mt-1">
@@ -91,15 +91,15 @@ export function HonoraryMemberWidget() {
                                             <Avatar
                                                 size={56}
                                                 src={member.image || undefined}
-                                                className="ring-2 ring-[#fbe7a6] rounded-[16px] group-hover:ring-4 transition-all"
+                                                className="ring-2 ring-[var(--color-kitchen-gold-bg)] rounded-[16px] group-hover:ring-4 transition-all"
                                             >
                                                 {displayName[0]}
                                             </Avatar>
-                                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#fbe7a6] rounded-full flex items-center justify-center shadow-sm">
-                                                <Icon icon="material-symbols:star" className="w-3 h-3 text-[#564419]" />
+                                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--color-kitchen-gold-bg)] rounded-full flex items-center justify-center shadow-sm">
+                                                <Icon icon="material-symbols:star" className="w-3 h-3 text-[var(--color-kitchen-gold-text)]" />
                                             </div>
                                         </div>
-                                        <p className="text-sm font-medium text-center text-[var(--md-sys-color-on-surface)] group-hover:text-[#73342b] transition-colors max-w-[80px] truncate">
+                                        <p className="text-sm font-medium text-center text-[var(--md-sys-color-on-surface)] group-hover:text-[var(--md-sys-color-primary)] transition-colors max-w-[80px] truncate">
                                             {displayName}
                                         </p>
                                     </motion.div>
