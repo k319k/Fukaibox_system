@@ -420,6 +420,7 @@ export async function getChannelAnalytics(startDate: string, endDate: string) {
         );
 
         const analytics = await getCachedAnalytics(accessToken, startDate, endDate);
+        console.log(`getChannelAnalytics: Success. Rows: ${analytics?.rows?.length || 0}`);
 
         return { success: true, data: analytics };
     } catch (error: any) {

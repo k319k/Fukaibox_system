@@ -106,7 +106,7 @@ export function AnalyticsPanel({ data, loading, period, onPeriodChange }: Analyt
                 <Segmented
                     options={[
                         { label: 'ダッシュボード', value: 'dashboard' },
-                        { label: '詳細レポート (example.ods)', value: 'advanced' },
+                        { label: '詳細レポート', value: 'advanced' },
                     ]}
                     value={viewMode}
                     onChange={(v: any) => setViewMode(v)}
