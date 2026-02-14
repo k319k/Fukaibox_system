@@ -394,10 +394,11 @@ export async function getChannelAnalytics(startDate: string, endDate: string) {
         }
 
         if (!accessToken) {
+            console.error("getChannelAnalytics: No access token");
             return { success: false, error: "YouTube not connected" };
         }
 
-        // アナリティクス取得（キャッシュ利用）
+        console.log(`getChannelAnalytics: Fetching for ${startDate} to ${endDate}`);
         // Metrics: views,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost,likes,dislikes,comments,shares,cardClicks,endScreenElementClicks
         const getCachedAnalytics = unstable_cache(
             async (token: string, start: string, end: string) => getAnalytics(token, start, end, [
@@ -487,6 +488,7 @@ export async function getAdvancedAnalytics() {
         }
 
         if (!accessToken) {
+            console.error("getAdvancedAnalytics: No access token (System or User)");
             return { success: false, error: "YouTube not connected" };
         }
 
@@ -494,13 +496,16 @@ export async function getAdvancedAnalytics() {
         const getCachedAdvancedData = unstable_cache(
             async (token: string) => {
                 // 1. 動画リスト取得（最新30件に削減してタイムアウト回避）
+                console.log("getAdvancedAnalytics: Fetching videos...");
                 const videos = await getVideosExtended(token, 30);
+                console.log(`getAdvancedAnalytics: Got ${videos.length} videos`);
                 if (videos.length === 0) return [];
 
                 const videoIds = videos.map(v => v.videoId);
                 const videoIdString = videoIds.join(",");
 
-                // 2. 動画ごとのアナリティクス取得（全期間）
+                // Lifetime analytics
+                console.log("getAdvancedAnalytics: Fetching lifetime analytics...");
                 const startDate = "2000-01-01";
                 const today = new Date().toISOString().split("T")[0];
 
@@ -528,6 +533,7 @@ export async function getAdvancedAnalytics() {
                 );
 
                 // 3. データのマージと計算
+                console.log(`getAdvancedAnalytics: Analytics fetched. Rows: ${analyticsData.rows?.length || 0}`);
                 const analyticsMap = new Map();
                 if (analyticsData.rows) {
                     analyticsData.rows.forEach((row: any) => {
@@ -548,6 +554,7 @@ export async function getAdvancedAnalytics() {
                 }
 
                 // Batch size increased to 10 for faster execution
+                console.log("getAdvancedAnalytics: Starting batch process...");
                 return await batchProcess(videos, 10, async (video) => {
                     const index = videos.indexOf(video);
                     const analytics = analyticsMap.get(video.videoId) || {};

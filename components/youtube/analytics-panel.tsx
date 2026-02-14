@@ -24,14 +24,19 @@ export function AnalyticsPanel({ data, loading, period, onPeriodChange }: Analyt
     const [advancedLoading, setAdvancedLoading] = useState(false);
 
     const fetchAdvancedData = async () => {
+        console.log("AnalyticsPanel: fetchAdvancedData called");
         setAdvancedLoading(true);
         try {
             const res = await getAdvancedAnalytics();
+            console.log("AnalyticsPanel: getAdvancedAnalytics result", res);
             if (res.success && res.data) {
+                console.log(`AnalyticsPanel: Advanced data loaded. Count: ${res.data.length}`);
                 setAdvancedData(res.data);
+            } else {
+                console.error("AnalyticsPanel: Failed to load advanced data", res.error);
             }
         } catch (error) {
-            console.error(error);
+            console.error("AnalyticsPanel: Exception in fetchAdvancedData", error);
         } finally {
             setAdvancedLoading(false);
         }
