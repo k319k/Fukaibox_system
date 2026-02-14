@@ -11,6 +11,7 @@ export const youtubeTokens = sqliteTable("youtube_tokens", {
     id: text("id").primaryKey(),
     userId: text("user_id")
         .notNull()
+        .unique()
         .references(() => users.id, { onDelete: "cascade" }),
     accessToken: text("access_token").notNull(),
     refreshToken: text("refresh_token").notNull(),

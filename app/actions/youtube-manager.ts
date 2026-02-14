@@ -15,7 +15,9 @@ import {
     getVideos,
     getVideoStats,
     getAnalytics,
+    getSystemAccessToken,
 } from "@/lib/youtube-api";
+import { env } from "@/lib/env";
 import crypto from "crypto";
 import { addDays, startOfDay } from "date-fns";
 
@@ -75,6 +77,18 @@ export async function getYouTubeConnectionStatus() {
 
     if (!session?.user) {
         return { success: false, error: "Unauthorized", connected: false };
+    }
+
+    // 1. 環境変数のシステムトークンを優先
+    if (env.YOUTUBE_REFRESH_TOKEN) {
+        try {
+            const accessToken = await getSystemAccessToken();
+            const channelInfo = await getChannelInfo(accessToken);
+            return { success: true, connected: true, channel: channelInfo };
+        } catch (error: any) {
+            console.error("System token connection error:", error);
+            // システムトークンがエラーでもDBトークンを試す（後方互換）
+        }
     }
 
     try {
@@ -338,7 +352,13 @@ export async function getChannelAnalytics(startDate: string, endDate: string) {
     }
 
     try {
-        const accessToken = await getValidAccessToken(session.user.id);
+        let accessToken: string | null = null;
+        if (env.YOUTUBE_REFRESH_TOKEN) {
+            accessToken = await getSystemAccessToken();
+        } else {
+            accessToken = await getValidAccessToken(session.user.id);
+        }
+
         if (!accessToken) {
             return { success: false, error: "YouTube not connected" };
         }
@@ -365,7 +385,13 @@ export async function getVideoAnalytics(videoId: string) {
     }
 
     try {
-        const accessToken = await getValidAccessToken(session.user.id);
+        let accessToken: string | null = null;
+        if (env.YOUTUBE_REFRESH_TOKEN) {
+            accessToken = await getSystemAccessToken();
+        } else {
+            accessToken = await getValidAccessToken(session.user.id);
+        }
+
         if (!accessToken) {
             return { success: false, error: "YouTube not connected" };
         }

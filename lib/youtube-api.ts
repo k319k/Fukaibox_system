@@ -65,6 +65,15 @@ export async function refreshAccessToken(refreshToken: string) {
     };
 }
 
+// 環境変数のリフレッシュトークンからアクセストークンを取得
+export async function getSystemAccessToken() {
+    if (!env.YOUTUBE_REFRESH_TOKEN) {
+        throw new Error("YOUTUBE_REFRESH_TOKEN is not set in environment variables");
+    }
+    const { accessToken } = await refreshAccessToken(env.YOUTUBE_REFRESH_TOKEN);
+    return accessToken;
+}
+
 // アクセストークンを使用してOAuth2クライアントを設定
 function setCredentials(accessToken: string) {
     const oauth2Client = getOAuth2Client();

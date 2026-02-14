@@ -40,6 +40,7 @@ const serverSchema = z.object({
     YOUTUBE_CLIENT_ID: z.string().optional(),
     YOUTUBE_CLIENT_SECRET: z.string().optional(),
     YOUTUBE_REDIRECT_URI: z.string().optional(),
+    YOUTUBE_REFRESH_TOKEN: z.string().optional(),
 });
 
 const clientSchema = z.object({
@@ -70,6 +71,7 @@ const processEnv = {
     YOUTUBE_CLIENT_ID: process.env.YOUTUBE_CLIENT_ID,
     YOUTUBE_CLIENT_SECRET: process.env.YOUTUBE_CLIENT_SECRET,
     YOUTUBE_REDIRECT_URI: process.env.YOUTUBE_REDIRECT_URI,
+    YOUTUBE_REFRESH_TOKEN: process.env.YOUTUBE_REFRESH_TOKEN,
 };
 
 // バリデーション実行
