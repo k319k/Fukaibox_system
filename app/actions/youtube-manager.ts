@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
 import { youtubeTokens, youtubeScheduledVideos } from "@/lib/db/schema/youtube";
 import { eq, and, gte, lte } from "drizzle-orm";
@@ -83,7 +84,15 @@ export async function getYouTubeConnectionStatus() {
     if (env.YOUTUBE_REFRESH_TOKEN) {
         try {
             const accessToken = await getSystemAccessToken();
-            const channelInfo = await getChannelInfo(accessToken);
+
+            // チャンネル情報取得（キャッシュ利用）
+            const getCachedChannelInfo = unstable_cache(
+                async (token: string) => getChannelInfo(token),
+                ['youtube-channel-info'],
+                { revalidate: 3600 } // 1時間キャッシュ
+            );
+
+            const channelInfo = await getCachedChannelInfo(accessToken);
             return { success: true, connected: true, channel: channelInfo };
         } catch (error: any) {
             console.error("System token connection error:", error);
@@ -114,8 +123,13 @@ export async function getYouTubeConnectionStatus() {
                     })
                     .where(eq(youtubeTokens.id, token.id));
 
-                // チャンネル情報取得
-                const channelInfo = await getChannelInfo(refreshed.accessToken);
+                // チャンネル情報取得（キャッシュ利用）
+                const getCachedChannelInfo = unstable_cache(
+                    async (token: string) => getChannelInfo(token),
+                    ['youtube-channel-info'],
+                    { revalidate: 3600 } // 1時間キャッシュ
+                );
+                const channelInfo = await getCachedChannelInfo(refreshed.accessToken);
                 return { success: true, connected: true, channel: channelInfo };
             } catch (e) {
                 // リフレッシュ失敗 → 再連携が必要
@@ -123,8 +137,13 @@ export async function getYouTubeConnectionStatus() {
             }
         }
 
-        // チャンネル情報取得
-        const channelInfo = await getChannelInfo(token.accessToken);
+        // チャンネル情報取得（キャッシュ利用）
+        const getCachedChannelInfo = unstable_cache(
+            async (token: string) => getChannelInfo(token),
+            ['youtube-channel-info'],
+            { revalidate: 3600 } // 1時間キャッシュ
+        );
+        const channelInfo = await getCachedChannelInfo(token.accessToken);
         return { success: true, connected: true, channel: channelInfo };
     } catch (error: any) {
         console.error("Get YouTube connection status error:", error);
@@ -363,7 +382,14 @@ export async function getChannelAnalytics(startDate: string, endDate: string) {
             return { success: false, error: "YouTube not connected" };
         }
 
-        const analytics = await getAnalytics(accessToken, startDate, endDate);
+        // アナリティクス取得（キャッシュ利用）
+        const getCachedAnalytics = unstable_cache(
+            async (token: string, start: string, end: string) => getAnalytics(token, start, end),
+            ['youtube-analytics'],
+            { revalidate: 3600 } // 1時間キャッシュ
+        );
+
+        const analytics = await getCachedAnalytics(accessToken, startDate, endDate);
 
         return { success: true, data: analytics };
     } catch (error: any) {
@@ -396,7 +422,13 @@ export async function getVideoAnalytics(videoId: string) {
             return { success: false, error: "YouTube not connected" };
         }
 
-        const stats = await getVideoStats(accessToken, videoId);
+        // 動画統計取得（キャッシュ利用）
+        const getCachedVideoStats = unstable_cache(
+            async (token: string, vId: string) => getVideoStats(token, vId),
+            ['youtube-video-stats'],
+            { revalidate: 3600 } // 1時間キャッシュ
+        );
+        const stats = await getCachedVideoStats(accessToken, videoId);
 
         return { success: true, data: stats };
     } catch (error: any) {
