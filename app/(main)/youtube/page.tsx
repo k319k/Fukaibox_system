@@ -7,7 +7,7 @@ import { Icon } from "@iconify/react";
 import { getYouTubeConnectionStatus, getYouTubeConnectUrl, disconnectYouTube, getChannelAnalytics, getScheduledVideos } from "@/app/actions/youtube-manager";
 import { AnalyticsPanel } from "@/components/youtube/analytics-panel";
 import UploadModal from "@/components/youtube/upload-modal";
-import { M3Button } from "@/components/ui/m3-button";
+
 import { format, subDays } from "date-fns";
 
 export default function YouTubeManagerPage() {
@@ -132,14 +132,14 @@ export default function YouTubeManagerPage() {
                     title="YouTubeと連携されていません"
                     subTitle="アナリティクスの確認や動画の予約投稿を行うには、YouTubeチャンネルと連携してください。"
                     extra={
-                        <M3Button
-                            variant="filled"
+                        <Button
+                            type="primary"
                             onClick={handleConnect}
                             icon={<GoogleOutlined />}
                             size="large"
                         >
                             YouTubeと連携する
-                        </M3Button>
+                        </Button>
                     }
                 />
             </div>
@@ -172,22 +172,21 @@ export default function YouTubeManagerPage() {
                 </div>
 
                 <div className="flex gap-2">
-                    <M3Button
-                        variant="tonal"
+                    <Button
                         onClick={fetchStatus}
                         icon={<ReloadOutlined />}
                         className="!h-10"
                     >
                         更新
-                    </M3Button>
-                    <M3Button
-                        variant="outlined"
+                    </Button>
+                    <Button
+                        danger
                         onClick={handleDisconnect}
                         icon={<DisconnectOutlined />}
-                        className="!h-10 text-red-500 border-red-200 hover:bg-red-50"
+                        className="!h-10"
                     >
                         解除
-                    </M3Button>
+                    </Button>
                 </div>
             </div>
 
@@ -217,14 +216,14 @@ export default function YouTubeManagerPage() {
                                 <h3 className="tex-lg font-bold">動画をアップロード</h3>
                                 <p className="text-xs text-gray-500 mt-1">MP4ファイルをアップロードして<br />公開予約を設定します。</p>
                             </div>
-                            <M3Button
-                                variant="filled"
+                            <Button
+                                type="primary"
                                 icon={<UploadOutlined />}
                                 onClick={() => setIsUploadModalOpen(true)}
-                                className="w-full bg-indigo-600 hover:bg-indigo-700"
+                                className="w-full bg-indigo-600 hover:bg-indigo-700 border-none h-10"
                             >
                                 新規アップロード
-                            </M3Button>
+                            </Button>
                         </div>
                     </Card>
 
