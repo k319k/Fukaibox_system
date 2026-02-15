@@ -207,10 +207,10 @@ export default function YouTubeManagerPage() {
                 </Card>
 
                 <div className="space-y-6">
-                    <Card className="shadow-sm border-none bg-indigo-50/50 dark:bg-indigo-950/20">
+                    <Card className="shadow-sm border-none bg-[var(--md-sys-color-surface-container)]">
                         <div className="flex flex-col items-center text-center gap-4 py-4">
-                            <div className="w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center">
-                                <UploadOutlined className="text-2xl text-indigo-600 dark:text-indigo-300" />
+                            <div className="w-16 h-16 rounded-full flex items-center justify-center bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]">
+                                <UploadOutlined className="text-2xl" />
                             </div>
                             <div>
                                 <h3 className="tex-lg font-bold">動画をアップロード</h3>
@@ -220,7 +220,7 @@ export default function YouTubeManagerPage() {
                                 type="primary"
                                 icon={<UploadOutlined />}
                                 onClick={() => setIsUploadModalOpen(true)}
-                                className="w-full bg-indigo-600 hover:bg-indigo-700 border-none h-10"
+                                className="w-full h-10"
                             >
                                 新規アップロード
                             </Button>
@@ -248,7 +248,7 @@ export default function YouTubeManagerPage() {
                                                     {format(new Date(video.scheduledDate), "M月d日 HH:mm")} 公開
                                                 </p>
                                             </div>
-                                            <div className="text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-700 border border-orange-200">
+                                            <div className="text-xs px-2 py-0.5 rounded bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)] border border-[var(--md-sys-color-outline)]">
                                                 Pending
                                             </div>
                                         </div>

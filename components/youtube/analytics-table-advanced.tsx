@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Table, Card, Button, Input, Space, Tag, Tooltip } from "antd";
+import { Table, Card, Button, Input, Space, Tag, Tooltip, ConfigProvider, theme } from "antd";
 import type { TableProps } from 'antd';
 import { SearchOutlined, DownloadOutlined, ReloadOutlined } from "@ant-design/icons";
 import { VideoAnalyticsRow } from "@/lib/types/analytics";
@@ -117,16 +117,18 @@ export function AnalyticsTableAdvanced({ data, loading, onRefresh }: AnalyticsTa
                 <Button icon={<DownloadOutlined />}>CSVエクスポート</Button>
             </div>
 
-            <Table
-                columns={columns}
-                dataSource={filteredData}
-                rowKey="videoId"
-                scroll={{ x: 2000, y: 600 }}
-                pagination={{ pageSize: 20 }}
-                loading={loading}
-                size="small"
-                bordered
-            />
+            <ConfigProvider theme={{ algorithm: theme.defaultAlgorithm }}>
+                <Table
+                    columns={columns}
+                    dataSource={filteredData}
+                    rowKey="videoId"
+                    scroll={{ x: 'max-content', y: 600 }}
+                    pagination={{ pageSize: 20 }}
+                    loading={loading}
+                    size="small"
+                    bordered
+                />
+            </ConfigProvider>
         </div>
     );
 }
