@@ -1,8 +1,9 @@
 "use client";
 
-import { ConfigProvider, App } from "antd";
+import { ConfigProvider, App, theme as antTheme } from "antd";
 import jaJP from "antd/locale/ja_JP";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
+import { useState, useEffect } from 'react';
 
 // Material Design 3 (M3) Theme Adaptation
 // Ant Design v5+ supports CSS variables in theme tokens
@@ -105,9 +106,26 @@ const theme = {
 };
 
 export function Providers({ children }: { children: React.ReactNode }) {
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        setIsDarkMode(mediaQuery.matches);
+
+        const handler = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
+        mediaQuery.addEventListener('change', handler);
+        return () => mediaQuery.removeEventListener('change', handler);
+    }, []);
+
     return (
         <AntdRegistry>
-            <ConfigProvider theme={theme} locale={jaJP}>
+            <ConfigProvider
+                theme={{
+                    ...theme,
+                    algorithm: isDarkMode ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
+                }}
+                locale={jaJP}
+            >
                 <App>{children}</App>
             </ConfigProvider>
         </AntdRegistry>
