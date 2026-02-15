@@ -101,6 +101,15 @@ const theme = {
             colorBgBody: "var(--md-sys-color-surface)",
             colorBgHeader: "var(--md-sys-color-surface)",
             colorBgTrigger: "var(--md-sys-color-surface)",
+        },
+        Table: {
+            headerBg: "var(--md-sys-color-surface-container-high)",
+            headerColor: "var(--md-sys-color-on-surface)",
+            colorBgContainer: "var(--md-sys-color-surface-container)",
+            rowHoverBg: "var(--md-sys-color-surface-container-highest)",
+            colorText: "var(--md-sys-color-on-surface)",
+            borderColor: "var(--md-sys-color-outline-variant)",
+            headerBorderRadius: 0,
         }
     },
 };
