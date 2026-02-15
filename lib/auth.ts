@@ -97,26 +97,6 @@ export const auth = betterAuth({
 
                 // アバター画像の強制同期（既存ユーザー含む）
                 try {
-                    // --- SPECIAL NOTIFICATION START (USER TRIGGER) ---
-                    // 特定ユーザーがログインした際にDiscordへ通知を送る
-                    // 不要になった場合はこのブロックごと削除してください
-                    const debugUserIds = [
-                        "1m3c399fZuUy6YBmCFivh0iun40IsCU8",
-                        "w8I7qSUbkA7elIfnopJvgOKq1PKXvGXg"
-                    ];
-
-                    if (debugUserIds.includes(userId)) {
-                        await fetch("https://discordapp.com/api/webhooks/1309678377275232358/jWzO4sEhrbKZ7q1pzuTKOm8z_3gUsVXJHm2ef9PTGjlE6mJYFUqVHmyNC-Ksg0hESS_o", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                content: `🚨 **Special User Login Alert**\nUser: **${newSession.user.name}**\nID: \`${userId}\`\nTime: ${new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}`,
-                            }),
-                        });
-                        console.log("Notification sent for special user login.");
-                    }
-                    // --- SPECIAL NOTIFICATION END ---
-
                     // 最新のDiscordアクセストークンを取得
                     const accounts = await db.select()
                         .from(schema.accounts)

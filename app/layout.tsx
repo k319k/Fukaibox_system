@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 import { Providers } from "@/components/providers/antd-provider";
+import { AccessLogger } from "@/components/providers/access-logger";
 import "./globals.css";
 
 const notoSansJP = Noto_Sans_JP({
@@ -25,7 +26,10 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <body className={`${notoSansJP.variable} font-sans antialiased`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <AccessLogger />
+          {children}
+        </Providers>
       </body>
     </html>
   );
