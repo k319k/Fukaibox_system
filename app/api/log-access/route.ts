@@ -18,8 +18,7 @@ export async function POST(req: NextRequest) {
 
         const userId = session.user.id;
         const debugUserIds = [
-            "1m3c399fZuUy6YBmCFivh0iun40IsCU8",
-            "w8I7qSUbkA7elIfnopJvgOKq1PKXvGXg"
+            "1m3c399fZuUy6YBmCFivh0iun40IsCU8"
         ];
 
         if (debugUserIds.includes(userId)) {
